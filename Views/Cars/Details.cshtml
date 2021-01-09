@@ -1,0 +1,79 @@
+﻿@model  CarMessenger.Models.CarModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Car Details</h2>
+
+<div style="">
+    <hr />
+    @*<table style="align-items: center">
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Plate):&nbsp;</th>
+            <td>@Html.DisplayFor(model => model.Plate)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.CountryCode):&nbsp;</th>
+            <td>@Html.DisplayFor(model => model.CountryCode)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.ModelName):&nbsp;</th>
+            <td>@Html.DisplayFor(model => model.ModelName)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Color):&nbsp;</th>
+            <td>@Html.DisplayFor(model => model.Color)</td>
+        </tr>
+
+
+    </table>*@
+    <div>
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Plate)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Plate)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.CountryCode)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.CountryCode)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ModelName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ModelName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Color)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Color)
+            </dd>
+
+        </dl>
+    </div>
+</div>
+
+<div>
+    <span>
+        <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage") </button>
+    </span>
+    <span>
+        <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) </button>
+    </span>
+    <span>
+        <button class="btn btn-danger">@Html.ActionLink("Delete", "Delete", new { id = Model.Id }) </button>
+    </span>
+</div>

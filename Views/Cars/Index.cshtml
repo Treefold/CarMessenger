@@ -1,0 +1,53 @@
+﻿@using CarMessenger.Models
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Car List</h2>
+<br />
+<a href="/cars/create" class="btn btn-primary">Create</a>
+
+@{
+
+        var carList = ViewData["Cars"] as List<CarModel>;
+        Console.WriteLine(carList);
+        foreach (var car in carList)
+        {
+        <div class="col-md-4 col-lg-4 col-xs-6 col-sm-4">
+
+
+            @Html.Label("CountryCode", "CountryCode:")
+            <p>@car.CountryCode</p>
+
+            <br />
+            @Html.Label("Plate", "Plate:")
+            <p>@car.Plate</p>
+
+            <br />
+
+            @using (Html.BeginForm(actionName: "Details",
+            controllerName: "Car",
+            method: FormMethod.Get,
+            routeValues: new { id = car.Id }))
+            {
+                <button class="btn btn-info">Details</button>
+
+            }   
+
+            <br />
+
+            <a href="/books/edit/@car.Id" class="btn btn-warning">Edit</a>
+
+            <br />
+            <br />
+
+            <a href="/books/delete/@car.Id" class="btn btn-danger">Delete</a>
+
+        </div>
+    }
+}
+
+<br />
+
+<a href="/cars/create" class="btn btn-primary">Create</a>
