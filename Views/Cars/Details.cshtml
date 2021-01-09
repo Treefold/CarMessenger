@@ -6,7 +6,7 @@
 
 <h2>Car Details</h2>
 
-<div style="">
+<div>
     <hr />
     @*<table style="align-items: center">
         <tr>
@@ -30,38 +30,47 @@
     </table>*@
     <div>
         <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Plate)
-            </dt>
+            <dt>Owner</dt>
+            <dd>@ViewBag.OwnerName
+                @if (ViewBag.Owned){<text> (you) </text>}</dd>
 
+            <dt>@Html.DisplayNameFor(model => model.Plate)</dt>
+            <dd>@Html.DisplayFor(model => model.Plate)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.CountryCode)</dt>
+            <dd>@Html.DisplayFor(model => model.CountryCode)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.ModelName)</dt>
+            <dd>@Html.DisplayFor(model => model.ModelName)</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.Color)</dt>
+            <dd>@Html.DisplayFor(model => model.Color)</dd>
+
+            <dt>CoOwners</dt>
             <dd>
-                @Html.DisplayFor(model => model.Plate)
+                @{ 
+                    var coOwners = ViewBag.CoOwners as List<String>;
+                }
+
+                @if (coOwners != null && coOwners.Count > 0)
+                {
+                    <ul>
+                        @foreach (var coOwnerMail in coOwners)
+                        {
+                        <li>
+                            <text>@coOwnerMail</text>
+                            <text onclick="return confirm('Are you sure?')">
+                                [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
+                            </text>
+                        </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <text>None</text>
+                }
             </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.CountryCode)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.CountryCode)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.ModelName)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.ModelName)
-            </dd>
-
-            <dt>
-                @Html.DisplayNameFor(model => model.Color)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Color)
-            </dd>
-
         </dl>
     </div>
 </div>
@@ -70,10 +79,13 @@
     <span>
         <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage") </button>
     </span>
+    @if (ViewBag.Owned)
+    {
     <span>
         <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) </button>
     </span>
+    }
     <span>
-        <button class="btn btn-danger">@Html.ActionLink("Delete", "Delete", new { id = Model.Id }) </button>
+        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink("Delete", "Delete", new { id = Model.Id }) </button>
     </span>
 </div>

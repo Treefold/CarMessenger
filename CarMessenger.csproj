@@ -210,6 +210,14 @@
     <Compile Include="Migrations\202101091815115_AddCarConstrains.Designer.cs">
       <DependentUpon>202101091815115_AddCarConstrains.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101092008093_AddOwnerType.cs" />
+    <Compile Include="Migrations\202101092008093_AddOwnerType.Designer.cs">
+      <DependentUpon>202101092008093_AddOwnerType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101092113497_AddOwnerExpiry.cs" />
+    <Compile Include="Migrations\202101092113497_AddOwnerExpiry.Designer.cs">
+      <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -324,6 +332,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101091815115_AddCarConstrains.resx">
       <DependentUpon>202101091815115_AddCarConstrains.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101092008093_AddOwnerType.resx">
+      <DependentUpon>202101092008093_AddOwnerType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101092113497_AddOwnerExpiry.resx">
+      <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

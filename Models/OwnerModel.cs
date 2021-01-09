@@ -20,8 +20,20 @@ namespace CarMessenger.Models
         [Required]
         public string CarId { get; set; }
 
-        //[Required]
-        //public string Category { get; set; } = "Owner";
+        [Required]
+        public string Category { get; set; } = "Owner";
+        // Owner     - The first one to have the car (the ownership can be passed to a CoOwner)
+        // CoOwner   - The others that use that car
+        // Invited   - Invitation sent by the Owner to someone to become a CoOwner
+        // Requested - Invitation sent to the Owner to become a CoOwner
+        // Invitation Rejected
+        // Request Denied
+
+        public DateTime Expiry { get; set; } = DateTime.MaxValue; // never
+
+        public OwnerModel()
+        {
+        }
 
         public OwnerModel(string userId, string carId)
         {
@@ -29,8 +41,22 @@ namespace CarMessenger.Models
             CarId = carId;
         }
 
-        public OwnerModel()
+        public OwnerModel(string userId, string carId, string category) : this(userId, carId)
         {
+            Category = category;
+        }
+
+        public OwnerModel(string userId, string carId, string category, DateTime expiry) : this(userId, carId, category)
+        {
+            Expiry = expiry;
+            //if (DateTime.Compare(Expiry, DateTime.Now) > 0)
+            //{
+            //    Expiry = expiry;
+            //}
+            //else
+            //{
+            //    Expiry = DateTime.MaxValue;
+            //}
         }
     }
 }

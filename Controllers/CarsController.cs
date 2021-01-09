@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Data.Entity.Infrastructure;
+using System.Collections.Generic;
 
 namespace CarMessenger.Controllers
 {
@@ -37,11 +38,39 @@ namespace CarMessenger.Controllers
         [HttpGet]
         public ActionResult Details(string id)
         {
+            string userId = User.Identity.GetUserId();
+            OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+            if (owner == null)
+            {
+                return HttpNotFound();
+            }
+
             var car = context.Cars.Find(id);
             if (car == null)
             {
                 return HttpNotFound();
             }
+            
+            if (owner.Category == "Owner")
+            {
+                ViewBag.Owned = true;
+                ViewBag.OwnerName = User.Identity.GetUserName();
+            }
+            else if (owner.Category == "CoOwner")
+            {
+                ViewBag.Owned = false;
+            }
+            else
+            {
+                return HttpNotFound(); // HttpUnauthorizedResult();
+            }
+
+            List<string> coOwnersId = context.Owners.Where(o => o.CarId == id && o.Category == "CoOwner").Select(o => o.UserId).ToList();
+            if (coOwnersId.Count > 0)
+            {
+                ViewBag.CoOwners = context.Users.Where(u => coOwnersId.Contains(u.Id)).Select(u => u.UserName).ToList();
+            }
+
             return View(car);
         }
 
@@ -77,11 +106,28 @@ namespace CarMessenger.Controllers
         [HttpGet]
         public ActionResult Edit(string id)
         {
+            string userId = User.Identity.GetUserId();
+            OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+            if (owner == null)
+            {
+                return HttpNotFound();
+            }
+
             var car = context.Cars.Find(id);
             if (car == null)
             {
                 return HttpNotFound();
             }
+
+            if (owner.Category == "Owner")
+            {
+                ViewBag.Owned = true;
+            }
+            else
+            {
+                return HttpNotFound(); // HttpUnauthorizedResult();
+            }
+
             return View(car);
         }
 
@@ -128,6 +174,43 @@ namespace CarMessenger.Controllers
             return View(id);
         }
 
+        // GET: Car/RemoveCoOwner/5
+        [HttpGet]
+        public ActionResult RemoveCoOwner(string id, string mail)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+                if (owner == null)
+                {
+                    return HttpNotFound();
+                }
+
+                if (owner.Category != "Owner")
+                {
+                    return HttpNotFound();
+                }
+
+                ApplicationUser user = context.Users.FirstOrDefault(u => u.UserName == mail);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+
+                context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == user.Id));
+                context.SaveChanges();
+
+                return RedirectToAction("Details/"+id);
+            }
+            catch (Exception e)
+            {
+                return Json(new { error_message = e.Message }, JsonRequestBehavior.AllowGet);
+            }
+            //return View(id);
+        }
+
         // GET: Car/Delete/5
         [HttpGet]
         public ActionResult Delete(string id)
@@ -142,12 +225,19 @@ namespace CarMessenger.Controllers
                     return HttpNotFound();
                 }
 
-                context.Owners.Remove(owner);
-
-                CarModel car = context.Cars.Find(id);
-                if (car != null)
+                if (owner.Category == "Owner")
                 {
-                    context.Cars.Remove(car);
+                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
+
+                    CarModel car = context.Cars.Find(id);
+                    if (car != null)
+                    {
+                        context.Cars.Remove(car);
+                    }
+                } 
+                else
+                {
+                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == userId));
                 }
 
                 context.SaveChanges();
