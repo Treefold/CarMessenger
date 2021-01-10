@@ -64,6 +64,8 @@ namespace CarMessenger.Controllers
                 OwnerModel realOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.Category == "Owner");
                 if (realOwner == null)
                 {
+                    owner.Category = "Owner";
+                    context.SaveChanges();
                     ViewBag.Owned = true;
                     ViewBag.OwnerName = User.Identity.GetUserName();
                     if (TempData["InfoMsgs"] == null)
@@ -72,14 +74,13 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
+                        ViewBag.Owned = false;
                         //List<string> infoMsgs = TempData["InfoMsgs"] as List<string>;
                         //infoMsgs.Add("This car didn't have an Owner. Now it choosed you!");
                         //TempData["InfoMsgs"] = infoMsgs;
                         (TempData["InfoMsgs"] as List<string>).Add("This car didn't have an Owner. Now it choosed you!");
                     }
                 }
-
-                ViewBag.Owned = false;
             }
             else
             {
@@ -350,7 +351,34 @@ namespace CarMessenger.Controllers
             }
         }
 
-        
+        // GET: Car/AcceptInvite/id
+        [HttpGet]
+        public ActionResult AcceptInvite(string id)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+                if (owner == null || owner.Category != "Invited")
+                {
+                    TempData["InfoMsgs"] = new List<string> { "You invitation is not valid" };
+                    return Redirect("../../Manage");
+                }
+
+                owner.Category = "CoOwner";
+                owner.Expiry = DateTime.MaxValue;
+                context.SaveChanges();
+
+                TempData["SuccessMsgs"] = new List<string> { "You are now a CoOwner" };
+                return RedirectToAction("Details/" + id);
+            }
+            catch (Exception e)
+            {
+                TempData["DangerMsgs"] = new List<string> { e.Message };
+                return Redirect("../../Manage");
+            }
+        }
 
         // GET: Car/OwnerAccept/id/mail
         [HttpGet]
