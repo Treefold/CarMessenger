@@ -222,6 +222,14 @@
     <Compile Include="Migrations\202101101403414_requested.Designer.cs">
       <DependentUpon>202101101403414_requested.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101101629035_AddRequestModel.cs" />
+    <Compile Include="Migrations\202101101629035_AddRequestModel.Designer.cs">
+      <DependentUpon>202101101629035_AddRequestModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101101638590_RequiredApp2.cs" />
+    <Compile Include="Migrations\202101101638590_RequiredApp2.Designer.cs">
+      <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -292,6 +300,7 @@
     <Content Include="Views\Cars\Index.cshtml" />
     <Content Include="Views\Cars\Edit.cshtml" />
     <Content Include="Views\Cars\InviteCoOwner.cshtml" />
+    <Content Include="Views\Cars\RequestCoOwner.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -346,6 +355,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101101403414_requested.resx">
       <DependentUpon>202101101403414_requested.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101101629035_AddRequestModel.resx">
+      <DependentUpon>202101101629035_AddRequestModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101101638590_RequiredApp2.resx">
+      <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

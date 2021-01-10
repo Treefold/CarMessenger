@@ -255,6 +255,108 @@ namespace CarMessenger.Controllers
             return View(id);
         }
 
+        // GET: Car/RequestCoOwner
+        // used send invitation to a user to become a CoOwner
+        [HttpGet]
+        public ActionResult RequestCoOwner()
+        {
+            return View();
+        }
+
+        // Post: Car/RequestCoOwner
+        [HttpPost]
+        public ActionResult RequestCoOwner(FormCollection collection)
+        {
+            try
+            {
+                string ownerEmail     = collection["Email"];
+                string carPlate       = collection["Plate"];
+                string carCountryCode = collection["CountryCode"];
+                string userID         = User.Identity.GetUserId();
+
+                if (User.Identity.GetUserName() == ownerEmail)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "You can't request to join a car that might belong to you" };
+                    return Redirect("../Manage");
+                }
+
+                ApplicationUser ownerUser = context.Users.FirstOrDefault(u => u.UserName == ownerEmail);
+                CarModel ownerCar = context.Cars.FirstOrDefault(c => c.Plate == carPlate && c.CountryCode == carCountryCode);
+                OwnerModel owner;
+
+                if (ownerUser == null)
+                {
+                    ViewBag.WarningMsgs = ((List<string>)(ViewBag.WarningMsgs ?? new List<string>()));
+                    ViewBag.WarningMsgs.Add("User Not Found");
+                }
+
+                if (ownerCar == null)
+                {
+                    ViewBag.WarningMsgs = ((List<string>)(ViewBag.WarningMsgs ?? new List<string>()));
+                    ViewBag.WarningMsgs.Add("Car Not Found");
+                }
+
+                if (ownerUser != null && ownerCar != null)
+                {
+                    owner = context.Owners.FirstOrDefault(o => o.UserId == ownerUser.Id && o.CarId == ownerCar.Id && o.Category == "Owner");
+                    if (owner == null)
+                    {
+                        ViewBag.WarningMsgs = ((List<string>)(ViewBag.WarningMsgs ?? new List<string>()));
+                        ViewBag.WarningMsgs.Add("That user doen't own a car like that");
+                    }
+                }
+
+                if (ViewBag.WarningMsgs != null)
+                {
+                    ViewBag.ownerEmail = ownerEmail;
+                    ViewBag.carPlate = carPlate;
+                    ViewBag.carCountryCode = carCountryCode;
+
+                    return View();
+                }
+
+                OwnerModel coOwner = context.Owners.FirstOrDefault(o => o.UserId == userID && o.CarId == ownerCar.Id);
+                if (coOwner == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "Request Sent" };
+                    context.Owners.Add(new OwnerModel(userID, ownerCar.Id, "Requested", DateTime.Now.AddDays(7)));
+                    context.SaveChanges();
+                }
+                else if (coOwner.Category == "Owner")
+                {
+                    TempData["InfoMsgs"] = new List<string> { "You already own the car" };
+                }
+                else if (coOwner.Category == "CoOwner")
+                {
+                    TempData["InfoMsgs"] = new List<string> { "Already a CoOwner" };
+                }
+                else if (coOwner.Category == "Invited")
+                {
+                    TempData["InfoMsgs"] = new List<string> { "You already invited to be a CoOwner; Please Accept the invitation" };
+                }
+                else if (coOwner.Category == "Requested")
+                {
+                    TempData["InfoMsgs"] = new List<string> { "Already Requested" };
+                }
+                else
+                {
+                    // unknown tipe of Ownership => send request
+                    TempData["WarningMsgs"] = new List<string> { "Unknown type of user" };
+                    TempData["InfoMsgs"] = new List<string> { "Request Sent" };
+
+                    coOwner.Category = "Requested";
+                    coOwner.Expiry = DateTime.Now.AddDays(7);
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                TempData["DangerMsgs"] = new List<string> { e.Message };
+                return Redirect("../Manage");
+            }
+            return Redirect("../Manage");
+        }
+
         // GET: Car/InviteCoOwner/id/mail
         // used send invitation to a user to become a CoOwner
         [HttpGet]

@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using CarMessenger.Models;
+using System.Collections.Generic;
 
 namespace CarMessenger.Controllers
 {
@@ -95,7 +96,8 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
-                    ModelState.AddModelError("", "Invalid login attempt.");
+                    //ModelState.AddModelError("", "Invalid login attempt.");
+                    ViewBag.WarningMsgs = new List<String> { "Invalid login attempt." };
                     return View(model);
             }
         }
