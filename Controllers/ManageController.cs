@@ -8,7 +8,6 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using CarMessenger.Models;
 using System.Collections.Generic;
-
 namespace CarMessenger.Controllers
 {
     [Authorize]
@@ -100,6 +99,7 @@ namespace CarMessenger.Controllers
 
             var model = new IndexViewModel
             {
+                Nickname = UserManager.FindById(User.Identity.GetUserId()).Nickname,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
@@ -263,6 +263,42 @@ namespace CarMessenger.Controllers
                 await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
             }
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
+        }
+
+        //
+        // GET: /Manage/ChangeNickname
+        public ActionResult ChangeNickname()
+        {
+            ChangeNicknameViewModel model = new ChangeNicknameViewModel();
+            model.Nickname = context.Users.Find(User.Identity.GetUserId()).Nickname;
+
+            return View(model);
+        }
+
+        //
+        // POST: /Manage/ChangeNickname
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeNickname(ChangeNicknameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userApp = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            userApp.Nickname = model.Nickname;
+            await UserManager.UpdateAsync(userApp);
+
+            var userCtx = context.Users.Find(User.Identity.GetUserId());
+            userCtx.Nickname = model.Nickname;
+            TryUpdateModel(userCtx);
+            await context.SaveChangesAsync();
+
+            User.AddUpdateClaim("Nickname", model.Nickname);
+
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
         }
 
         //

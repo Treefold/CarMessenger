@@ -34,12 +34,10 @@ namespace CarMessenger.Models
 
         [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [RegularExpression(@"[0-9A-Z][0-9A-Z]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
-        [Index("UniquePlateNumber", 1, IsUnique = true)]
         public string Plate { get; set; }
 
         [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
         [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
-        [Index("UniquePlateNumber", 2, IsUnique = true)]
         public string CountryCode { get; set; }
 
         public RequestModel()

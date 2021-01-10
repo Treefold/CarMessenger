@@ -11,6 +11,10 @@
     <h4>Change your account settings</h4>
     <hr />
     <dl class="dl-horizontal">
+        <dt>Nickname:</dt>
+        <dd><text>@Model.Nickname</text>
+            [@Html.ActionLink("Change your Nickname", "ChangeNickname")]
+        </dd>
         <dt>Password:</dt>
         <dd>
             [
@@ -157,10 +161,10 @@
                     var cars = ViewBag.Requests as List<CarModel>;
                     foreach (var car in cars)
                     {
-                    <li>
-                        <text> (@car.CountryCode) @car.Plate </text>
-                        [&nbsp;&nbsp;@Html.ActionLink("Remove", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
-                    </li>
+                        <li>
+                            <text> (@car.CountryCode) @car.Plate </text>
+                            [&nbsp;&nbsp;@Html.ActionLink("Remove", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
+                        </li>
                     }
                 }
                 @*else
@@ -180,16 +184,16 @@
                     var cars = ViewBag.Invitations as List<CarModel>;
                     foreach (var car in cars)
                     {
-                    <li>
-                        <text> (@car.CountryCode) @car.Plate </text>
-                        [&nbsp;&nbsp;@Html.ActionLink("Accept", "../Cars/AcceptInvite", new { id = car.Id })&nbsp;
-                        |&nbsp;&nbsp;@Html.ActionLink("Reject", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
-                    </li>
+                        <li>
+                            <text> (@car.CountryCode) @car.Plate </text>
+                            [&nbsp;&nbsp;@Html.ActionLink("Accept", "../Cars/AcceptInvite", new { id = car.Id })&nbsp;
+                            |&nbsp;&nbsp;@Html.ActionLink("Reject", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
+                        </li>
                     }
                 }
                 else
                 {
-                        <li>None</li>
+                    <li>None</li>
                 }
 
             </ul>

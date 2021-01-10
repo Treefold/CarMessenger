@@ -70,6 +70,10 @@ namespace CarMessenger.Models
         public string Email { get; set; }
 
         [Required]
+        [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
+        public string Nickname { get; set; }
+
+        [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
@@ -79,10 +83,6 @@ namespace CarMessenger.Models
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
-
-        [StringLength(10, ErrorMessage = "Enter a valid plate number.", MinimumLength = 4)]
-        [Display(Name = "Plate")]
-        public string PlateNumber { get; set; }
 
     }
 

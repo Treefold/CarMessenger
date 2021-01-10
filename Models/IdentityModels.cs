@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -14,10 +15,15 @@ namespace CarMessenger.Models
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Add custom user claims here
+
+            userIdentity.AddClaim(new Claim("Nickname", this.Nickname));
+
             return userIdentity;
         }
 
-        // public string PlateNumber { get; set; }
+        [Required]
+        [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
+        public string Nickname { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

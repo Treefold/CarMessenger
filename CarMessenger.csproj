@@ -230,9 +230,18 @@
     <Compile Include="Migrations\202101101638590_RequiredApp2.Designer.cs">
       <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101101806532_AddNickname.cs" />
+    <Compile Include="Migrations\202101101806532_AddNickname.Designer.cs">
+      <DependentUpon>202101101806532_AddNickname.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101101839101_Nickname2.cs" />
+    <Compile Include="Migrations\202101101839101_Nickname2.Designer.cs">
+      <DependentUpon>202101101839101_Nickname2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
+    <Compile Include="Models\IdentityExtensions.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\OwnerModel.cs" />
@@ -301,6 +310,7 @@
     <Content Include="Views\Cars\Edit.cshtml" />
     <Content Include="Views\Cars\InviteCoOwner.cshtml" />
     <Content Include="Views\Cars\RequestCoOwner.cshtml" />
+    <Content Include="Views\Manage\ChangeNickname.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -361,6 +371,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101101638590_RequiredApp2.resx">
       <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101101806532_AddNickname.resx">
+      <DependentUpon>202101101806532_AddNickname.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101101839101_Nickname2.resx">
+      <DependentUpon>202101101839101_Nickname2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

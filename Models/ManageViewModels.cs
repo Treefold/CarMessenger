@@ -7,13 +7,12 @@ namespace CarMessenger.Models
 {
     public class IndexViewModel
     {
+        public string Nickname { get; set; }
         public bool HasPassword { get; set; }
         public IList<UserLoginInfo> Logins { get; set; }
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
-
-        public List <CarModel> Cars { get; set; }
     }
 
     public class ManageLoginsViewModel
@@ -39,6 +38,13 @@ namespace CarMessenger.Models
         [Display(Name = "Confirm new password")]
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+    }
+
+    public class ChangeNicknameViewModel
+    {
+        [Required]
+        [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
+        public string Nickname { get; set; }
     }
 
     public class ChangePasswordViewModel
