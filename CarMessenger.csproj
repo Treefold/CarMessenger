@@ -218,6 +218,10 @@
     <Compile Include="Migrations\202101092113497_AddOwnerExpiry.Designer.cs">
       <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101101403414_requested.cs" />
+    <Compile Include="Migrations\202101101403414_requested.Designer.cs">
+      <DependentUpon>202101101403414_requested.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -287,6 +291,7 @@
     <Content Include="Views\Cars\Create.cshtml" />
     <Content Include="Views\Cars\Index.cshtml" />
     <Content Include="Views\Cars\Edit.cshtml" />
+    <Content Include="Views\Cars\InviteCoOwner.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -338,6 +343,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101092113497_AddOwnerExpiry.resx">
       <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101101403414_requested.resx">
+      <DependentUpon>202101101403414_requested.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

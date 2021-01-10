@@ -11,14 +11,6 @@
 {
     @Html.AntiForgeryToken()
 
-    if (ViewBag.errMsg != null)
-    {
-        <div class="alert">
-            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-            <strong>Sorry!</strong> 
-        </div>
-    }
-
     <div class="form-horizontal">
         <h4>CarModel</h4>
         <hr />

@@ -13,15 +13,9 @@ namespace CarMessenger
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            //routes.MapRoute(
-            //    name: "Cars",
-            //    url: "Cars/{action=Index}/{id?}",  //"Manage/Cars/{action=Index}/{id?}",
-            //    defaults: new { controller = "CarsController"}
-            //);
-
             routes.MapRoute(
                 name: "Remove Owner",
-                url: "Cars/RemoveCoOwner/{id}/{email}",
+                url: "Cars/{action}/{id}/{email}",
                 new { Controller = "Cars", action = "RemoveCoOwners"}
             );
 
@@ -30,6 +24,12 @@ namespace CarMessenger
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            //routes.MapRoute(
+            //    "404-PageNotFound",
+            //    "{controller}/{action}",
+            //    new { controller = "Home", action = "Index" }
+            //);
         }
     }
 }

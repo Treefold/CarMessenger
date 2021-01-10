@@ -8,31 +8,14 @@
 
 <div>
     <hr />
-    @*<table style="align-items: center">
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Plate):&nbsp;</th>
-            <td>@Html.DisplayFor(model => model.Plate)</td>
-        </tr>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.CountryCode):&nbsp;</th>
-            <td>@Html.DisplayFor(model => model.CountryCode)</td>
-        </tr>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.ModelName):&nbsp;</th>
-            <td>@Html.DisplayFor(model => model.ModelName)</td>
-        </tr>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Color):&nbsp;</th>
-            <td>@Html.DisplayFor(model => model.Color)</td>
-        </tr>
-
-
-    </table>*@
     <div>
         <dl class="dl-horizontal">
             <dt>Owner</dt>
-            <dd>@ViewBag.OwnerName
-                @if (ViewBag.Owned){<text> (you) </text>}</dd>
+            <dd>
+                @ViewBag.OwnerName
+                @if (ViewBag.Owned)
+                {<text> (you) </text>}
+            </dd>
 
             <dt>@Html.DisplayNameFor(model => model.Plate)</dt>
             <dd>@Html.DisplayFor(model => model.Plate)</dd>
@@ -48,7 +31,7 @@
 
             <dt>CoOwners</dt>
             <dd>
-                @{ 
+                @{
                     var coOwners = ViewBag.CoOwners as List<String>;
                 }
 
@@ -57,12 +40,15 @@
                     <ul>
                         @foreach (var coOwnerMail in coOwners)
                         {
-                        <li>
-                            <text>@coOwnerMail</text>
-                            <text onclick="return confirm('Are you sure?')">
-                                [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
-                            </text>
-                        </li>
+                            <li>
+                                <text>@coOwnerMail</text>
+                                @if (ViewBag.Owned)
+                                {
+                                    <text><text onclick="return confirm('Are you sure?')">
+                                            [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
+                                        </text></text>
+                                }
+                            </li>
                         }
                     </ul>
                 }
@@ -71,6 +57,65 @@
                     <text>None</text>
                 }
             </dd>
+
+            @if (ViewBag.Owned)
+            {
+                <dt>Invitations Sent</dt>
+                <dd>
+                    <ul>
+                        @{
+                            var invitations = ViewBag.Invitations as List<String>;
+                        }
+
+                        @if (invitations != null && invitations.Count > 0)
+                        {
+                            foreach (var invitationMail in invitations)
+                            {
+                                <li>
+                                    <text>@invitationMail</text>
+                                    [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = invitationMail })&nbsp;&nbsp;]
+                                </li>
+                            }
+                        }
+                    <li>
+                        @if(ViewBag.Owned)
+                        {
+                            <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
+                        }
+                        else
+                        {
+                            <text>None</text>
+                        }
+                    </li>
+                    </ul>
+                </dd>
+
+                <dt>Requests Received</dt>
+                <dd>
+                    @{
+                        var requests = ViewBag.Requests as List<String>;
+                    }
+
+                    @if (requests != null && requests.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var requestMail in requests)
+                            {
+                                <li>
+                                    <text>@requestMail</text>
+                                    [&nbsp;&nbsp;@Html.ActionLink("Accept", "OwnerAccept", new { id = Model.Id, mail = requestMail })&nbsp;
+                                    |&nbsp;&nbsp;@Html.ActionLink("Reject", "RemoveCoOwner", new { id = Model.Id, mail = requestMail })&nbsp;&nbsp;]
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <text>None</text>
+                    }
+                </dd>
+            }
+
         </dl>
     </div>
 </div>
@@ -81,9 +126,9 @@
     </span>
     @if (ViewBag.Owned)
     {
-    <span>
-        <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) </button>
-    </span>
+        <span>
+            <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) </button>
+        </span>
     }
     <span>
         <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink("Delete", "Delete", new { id = Model.Id }) </button>

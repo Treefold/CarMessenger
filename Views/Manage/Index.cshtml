@@ -136,10 +136,7 @@
                     {
                     <li>
                         <text> (@car.CountryCode) @car.Plate </text>
-                        @if (ViewBag.OwnedCars != null)
-                        {
-                            <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) & nbsp; &nbsp;] </text>
-                        }
+                        <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) &nbsp; &nbsp;] </text>
                     </li>
                     }
                  }

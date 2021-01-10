@@ -7,6 +7,24 @@ using System.Web;
 
 namespace CarMessenger.Models
 {
+    public class InvitationModel
+    {
+        [Key]
+        [Required]
+        [Display(Name = "Email")]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        public InvitationModel()
+        {
+        }
+
+        public InvitationModel(string email)
+        {
+            Email = email;
+        }
+    }
+
     public class CarModel
     {
         [Key]

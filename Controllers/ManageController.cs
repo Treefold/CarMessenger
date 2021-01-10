@@ -106,6 +106,24 @@ namespace CarMessenger.Controllers
                 Logins = await UserManager.GetLoginsAsync(userId),
                 BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
             };
+
+            if (TempData["DangerMsgs"] != null)
+            {
+                ViewBag.DangerMsgs = TempData["DangerMsgs"];
+            }
+            if (TempData["WarningMsgs"] != null)
+            {
+                ViewBag.WarningMsgs = TempData["WarningMsgs"];
+            }
+            if (TempData["SuccessMsgs"] != null)
+            {
+                ViewBag.SuccessMsgs = TempData["SuccessMsgs"];
+            }
+            if (TempData["InfoMsgs"] != null)
+            {
+                ViewBag.InfoMsgs = TempData["InfoMsgs"];
+            }
+
             return View(model);
         }
 

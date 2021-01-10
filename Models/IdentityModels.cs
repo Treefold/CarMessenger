@@ -35,5 +35,7 @@ namespace CarMessenger.Models
         {
             return new ApplicationDbContext();
         }
+
+        public System.Data.Entity.DbSet<CarMessenger.Models.InvitationModel> InvitationModels { get; set; }
     }
 }
