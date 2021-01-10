@@ -13,7 +13,7 @@
             <dt>Owner</dt>
             <dd>
                 @ViewBag.OwnerName
-                @if (ViewBag.Owned)
+                @if (ViewBag.Owned != null && ViewBag.Owned)
                 {<text> (you) </text>}
             </dd>
 
@@ -42,7 +42,7 @@
                         {
                             <li>
                                 <text>@coOwnerMail</text>
-                                @if (ViewBag.Owned)
+                                @if (ViewBag.Owned != null && ViewBag.Owned)
                                 {
                                     <text><text onclick="return confirm('Are you sure?')">
                                             [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
@@ -58,7 +58,7 @@
                 }
             </dd>
 
-            @if (ViewBag.Owned)
+            @if (ViewBag.Owned != null && ViewBag.Owned)
             {
                 <dt>Invitations Sent</dt>
                 <dd>
@@ -124,7 +124,7 @@
     <span>
         <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage") </button>
     </span>
-    @if (ViewBag.Owned)
+    @if (ViewBag.Owned != null && ViewBag.Owned)
     {
         <span>
             <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }) </button>

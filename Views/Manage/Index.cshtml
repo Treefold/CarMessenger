@@ -134,17 +134,63 @@
                     var cars = ViewBag.CoOwnedCars as List<CarModel>;
                     foreach (var car in cars)
                     {
+                        <li>
+                            <text> (@car.CountryCode) @car.Plate </text>
+                            <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) &nbsp; &nbsp;] </text>
+                        </li>
+                    }
+                }
+                @**@else
+                {
+                    <li>None</li>
+                }@*@
+                <li><text>[&nbsp;&nbsp;@Html.ActionLink("Request Car", "../Cars/Request")&nbsp;&nbsp;]</text></li>
+                @**@
+            </ul>
+        </dd>
+
+        <dt>Pending Request:</dt>
+        <dd>
+            <ul>
+                @if (ViewBag.Requests != null)
+                {
+                    var cars = ViewBag.Requests as List<CarModel>;
+                    foreach (var car in cars)
+                    {
                     <li>
                         <text> (@car.CountryCode) @car.Plate </text>
-                        <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) &nbsp; &nbsp;] </text>
+                        [&nbsp;&nbsp;@Html.ActionLink("Remove", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
                     </li>
                     }
-                 }
+                }
                 @*else
                 {
                     <text>None</text></li>
                 }*@
-                <li><text>[&nbsp;&nbsp;@Html.ActionLink("Request Car", "../Cars/Request")&nbsp;&nbsp;]</text></li>
+                <li><text>[&nbsp;&nbsp;@Html.ActionLink("New Request", "../Cars/Request")&nbsp;&nbsp;]</text></li>
+
+            </ul>
+        </dd>
+
+        <dt>Pending Invitations:</dt>
+        <dd>
+            <ul>
+                @if (ViewBag.Invitations != null)
+                {
+                    var cars = ViewBag.Invitations as List<CarModel>;
+                    foreach (var car in cars)
+                    {
+                    <li>
+                        <text> (@car.CountryCode) @car.Plate </text>
+                        [&nbsp;&nbsp;@Html.ActionLink("Accept", "../Cars/AcceptInvite", new { id = car.Id })&nbsp;
+                        |&nbsp;&nbsp;@Html.ActionLink("Reject", "../Cars/Delete", new { id = car.Id })&nbsp;&nbsp;]
+                    </li>
+                    }
+                }
+                else
+                {
+                        <li>None</li>
+                }
 
             </ul>
         </dd>

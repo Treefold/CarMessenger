@@ -435,7 +435,7 @@ namespace CarMessenger.Controllers
 
                 if (owner == null || owner.Category != "Owner")
                 {
-                    TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return Redirect("../../Manage");
                 }
 
@@ -446,10 +446,36 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("Details/" + id);
                 }
 
-                context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == user.Id));
+                OwnerModel removedOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.UserId == user.Id);
+                if (removedOwner == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "Not a CoOwner" };
+                    return RedirectToAction("Details/" + id);
+                }
+                context.Owners.Remove(removedOwner);
                 context.SaveChanges();
 
-                TempData["InfoMsgs"] = new List<string> { mail + " is no longer a CoOwner" };
+
+                string msg;
+
+                if (removedOwner.Category == "CoOwner")
+                {
+                    msg = " is no longer a CoOwner";
+                }
+                else if (removedOwner.Category == "Invited")
+                {
+                    msg = " Invitation was Removed";
+                }
+                else if (removedOwner.Category == "Requested")
+                {
+                    msg = " Request was Removed";
+                }
+                else
+                {
+                    msg = " was Removed";
+                }
+
+                TempData["SuccessMsgs"] = new List<string> { mail + msg };
                 return RedirectToAction("Details/" + id);
             }
             catch (Exception e)
@@ -477,17 +503,19 @@ namespace CarMessenger.Controllers
                     ViewBag.Owned = true;
                 }
 
-                var car = context.Cars.Find(id);
-                if (car == null)
-                {
-                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                    return Redirect("../../Manage");
-                }
-
                 if (owner.Category == "Owner")
                 {
                     context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
-                    context.Cars.Remove(car);
+
+                    var car = context.Cars.Find(id);
+                    if (car == null)
+                    {
+                        TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                    }
+                    else
+                    {
+                        context.Cars.Remove(car);
+                    }
                 } 
                 else
                 {
@@ -496,7 +524,24 @@ namespace CarMessenger.Controllers
 
                 context.SaveChanges();
 
-                TempData["SuccessMsgs"] = new List<string> { "Car Deleted" };
+                string msg;
+
+                if (owner.Category == "Owner" || owner.Category == "CoOwner")
+                {
+                    msg = "Car Removed";
+                }
+                else if (owner.Category == "Invited")
+                {
+                    msg = "Invitation Removed";
+                } else if (owner.Category == "Requested")
+                {
+                    msg = "Request Removed";
+                } else
+                {
+                    msg = "Removed";
+                }
+
+                TempData["SuccessMsgs"] = new List<string> { msg };
                 return RedirectToAction("../Manage");
             }
             catch (Exception e)
