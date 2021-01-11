@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using System.Web.Routing;
 
 [assembly: OwinStartupAttribute(typeof(CarMessenger.Startup))]
 namespace CarMessenger
@@ -9,6 +10,12 @@ namespace CarMessenger
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
+            //app.MapSignalR();
+
+            //app.UseRouting()
+            //app.MapSignalR();
+
+            //app.MapHubs();
         }
     }
 }
