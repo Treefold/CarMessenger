@@ -61,8 +61,12 @@ namespace CarMessenger.Controllers
             }
             else if (owner.Category == "CoOwner")
             {
+                ViewBag.Owned = false;
                 OwnerModel realOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.Category == "Owner");
-                if (realOwner == null)
+                ApplicationUser realOwnerUser = null;
+                if (realOwner != null)
+                    realOwnerUser = context.Users.Find(realOwner.UserId);
+                if (realOwner == null || realOwnerUser == null)
                 {
                     owner.Category = "Owner";
                     context.SaveChanges();
@@ -74,12 +78,15 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
-                        ViewBag.Owned = false;
                         //List<string> infoMsgs = TempData["InfoMsgs"] as List<string>;
                         //infoMsgs.Add("This car didn't have an Owner. Now it choosed you!");
                         //TempData["InfoMsgs"] = infoMsgs;
                         (TempData["InfoMsgs"] as List<string>).Add("This car didn't have an Owner. Now it choosed you!");
                     }
+                }
+                else
+                {
+                    ViewBag.OwnerName = realOwnerUser.UserName;
                 }
             }
             else
@@ -158,11 +165,39 @@ namespace CarMessenger.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    context.Cars.Add(car);
-                    context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
-                    context.SaveChanges();
-                    TempData["SuccessMsgs"] = new List<string> { "Car Added" };
-                    return RedirectToAction("../Manage");
+                    CarModel existingCar = context.Cars.FirstOrDefault(c => c.Plate == car.Plate && c.CountryCode == car.CountryCode);
+                    if (existingCar == null)
+                    {
+                        context.Cars.Add(car);
+                        context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
+                        context.SaveChanges();
+                        TempData["SuccessMsgs"] = new List<string> { "Car Added" };
+                        return RedirectToAction("../Manage");
+                    }
+
+                    string userId = User.Identity.GetUserId();
+                    OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == existingCar.Id);
+                    string msg;
+                    if (owner == null)
+                    {
+                        msg = "This car is already owned. If you know the owner send him a request";
+                    } else if (owner.Category == "Owner")
+                    {
+                        msg = "You already own the car";
+                    } else if (owner.Category == "CoOwner")
+                    {
+                        msg = "You already co-own the car";
+                    } else if (owner.Category == "Invited")
+                    {
+                        msg = "You already are invited to co-own the car";
+                    } else if (owner.Category == "Requested")
+                    {
+                        msg = "You already requested to co-own the car";
+                    } else
+                    {
+                        msg = "This car is already owned.";
+                    }
+                    ViewBag.InfoMsgs = new List<string> { msg };
                 }
                 return View();
             }
