@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@**@
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -32,51 +34,51 @@
     <div class="container body-content">
 
         @{
-            var dangerMsgs  = ViewBag.DangerMsgs  as List<string>;
+            var dangerMsgs = ViewBag.DangerMsgs as List<string>;
             var warningMsgs = ViewBag.WarningMsgs as List<string>;
             var successMsgs = ViewBag.SuccessMsgs as List<string>;
-            var infoMsgs    = ViewBag.InfoMsgs    as List<string>;
+            var infoMsgs = ViewBag.InfoMsgs as List<string>;
             if (dangerMsgs != null)
             {
                 foreach (var dangerMsg in dangerMsgs)
                 {
-                <div class="alert">
-                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    <strong>USP? </strong> @dangerMsg
-                </div>
+                    <div class="alert">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>USP? </strong> @dangerMsg
+                    </div>
                 }
             }
             if (warningMsgs != null)
             {
-            foreach (var warningMsg in warningMsgs)
-            {
-                <div class="alert warning">
-                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    <strong>Well... </strong> @warningMsg
-                </div>
+                foreach (var warningMsg in warningMsgs)
+                {
+                    <div class="alert warning">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Well... </strong> @warningMsg
+                    </div>
                 }
             }
             if (successMsgs != null)
             {
                 foreach (var successMsg in successMsgs)
                 {
-                <div class="alert success">
-                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    <strong>Success! </strong> @successMsg
-                </div>
+                    <div class="alert success">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Success! </strong> @successMsg
+                    </div>
                 }
             }
             if (infoMsgs != null)
             {
                 foreach (var infoMsg in infoMsgs)
                 {
-                <div class="alert info">
-                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-                    <strong>Info: </strong> @infoMsg
-                </div>
-                    }
+                    <div class="alert info">
+                        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        <strong>Info: </strong> @infoMsg
+                    </div>
                 }
             }
+        }
         @RenderBody()
         <hr />
         <footer>
@@ -84,8 +86,12 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+@*@
+@RenderBody()
+@**@

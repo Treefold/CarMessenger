@@ -378,7 +378,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Migrations\202012281052333_CreateCarTable.cs" />
     <Compile Include="Migrations\202012281052333_CreateCarTable.designer.cs">
       <DependentUpon>202012281052333_CreateCarTable.cs</DependentUpon>
@@ -631,6 +630,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Hubs\" />
     <Folder Include="Views\Car\" />
   </ItemGroup>
   <ItemGroup>
