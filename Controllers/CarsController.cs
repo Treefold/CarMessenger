@@ -161,7 +161,7 @@ namespace CarMessenger.Controllers
                     context.Cars.Add(car);
                     context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
                     context.SaveChanges();
-                    TempData["SuccessMsgs"] = new List<string> { "That was not your car" };
+                    TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                     return RedirectToAction("../Manage");
                 }
                 return View();
