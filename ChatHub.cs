@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 
@@ -18,6 +19,13 @@ namespace CarMessenger
         public void JoinCar (string carPlate, string carCountryCode)
         {
             Groups.Add(Context.ConnectionId, CarGroup(carPlate, carCountryCode));
+        }
+        public void JoinCars (List<(string plate, string countryCode)> cars)
+        {
+            foreach (var car in cars)
+            {
+                JoinCar(car.plate, car.countryCode);
+            }
         }
         public void MessageCar(string mail, string nickname, string carPlate, string carCountryCode, string message)
         {
