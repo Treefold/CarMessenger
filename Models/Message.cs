@@ -19,9 +19,18 @@ namespace CarMessenger.Models
         [Required]
         public string carCountryCode { get; set; }
 
+        public string personMail { get; set; }
+
+        [Required]
+        public bool owning { get; set; }
+
+        [Required]
+        public string content { get; set; }
+
         [Required]
         public DateTime sendTime { get; private set; } = DateTime.Now;
 
+        [Required]
         public DateTime expiry { get; private set; } = DateTime.Now.AddDays(2);
     }
 }

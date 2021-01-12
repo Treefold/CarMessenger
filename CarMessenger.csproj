@@ -47,6 +47,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=10.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>packages\AutoMapper.10.1.1\lib\net461\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="CollectionExtensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\CollectionExtensions.1.1.0.0\lib\net40\CollectionExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Enable.Common.Argument, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Enable.Common.Argument.2.0.0\lib\net40\Enable.Common.Argument.dll</HintPath>
+    </Reference>
+    <Reference Include="Enable.Extensions.CollectionExtensions, Version=2.0.18.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Enable.Extensions.CollectionExtensions.2.0.18\lib\net40\Enable.Extensions.CollectionExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -451,6 +463,18 @@
     <Compile Include="Migrations\202101111954417_CreateChatMessages.Designer.cs">
       <DependentUpon>202101111954417_CreateChatMessages.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101112017395_AddMessageContent.cs" />
+    <Compile Include="Migrations\202101112017395_AddMessageContent.Designer.cs">
+      <DependentUpon>202101112017395_AddMessageContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101112112293_AddMessagOwning.cs" />
+    <Compile Include="Migrations\202101112112293_AddMessagOwning.Designer.cs">
+      <DependentUpon>202101112112293_AddMessagOwning.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202101112152248_AddMessagePerson.cs" />
+    <Compile Include="Migrations\202101112152248_AddMessagePerson.Designer.cs">
+      <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -702,6 +726,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101111954417_CreateChatMessages.resx">
       <DependentUpon>202101111954417_CreateChatMessages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101112017395_AddMessageContent.resx">
+      <DependentUpon>202101112017395_AddMessageContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101112112293_AddMessagOwning.resx">
+      <DependentUpon>202101112112293_AddMessagOwning.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101112152248_AddMessagePerson.resx">
+      <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
