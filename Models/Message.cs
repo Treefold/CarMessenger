@@ -11,7 +11,9 @@ namespace CarMessenger.Models
         [Key]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
-        public string mail { get; set; } // can be null if the user is anonymous
+        public string senderEmail { get; set; } // can be null if the user is anonymous
+
+        public string senderNickname { get; set; }// can be null if the user is anonymous
 
         [Required]
         public string carPlate { get; set; }
@@ -19,7 +21,9 @@ namespace CarMessenger.Models
         [Required]
         public string carCountryCode { get; set; }
 
-        public string personMail { get; set; }
+        public string personMail { get; set; } // null if you own the car
+
+        public string personNickname { get; set; } // null if you own the car
 
         [Required]
         public bool owning { get; set; }

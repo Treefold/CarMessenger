@@ -54,7 +54,7 @@ namespace CarMessenger.Controllers
                     }
                 }
 
-                ViewBag.messages = carsMessages.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : DateTime.MinValue);
+                ViewBag.carsMessages = carsMessages.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : DateTime.MinValue).ToList();
                 return View();
             }
             else

@@ -475,6 +475,10 @@
     <Compile Include="Migrations\202101112152248_AddMessagePerson.Designer.cs">
       <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101120125244_UpdateMessage.cs" />
+    <Compile Include="Migrations\202101120125244_UpdateMessage.Designer.cs">
+      <DependentUpon>202101120125244_UpdateMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -498,6 +502,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\messeges.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -735,6 +740,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101112152248_AddMessagePerson.resx">
       <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101120125244_UpdateMessage.resx">
+      <DependentUpon>202101120125244_UpdateMessage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
