@@ -186,10 +186,6 @@
         $("#b_" + chatId).append('<div class="messege"><strong>' + nickname + '</strong><text> : ' + msg + '</text></div>');
     }
 
-    function findHead(carPlate, carCode) {
-
-    }
-
     $(document).ready(function () {
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
@@ -197,8 +193,11 @@
         chat.client.broadcastMessage = function (name, message) {
             console.log(name + ": " + message);
         };
-        chat.client.addMessage = function (msg) {
+        chat.client.addMessage = function (msgJson) {
+            var msg = jQuery.parseJSON(msgJson);
             console.log(msg);
+            var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
+            addMessage(id, msg.senderNickname, msg.content);
         }
 
         var email = "@User.Identity.GetUserName()";
