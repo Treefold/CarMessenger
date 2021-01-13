@@ -165,6 +165,20 @@
         $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
     }
 
+    function addMessage(chatId, nickname, msg) {
+        // move chat head
+        var el = $("#h_" + chatId);
+        $("#h_" + chatId).remove();
+        $("#heads_box").prepend(el);
+
+        // add chat message
+        //var msg_ = $("div").addClass("message");
+        //var name_ = $("strong").innerHTML = "You";
+        //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
+        //msg_.append(name_);
+        $("#b_" + chatId).append('<div class="messege"><strong>' + nickname + '</strong><text> : ' + msg + '</text></div>');
+    }
+
     $(document).ready(function () {
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
@@ -172,8 +186,6 @@
         chat.client.broadcastMessage = function (name, message) {
             console.log(name + ": " + message);
         };
-
-        
 
         var email = "@User.Identity.GetUserName()";
         var nickname = "@User.GetClaimValue("Nickname")";
@@ -194,16 +206,9 @@
                 chat.server.send(nickname, $('#messageInput').val());
                 var id = "h_" + _selectedChatId;
                 var owned = getOwned(id)
-                var el = $("#" + id);
-                $("#" + id).remove();
-                $("#heads_box").prepend(el);
-                //var msg_ = $("div").addClass("message");
-                //var name_ = $("strong").innerHTML = "You";
-                //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
-                //msg_.append(name_);
-                $("#b_" + _selectedChatId).append('<div class="messege"><strong>You</strong><text>: ' + getContent() + '</text></div>');
+                addMessage(_selectedChatId, "You", getContent());
                 $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
-                chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? nickname : getNickname(id), owned, getContent());
+                chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
                 $('#messageInput').val('').focus();
             });
         });

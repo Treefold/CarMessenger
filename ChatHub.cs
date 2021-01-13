@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web;
 using CarMessenger.Models;
 using Microsoft.AspNet.SignalR;
+using System.Text.Json;
 
 namespace CarMessenger
 {
@@ -36,8 +37,9 @@ namespace CarMessenger
         }
         public void MessageCar(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
         {
-            Message msg = new Message(senderEmail, senderNickname, carPlate, carCountryCode, personNickname, owning, content);
-            Clients.Group(CarGroup(carPlate, carCountryCode)).addMessage(msg);
+            Message msg = new Message(null, senderNickname, carPlate, carCountryCode, personNickname, owning, content);
+            Clients.Group(CarGroup(carPlate, carCountryCode)).addMessage(JsonSerializer.Serialize(msg));
+            msg.senderEmail = senderEmail;
             context.Messages.Add(msg);
             context.SaveChanges();
         }
