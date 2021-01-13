@@ -26,6 +26,7 @@
                             </div>
                         </div>
                     </div>*@
+                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "")</button>
                 <div id="heads_box" class="card-body contacts_body">
                     @{
                         var cnt_h = 0;
@@ -66,7 +67,7 @@
                     var cnt_b = 0;
                     foreach (var carMessages in carsMessages)
                     {
-                        <div id="b_@cnt_b" class="card-body msg_card_body contact_body ">
+                        <div id="b_@cnt_b" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">
                             @if(carMessages.Value.Count > 0)
                             {
                                 Message msg;
@@ -116,8 +117,6 @@
     <div class="clearfix"></div>
 </div>
 
-@Scripts.Render("~/Content/messeges.js")
-
 <!--Script references. -->
 <!--Reference the SignalR library. -->
 <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
@@ -163,6 +162,7 @@
         $(".contact_body").css('display', 'none');
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
+        $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
     }
 
     $(document).ready(function () {
