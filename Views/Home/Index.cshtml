@@ -195,7 +195,7 @@
         };
         chat.client.addMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
-            console.log(msg);
+            // console.log(msg);
             var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
             addMessage(id, msg.senderNickname, msg.content);
         }
