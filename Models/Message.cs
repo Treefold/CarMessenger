@@ -21,8 +21,6 @@ namespace CarMessenger.Models
         [Required]
         public string carCountryCode { get; set; }
 
-        public string personMail { get; set; } // null if you own the car
-
         public string personNickname { get; set; } // null if you own the car
 
         [Required]
@@ -36,5 +34,20 @@ namespace CarMessenger.Models
 
         [Required]
         public DateTime expiry { get; private set; } = DateTime.Now.AddDays(2);
+
+        public Message()
+        {
+        }
+
+        public Message(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
+        {
+            this.senderEmail = senderEmail;
+            this.senderNickname = senderNickname;
+            this.carPlate = carPlate;
+            this.carCountryCode = carCountryCode;
+            this.personNickname = personNickname;
+            this.owning = owning;
+            this.content = content;
+        }
     }
 }
