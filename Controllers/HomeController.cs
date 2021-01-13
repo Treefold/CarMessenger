@@ -71,18 +71,79 @@ namespace CarMessenger.Controllers
             }
         }
 
-        public ActionResult About()
+        [HttpGet]
+        public ActionResult NewMessage ()
         {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
-        public ActionResult Contact()
+        // Post: Car/InviteCoOwner/id/mail
+        [HttpPost]
+        public ActionResult NewMessage(NewMessage msg)
         {
-            ViewBag.Message = "Your contact page.";
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                string carId = context.Cars.FirstOrDefault(c => c.Plate == msg.carPlate && c.CountryCode == msg.carCountryCode)?.Id;
 
-            return View();
+                if (carId == null)
+                {
+                    ViewBag["WarningMsgs"] = new List<string> { "We coudn't find that car" };
+                    return View(msg);
+                }
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
+                if (owner?.Category == "Invited")
+                {
+                    ViewBag["WarningMsgs"] = new List<string> { "You are already invited to CoOwn that car", "Please accept the inviation to be automatically added to the car private group", "Or you can decline the invitation to be able to start a new conversation with the car Owners"};
+                    return View(msg);
+                } else if (owner?.Category == "Requested")
+                {
+                    ViewBag["WarningMsgs"] = new List<string> { "You are already send a request to CoOwn that car", "Please wait to be accepted so that you will be automatically added to the car private group", "Or you can remove the request to be able to start a new conversation with the car Owners" };
+                    return View(msg);
+                }
+
+                if (owner == null)
+                {
+                    owner = new OwnerModel(userId, carId, "Conversation", DateTime.Now.AddDays(2));
+                    context.Owners.Add(owner);
+                    //context.Messages.Add(new Message())
+                    context.SaveChanges();
+                } 
+                else if (owner.Category == "Owner")
+                {
+
+                } 
+                else if (owner.Category == "CoOwner")
+                {
+
+                } 
+                else
+                {
+                    ViewBag["DangerMsgs"] = new List<string> { "Your relationship with that car is Unknown. Please contact us for technical support!" };
+                    return View(msg);
+                }
+                
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception e)
+            {
+                TempData["DangerMsgs"] = new List<string> { e.Message };
+                return Redirect("../../Manage");
+            }
         }
+
+        //public ActionResult About()
+        //{
+        //    ViewBag.Message = "Your application description page.";
+
+        //    return View();
+        //}
+
+        //public ActionResult Contact()
+        //{
+        //    ViewBag.Message = "Your contact page.";
+
+        //    return View();
+        //}
     }
 }

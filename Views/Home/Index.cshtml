@@ -26,7 +26,7 @@
                             </div>
                         </div>
                     </div>*@
-                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "")</button>
+                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewMessage")</button>
                 <div id="heads_box" class="card-body contacts_body">
                     @{
                         var cnt_h = 0;
@@ -141,7 +141,7 @@
 
     function getNickname(headId) {
 
-        var maybeNickname = $("#" + headId + " .nickname");
+        var maybeNickname =  $("#" + headId + " .nickname");
         return maybeNickname.length == 0 ? null : maybeNickname[0].innerHTML;
     }
 
@@ -173,6 +173,8 @@
             console.log(name + ": " + message);
         };
 
+        
+
         var email = "@User.Identity.GetUserName()";
         var nickname = "@User.GetClaimValue("Nickname")";
 
@@ -191,7 +193,17 @@
                 if (getContent() === "") return;
                 chat.server.send(nickname, $('#messageInput').val());
                 var id = "h_" + _selectedChatId;
-                chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), getNickname(id), getOwned(id), getContent());
+                var owned = getOwned(id)
+                var el = $("#" + id);
+                $("#" + id).remove();
+                $("#heads_box").prepend(el);
+                //var msg_ = $("div").addClass("message");
+                //var name_ = $("strong").innerHTML = "You";
+                //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
+                //msg_.append(name_);
+                $("#b_" + _selectedChatId).append('<div class="messege"><strong>You</strong><text>: ' + getContent() + '</text></div>');
+                $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
+                chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? nickname : getNickname(id), owned, getContent());
                 $('#messageInput').val('').focus();
             });
         });

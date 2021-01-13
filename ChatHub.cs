@@ -36,8 +36,8 @@ namespace CarMessenger
         }
         public void MessageCar(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
         {
-            Clients.Group(CarGroup(carPlate, carCountryCode)).addMessage(senderNickname, content);
             Message msg = new Message(senderEmail, senderNickname, carPlate, carCountryCode, personNickname, owning, content);
+            Clients.Group(CarGroup(carPlate, carCountryCode)).addMessage(msg);
             context.Messages.Add(msg);
             context.SaveChanges();
         }

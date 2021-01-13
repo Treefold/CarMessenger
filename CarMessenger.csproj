@@ -483,6 +483,10 @@
     <Compile Include="Migrations\202101130021591_RemovMessagePersonEmail.Designer.cs">
       <DependentUpon>202101130021591_RemovMessagePersonEmail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202101130927091_NewMssag.cs" />
+    <Compile Include="Migrations\202101130927091_NewMssag.Designer.cs">
+      <DependentUpon>202101130927091_NewMssag.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -672,6 +676,7 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Home\NewMessage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Hubs\" />
@@ -749,6 +754,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202101130021591_RemovMessagePersonEmail.resx">
       <DependentUpon>202101130021591_RemovMessagePersonEmail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202101130927091_NewMssag.resx">
+      <DependentUpon>202101130927091_NewMssag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -6,6 +6,19 @@ using System.Web;
 
 namespace CarMessenger.Models
 {
+    public class NewMessage
+    {
+        //[Key]
+        //public string id { get; set; }
+
+        [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
+        [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
+        public string carPlate { get; set; }
+
+        [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
+        [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
+        public string carCountryCode { get; set; }
+    }
     public class Message
     {
         [Key]
