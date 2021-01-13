@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNet.Identity
-@using CarMessenger.Models
+﻿@using CarMessenger.Models
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
@@ -8,7 +7,7 @@
 
     <ul class="nav navbar-nav navbar-right">
         <li>
-            @Html.ActionLink("Hello " + User.GetClaimValue("Nickname") + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage" })
+            @Html.ActionLink(User.GetClaimValue("Nickname"), "Index", "Manage", routeValues: null, htmlAttributes: new { id = "Nickname", title = "Manage" })
         </li>
         <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
     </ul>
