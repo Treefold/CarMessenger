@@ -17,7 +17,7 @@
 <div class="container-fluid h-100">
     <div class="row justify-content-center h-100">
         <div class="col-md-4 col-xl-3 chat">
-            <div class="card mb-sm-3 mb-md-0 contacts_card">
+            <div class="card mb-sm-3 mb-md-0 contacts_card" style="width:200px">
                 @*<div class="card-header">
                         <div class="input-group">
                             <input type="text" placeholder="Search..." name="" class="form-control search">
@@ -27,13 +27,14 @@
                         </div>
                     </div>*@
                 <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewMessage")</button>
-                <div id="heads_box" class="card-body contacts_body">
+                <div id="heads_box" class="card-body contacts_body" style="overflow-y: scroll; height:400px;">
                     @{
                         var cnt_h = 0;
                         foreach (var carMessages in carsMessages)
                         {
                             var personNickname = carMessages.Value.Count > 0 ? carMessages.Value[0].personNickname : null;
-                            <div id="h_@cnt_h" class="contacts_card chat_head @(carMessages.Key.owning == true ? "Owned" : "")" style="border: 1px solid; border-color: black" onclick="select_head('@cnt_h');">
+                            <div id="h_@cnt_h" class="contacts_card chat_head @carMessages.Key.code @carMessages.Key.plate @(carMessages.Key.owning == true ? "Owned" : "")"
+                                    style="border: 1px solid; border-color: black" onclick="select_head('@cnt_h');">
                                 (<text class="carCode">@carMessages.Key.code</text>) <strong class="carPlate">@carMessages.Key.plate</strong>
                                 @if (carMessages.Key.owning)
                                 {
@@ -124,6 +125,12 @@
 <script src="~/signalr/hubs"></script>
 <!--Add script to update the page and send messages.-->
 <script type="text/javascript">
+    var registeredCars;
+
+    function regiterCar(id=0, plate="", code="") {
+        console.log(plate + " " + code + " " + id);
+    }
+
     var _selectedChatId = undefined;
 
     function getCarPlate(headId) {
@@ -179,6 +186,10 @@
         $("#b_" + chatId).append('<div class="messege"><strong>' + nickname + '</strong><text> : ' + msg + '</text></div>');
     }
 
+    function findHead(carPlate, carCode) {
+
+    }
+
     $(document).ready(function () {
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
@@ -186,6 +197,9 @@
         chat.client.broadcastMessage = function (name, message) {
             console.log(name + ": " + message);
         };
+        chat.client.addMessage = function (msg) {
+            console.log(msg);
+        }
 
         var email = "@User.Identity.GetUserName()";
         var nickname = "@User.GetClaimValue("Nickname")";
@@ -202,8 +216,12 @@
             $('#messageInput').val('').focus();
 
             $('#sendButton').click(function () {
-                if (getContent() === "") return;
-                chat.server.send(nickname, $('#messageInput').val());
+                if (getContent() === "") {
+                    $('#messageInput').focus();
+                    return;
+                }
+                //chat.server.send(nickname, $('#messageInput').val());
+
                 var id = "h_" + _selectedChatId;
                 var owned = getOwned(id)
                 addMessage(_selectedChatId, "You", getContent());

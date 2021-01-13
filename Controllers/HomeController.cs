@@ -106,7 +106,7 @@ namespace CarMessenger.Controllers
                 {
                     owner = new OwnerModel(userId, carId, "Conversation", DateTime.Now.AddDays(2));
                     context.Owners.Add(owner);
-                    //context.Messages.Add(new Message())
+                    //context.Messages.Add(new Message(User.Identity.GetUserName(), User.Identity.GetNickname(), msg.carCountryCode, msg.carCountryCode, User.Identity.GetNickname(), false, "*Joined the group*"));
                     context.SaveChanges();
                 } 
                 else if (owner.Category == "Owner")

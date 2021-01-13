@@ -38,7 +38,7 @@ namespace CarMessenger
         public void MessageCar(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
         {
             Message msg = new Message(null, senderNickname, carPlate, carCountryCode, personNickname, owning, content);
-            Clients.Group(CarGroup(carPlate, carCountryCode)).addMessage(JsonSerializer.Serialize(msg));
+            Clients.OthersInGroup(CarGroup(carPlate, carCountryCode)).addMessage(JsonSerializer.Serialize(msg));
             msg.senderEmail = senderEmail;
             context.Messages.Add(msg);
             context.SaveChanges();
