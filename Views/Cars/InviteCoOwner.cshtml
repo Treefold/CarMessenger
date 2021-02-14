@@ -23,16 +23,16 @@
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Send Invitation" class="btn btn-default" />
-            </div>
+            <span class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Send Invitation" class="btn btn-info" />
+            </span>
+            <span>
+                <button class="btn btn-info"> @Html.ActionLink("Back to Car Details", HttpContext.Current.Request.Url.AbsolutePath.Replace("Cars/InviteCoOwner", "Details"), null, new { Style = "color:White; text-decoration: none;" }) </button>
+            </span>
         </div>
     </div>
 }
 
-<div>
-    <button class="btn btn-info"> @Html.ActionLink("Back to Car Details", HttpContext.Current.Request.Url.AbsolutePath.Replace("Cars/InviteCoOwner", "Details")) </button>
-</div>
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

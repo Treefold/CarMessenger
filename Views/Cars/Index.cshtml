@@ -1,53 +1,55 @@
 ﻿@using CarMessenger.Models
-
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Car List";
 }
-
-<h2>Car List</h2>
+<h2>@ViewBag.Title</h2>
 <br />
-<a href="/cars/create" class="btn btn-primary">Create</a>
+<div>
+    <span>
+        <button class="btn btn-primary"> @Html.ActionLink("Create", "../Cars/Create", null, new { Style = "color:White; text-decoration: none;" }) </button>
+    </span>
+    @*<span>
+        <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
+    </span>*@
+</div>
+<br />
 
-@{
+<table>
+    <tr>
+        <th>Plate</th>
+        <th> </th>
+        <th>Country Code</th>
+        <th> </th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    @foreach (var car in ViewData["Cars"] as List<CarModel>)
+    {
+        <tr>
+            <td style="text-align: center;">@car.Plate</td>
+            <td> </td>
+            <td style="text-align: center;">@car.CountryCode</td>
 
-        var carList = ViewData["Cars"] as List<CarModel>;
-        Console.WriteLine(carList);
-        foreach (var car in carList)
-        {
-        <div class="col-md-4 col-lg-4 col-xs-6 col-sm-4">
-
-
-            @Html.Label("CountryCode", "CountryCode:")
-            <p>@car.CountryCode</p>
-
-            <br />
-            @Html.Label("Plate", "Plate:")
-            <p>@car.Plate</p>
-
-            <br />
-
-            @using (Html.BeginForm(actionName: "Details",
-            controllerName: "Car",
-            method: FormMethod.Get,
-            routeValues: new { id = car.Id }))
-            {
-                <button class="btn btn-info">Details</button>
-
-            }   
-
-            <br />
-
-            <a href="/books/edit/@car.Id" class="btn btn-warning">Edit</a>
-
-            <br />
-            <br />
-
-            <a href="/books/delete/@car.Id" class="btn btn-danger">Delete</a>
-
-        </div>
+            <td> </td>
+            <td>
+                <button class="btn btn-info"> @Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
+            </td>
+            <td>
+                <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+            </td>
+            <td>
+                <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink("Delete", "Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+            </td>
+        </tr>
     }
-}
-
+</table>
 <br />
-
-<a href="/cars/create" class="btn btn-primary">Create</a>
+<div>
+    @*<span>
+        <button class="btn btn-primary"> @Html.ActionLink("Create", "../Cars/Create", null, new { Style = "color:White; text-decoration: none;" }) </button>
+    </span>*@
+    <span>
+        <button class="btn btn-primary"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
+    </span>
+</div>

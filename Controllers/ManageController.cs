@@ -297,8 +297,8 @@ namespace CarMessenger.Controllers
 
             User.AddUpdateClaim("Nickname", model.Nickname);
 
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index","Manage");//RedirectToAction("Index", "Home");
         }
 
         //

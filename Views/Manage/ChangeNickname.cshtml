@@ -1,16 +1,16 @@
 ﻿@using CarMessenger.Models
 @model ChangeNicknameViewModel
 @{
-    ViewBag.Title = "Change Nickname";
+    ViewBag.Title = "Change your Nickname";
 }
 
-<h2>@ViewBag.Title.</h2>
+<h2>@ViewBag.Title</h2>
 
 @using (Html.BeginForm("ChangeNickname", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     <hr />
-    @Html.ValidationSummary("", new { @class = "text-danger" })
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
         @Html.LabelFor(m => m.Nickname, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
@@ -19,17 +19,14 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Change Nickname (and Log Off)" class="btn btn-default" />
-        </div>
+        <span class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Change Nickname" class="btn btn-info" />  @*(and Log Off)*@
+        </span>
+        <span>
+            <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
+        </span>
     </div>
 }
-
-<div>
-    <span>
-        <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage") </button>
-    </span>
-</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
