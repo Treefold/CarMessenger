@@ -37,16 +37,24 @@ namespace CarMessenger.Controllers
                 var ownedCars = context.Cars.Where(c => ownedCarIds.Contains(c.Id)).ToList();
                 foreach (var car in ownedCars)
                 {
-                    var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
-                    carsMessages.Add((true, car.Plate, car.CountryCode), carMessages);
+                    try
+                    {
+                        var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
+                        carsMessages.Add((true, car.Plate, car.CountryCode), carMessages);
+                    }
+                    catch { }
                 }
 
                 var otherCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Conversation")).Select(o => o.CarId);
                 var otherdCars = context.Cars.Where(c => otherCarIds.Contains(c.Id)).ToList();
                 foreach (var car in otherdCars)
                 {
-                    var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
-                    carsMessages.Add((false, car.Plate, car.CountryCode), carMessages);
+                    try
+                    {
+                        var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
+                        carsMessages.Add((false, car.Plate, car.CountryCode), carMessages);
+                    }
+                    catch { }
                 }
 
                 //var otherMessages = context.Messages.Where(m => m.personMail == userMail).OrderByDescending(m => m.sendTime).ToList();

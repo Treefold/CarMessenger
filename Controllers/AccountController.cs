@@ -8,8 +8,10 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
+using Microsoft.Owin;
 using CarMessenger.Models;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace CarMessenger.Controllers
 {
@@ -17,7 +19,8 @@ namespace CarMessenger.Controllers
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
+        private ApplicationUserManager   _userManager;
+        //private ApplicationRoleManager   _roleManager;
 
         public AccountController()
         {
@@ -52,6 +55,18 @@ namespace CarMessenger.Controllers
                 _userManager = value;
             }
         }
+
+        //public ApplicationRoleManager RoleManager
+        //{
+        //    get
+        //    {
+        //        return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
+        //    }
+        //    private set
+        //    {
+        //        _roleManager = value;
+        //    }
+        //}
 
         //
         // GET: /Account/Login
@@ -429,6 +444,12 @@ namespace CarMessenger.Controllers
                     _signInManager.Dispose();
                     _signInManager = null;
                 }
+
+                //if (_roleManager != null)
+                //{
+                //    _roleManager.Dispose();
+                //    _roleManager = null;
+                //}
             }
 
             base.Dispose(disposing);

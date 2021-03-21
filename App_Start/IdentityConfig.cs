@@ -106,4 +106,14 @@ namespace CarMessenger
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
     }
+    //public class ApplicationRoleManager : RoleManager<IdentityRole>
+    //{
+    //    public ApplicationRoleManager(IRoleStore<IdentityRole, string> store) : base(store)
+    //    {
+    //    }
+    //    public static ApplicationRoleManager Createe(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+    //    {
+    //        return new ApplicationRoleManager(new RoleStore<IdentityRole>(context.Get<ApplicationDbContext>()));
+    //    }
+    //}
 }
