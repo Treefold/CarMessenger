@@ -42,7 +42,7 @@
                         {
                             <li>
                                 <text>@coOwnerMail</text>
-                                @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("SuperUser"))
+                                @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("Admin"))
                                 {
                                     <text><text onclick="return confirm('Are you sure?')">
                                             [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
@@ -58,7 +58,7 @@
                 }
             </dd>
 
-            @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("SuperUser"))
+            @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("Admin"))
             {
                 <dt>Invitations Sent</dt>
                 <dd>
@@ -78,7 +78,7 @@
                             }
                         }
                     <li>
-                        @if(ViewBag.Owned || User.IsInRole("SuperUser"))
+                        @if(ViewBag.Owned || User.IsInRole("Admin"))
                         {
                             <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
                         }
@@ -121,7 +121,7 @@
 </div>
 
 <div>
-    @if (User.IsInRole("SuperUser"))
+    @if (User.IsInRole("Admin"))
     {
         <span>
             <button class="btn btn-info"> @Html.ActionLink("Back to Cars", "Index", null, new { Style = "color:White; text-decoration: none;" }) </button>
@@ -133,13 +133,13 @@
             <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
         </span>
     }
-    @if (User.IsInRole("SuperUser") || (ViewBag.Owned != null && ViewBag.Owned))
+    @if (User.IsInRole("Admin") || (ViewBag.Owned != null && ViewBag.Owned))
     {
         <span>
             <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
         </span>
     }
     <span>
-        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned^User.IsInRole("SuperUser") ? "Delete":"Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned^User.IsInRole("Admin") ? "Delete":"Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
     </span>
 </div>

@@ -26,7 +26,7 @@ namespace CarMessenger.Controllers
 
         // GET: Car
         [HttpGet]
-        //[Authorize(Roles = "SuperUser")]
+        //[Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             ViewData["cars"] = context.Cars.ToList();
@@ -41,7 +41,7 @@ namespace CarMessenger.Controllers
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-            if (owner == null && !User.IsInRole("SuperUser"))
+            if (owner == null && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -59,7 +59,7 @@ namespace CarMessenger.Controllers
                 ViewBag.Owned = true;
                 ViewBag.OwnerName = User.Identity.GetUserName();
             }
-            else if (User.IsInRole("SuperUser") || owner.Category == "CoOwner")
+            else if (User.IsInRole("Admin") || owner.Category == "CoOwner")
             {
                 ViewBag.Owned = false;
                 OwnerModel realOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.Category == "Owner");
@@ -69,7 +69,7 @@ namespace CarMessenger.Controllers
                 if ((realOwner == null || realOwnerUser == null))
                 {
                     string msg = "";
-                    if (User.IsInRole("SuperUser"))
+                    if (User.IsInRole("Admin"))
                     {
                         msg = "This car is not Owned";
                     }
@@ -141,7 +141,7 @@ namespace CarMessenger.Controllers
                 ViewBag.CoOwners = context.Users.Where(u => coOwnersId.Contains(u.Id)).Select(u => u.UserName).ToList();
             }
 
-            if (User.IsInRole("SuperUser") || owner.Category == "Owner")
+            if (User.IsInRole("Admin") || owner.Category == "Owner")
             {
                 List<String> pendingRequests = carOwners.Where(o => o.Category == "Requested").Select(o => o.UserId).ToList();
                 if (pendingRequests.Count > 0)
@@ -222,7 +222,7 @@ namespace CarMessenger.Controllers
         {
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("SuperUser"))
+            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -250,7 +250,7 @@ namespace CarMessenger.Controllers
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
             ViewBag.Owned = !(owner == null || owner.Category != "Owner");
-            if (!((bool) ViewBag.Owned || User.IsInRole("SuperUser")))
+            if (!((bool) ViewBag.Owned || User.IsInRole("Admin")))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -405,7 +405,7 @@ namespace CarMessenger.Controllers
         {
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("SuperUser"))
+            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -431,7 +431,7 @@ namespace CarMessenger.Controllers
 
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("SuperUser"))
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
                     return Redirect("../../Manage");
@@ -532,7 +532,7 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("SuperUser"))
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
                     return Redirect("../../Manage");
@@ -576,7 +576,7 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("SuperUser"))
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return Redirect("../../Manage");
@@ -637,7 +637,7 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
                 ViewBag.Owned = owner?.Category == "Owner";
-                if (!(owner != null || User.IsInRole("SuperUser")))
+                if (!(owner != null || User.IsInRole("Admin")))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return Redirect("../../Manage");

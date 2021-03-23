@@ -194,7 +194,7 @@
                 }
             </ul>
         </dd>
-        @if (User.IsInRole("SuperUser"))
+        @if (User.IsInRole("Admin"))
         {
             <dd><button class="btn btn-primary"> @Html.ActionLink("All Cars", "../Cars", null, new { Style = "color:White; text-decoration: none;" }) </button></dd>
         }

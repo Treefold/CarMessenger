@@ -9,7 +9,7 @@ namespace CarMessenger.Data
 {
     public class ChatContext : DbContext
     {
-        public ChatContext() : base("ChatConnectionString") { }
+        public ChatContext() : base("DefaultConnection") { } // ChatConnectionString
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

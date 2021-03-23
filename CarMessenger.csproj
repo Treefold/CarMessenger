@@ -391,101 +391,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202012281052333_CreateCarTable.cs" />
-    <Compile Include="Migrations\202012281052333_CreateCarTable.designer.cs">
-      <DependentUpon>202012281052333_CreateCarTable.cs</DependentUpon>
+    <Compile Include="Migrations\202103231735151_redo.cs" />
+    <Compile Include="Migrations\202103231735151_redo.Designer.cs">
+      <DependentUpon>202103231735151_redo.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202012281103577_AddCarCode.cs" />
-    <Compile Include="Migrations\202012281103577_AddCarCode.designer.cs">
-      <DependentUpon>202012281103577_AddCarCode.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202012281322323_UpdateCarKey.cs" />
-    <Compile Include="Migrations\202012281322323_UpdateCarKey.Designer.cs">
-      <DependentUpon>202012281322323_UpdateCarKey.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101081527039_AddPlat.cs" />
-    <Compile Include="Migrations\202101081527039_AddPlat.Designer.cs">
-      <DependentUpon>202101081527039_AddPlat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101081537215_addPlate.cs" />
-    <Compile Include="Migrations\202101081537215_addPlate.Designer.cs">
-      <DependentUpon>202101081537215_addPlate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101081555393_OwnerTable.cs" />
-    <Compile Include="Migrations\202101081555393_OwnerTable.Designer.cs">
-      <DependentUpon>202101081555393_OwnerTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101091358433_RemoveOwnerID.cs" />
-    <Compile Include="Migrations\202101091358433_RemoveOwnerID.Designer.cs">
-      <DependentUpon>202101091358433_RemoveOwnerID.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101091424037_ModifyCarId.cs" />
-    <Compile Include="Migrations\202101091424037_ModifyCarId.Designer.cs">
-      <DependentUpon>202101091424037_ModifyCarId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101091815115_AddCarConstrains.cs" />
-    <Compile Include="Migrations\202101091815115_AddCarConstrains.Designer.cs">
-      <DependentUpon>202101091815115_AddCarConstrains.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101092008093_AddOwnerType.cs" />
-    <Compile Include="Migrations\202101092008093_AddOwnerType.Designer.cs">
-      <DependentUpon>202101092008093_AddOwnerType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101092113497_AddOwnerExpiry.cs" />
-    <Compile Include="Migrations\202101092113497_AddOwnerExpiry.Designer.cs">
-      <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101101403414_requested.cs" />
-    <Compile Include="Migrations\202101101403414_requested.Designer.cs">
-      <DependentUpon>202101101403414_requested.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101101629035_AddRequestModel.cs" />
-    <Compile Include="Migrations\202101101629035_AddRequestModel.Designer.cs">
-      <DependentUpon>202101101629035_AddRequestModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101101638590_RequiredApp2.cs" />
-    <Compile Include="Migrations\202101101638590_RequiredApp2.Designer.cs">
-      <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101101806532_AddNickname.cs" />
-    <Compile Include="Migrations\202101101806532_AddNickname.Designer.cs">
-      <DependentUpon>202101101806532_AddNickname.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101101839101_Nickname2.cs" />
-    <Compile Include="Migrations\202101101839101_Nickname2.Designer.cs">
-      <DependentUpon>202101101839101_Nickname2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101111941340_CrateChat.cs" />
-    <Compile Include="Migrations\202101111941340_CrateChat.Designer.cs">
-      <DependentUpon>202101111941340_CrateChat.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101111954417_CreateChatMessages.cs" />
-    <Compile Include="Migrations\202101111954417_CreateChatMessages.Designer.cs">
-      <DependentUpon>202101111954417_CreateChatMessages.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101112017395_AddMessageContent.cs" />
-    <Compile Include="Migrations\202101112017395_AddMessageContent.Designer.cs">
-      <DependentUpon>202101112017395_AddMessageContent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101112112293_AddMessagOwning.cs" />
-    <Compile Include="Migrations\202101112112293_AddMessagOwning.Designer.cs">
-      <DependentUpon>202101112112293_AddMessagOwning.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101112152248_AddMessagePerson.cs" />
-    <Compile Include="Migrations\202101112152248_AddMessagePerson.Designer.cs">
-      <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101120125244_UpdateMessage.cs" />
-    <Compile Include="Migrations\202101120125244_UpdateMessage.Designer.cs">
-      <DependentUpon>202101120125244_UpdateMessage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101130021591_RemovMessagePersonEmail.cs" />
-    <Compile Include="Migrations\202101130021591_RemovMessagePersonEmail.Designer.cs">
-      <DependentUpon>202101130021591_RemovMessagePersonEmail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202101130927091_NewMssag.cs" />
-    <Compile Include="Migrations\202101130927091_NewMssag.Designer.cs">
-      <DependentUpon>202101130927091_NewMssag.cs</DependentUpon>
+    <Compile Include="Migrations\202103231947500_CreateChatMessages.cs" />
+    <Compile Include="Migrations\202103231947500_CreateChatMessages.Designer.cs">
+      <DependentUpon>202103231947500_CreateChatMessages.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -686,84 +598,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202012281052333_CreateCarTable.resx">
-      <DependentUpon>202012281052333_CreateCarTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202012281103577_AddCarCode.resx">
-      <DependentUpon>202012281103577_AddCarCode.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202012281322323_UpdateCarKey.resx">
-      <DependentUpon>202012281322323_UpdateCarKey.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101081527039_AddPlat.resx">
-      <DependentUpon>202101081527039_AddPlat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101081537215_addPlate.resx">
-      <DependentUpon>202101081537215_addPlate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101081555393_OwnerTable.resx">
-      <DependentUpon>202101081555393_OwnerTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101091358433_RemoveOwnerID.resx">
-      <DependentUpon>202101091358433_RemoveOwnerID.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101091424037_ModifyCarId.resx">
-      <DependentUpon>202101091424037_ModifyCarId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101091815115_AddCarConstrains.resx">
-      <DependentUpon>202101091815115_AddCarConstrains.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101092008093_AddOwnerType.resx">
-      <DependentUpon>202101092008093_AddOwnerType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101092113497_AddOwnerExpiry.resx">
-      <DependentUpon>202101092113497_AddOwnerExpiry.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101101403414_requested.resx">
-      <DependentUpon>202101101403414_requested.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101101629035_AddRequestModel.resx">
-      <DependentUpon>202101101629035_AddRequestModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101101638590_RequiredApp2.resx">
-      <DependentUpon>202101101638590_RequiredApp2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101101806532_AddNickname.resx">
-      <DependentUpon>202101101806532_AddNickname.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101101839101_Nickname2.resx">
-      <DependentUpon>202101101839101_Nickname2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101111941340_CrateChat.resx">
-      <DependentUpon>202101111941340_CrateChat.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101111954417_CreateChatMessages.resx">
-      <DependentUpon>202101111954417_CreateChatMessages.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101112017395_AddMessageContent.resx">
-      <DependentUpon>202101112017395_AddMessageContent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101112112293_AddMessagOwning.resx">
-      <DependentUpon>202101112112293_AddMessagOwning.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101112152248_AddMessagePerson.resx">
-      <DependentUpon>202101112152248_AddMessagePerson.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101120125244_UpdateMessage.resx">
-      <DependentUpon>202101120125244_UpdateMessage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101130021591_RemovMessagePersonEmail.resx">
-      <DependentUpon>202101130021591_RemovMessagePersonEmail.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202101130927091_NewMssag.resx">
-      <DependentUpon>202101130927091_NewMssag.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202103231735151_redo.resx">
+      <DependentUpon>202103231735151_redo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103231947500_CreateChatMessages.resx">
+      <DependentUpon>202103231947500_CreateChatMessages.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
