@@ -26,7 +26,7 @@ namespace CarMessenger.Controllers
 
         // GET: Car
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             ViewData["cars"] = context.Cars.ToList();
