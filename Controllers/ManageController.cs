@@ -8,6 +8,8 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using CarMessenger.Models;
 using System.Collections.Generic;
+using CarMessenger.Hubs;
+
 namespace CarMessenger.Controllers
 {
     [Authorize]
@@ -53,7 +55,6 @@ namespace CarMessenger.Controllers
             }
         }
 
-        //
         // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
         {
@@ -127,7 +128,6 @@ namespace CarMessenger.Controllers
             return View(model);
         }
 
-        //
         // POST: /Manage/RemoveLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -151,14 +151,12 @@ namespace CarMessenger.Controllers
             return RedirectToAction("ManageLogins", new { Message = message });
         }
 
-        //
         // GET: /Manage/AddPhoneNumber
         public ActionResult AddPhoneNumber()
         {
             return View();
         }
 
-        //
         // POST: /Manage/AddPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -182,7 +180,6 @@ namespace CarMessenger.Controllers
             return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 
-        //
         // POST: /Manage/EnableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -197,7 +194,6 @@ namespace CarMessenger.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
         // POST: /Manage/DisableTwoFactorAuthentication
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -212,7 +208,6 @@ namespace CarMessenger.Controllers
             return RedirectToAction("Index", "Manage");
         }
 
-        //
         // GET: /Manage/VerifyPhoneNumber
         public async Task<ActionResult> VerifyPhoneNumber(string phoneNumber)
         {
@@ -221,7 +216,6 @@ namespace CarMessenger.Controllers
             return phoneNumber == null ? View("Error") : View(new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber });
         }
 
-        //
         // POST: /Manage/VerifyPhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -246,7 +240,6 @@ namespace CarMessenger.Controllers
             return View(model);
         }
 
-        //
         // POST: /Manage/RemovePhoneNumber
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -265,7 +258,6 @@ namespace CarMessenger.Controllers
             return RedirectToAction("Index", new { Message = ManageMessageId.RemovePhoneSuccess });
         }
 
-        //
         // GET: /Manage/ChangeNickname
         public ActionResult ChangeNickname()
         {
@@ -275,7 +267,6 @@ namespace CarMessenger.Controllers
             return View(model);
         }
 
-        //
         // POST: /Manage/ChangeNickname
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -286,29 +277,37 @@ namespace CarMessenger.Controllers
                 return View(model);
             }
 
-            var userApp = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+            var userID = User.Identity.GetUserId();
+
+            var userApp = await UserManager.FindByIdAsync(userID);
+
+            if (userApp.Nickname == model.Nickname)
+                return RedirectToAction("Index", "Manage");//RedirectToAction("Index", "Home");
+
             userApp.Nickname = model.Nickname;
+
             await UserManager.UpdateAsync(userApp);
 
-            var userCtx = context.Users.Find(User.Identity.GetUserId());
+            var userCtx = context.Users.Find(userID);
             userCtx.Nickname = model.Nickname;
             TryUpdateModel(userCtx);
             await context.SaveChangesAsync();
 
             User.AddUpdateClaim("Nickname", model.Nickname);
 
+            context.Chats.Where(c => c.userId == userID).Select(c => c.Id).ToList()
+                            .ForEach((chat) => ChatHub.UpdateNickChat(chat, model.Nickname));
+
             //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index","Manage");//RedirectToAction("Index", "Home");
         }
 
-        //
         // GET: /Manage/ChangePassword
         public ActionResult ChangePassword()
         {
             return View();
         }
 
-        //
         // POST: /Manage/ChangePassword
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -332,14 +331,12 @@ namespace CarMessenger.Controllers
             return View(model);
         }
 
-        //
         // GET: /Manage/SetPassword
         public ActionResult SetPassword()
         {
             return View();
         }
 
-        //
         // POST: /Manage/SetPassword
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -364,7 +361,6 @@ namespace CarMessenger.Controllers
             return View(model);
         }
 
-        //
         // GET: /Manage/ManageLogins
         public async Task<ActionResult> ManageLogins(ManageMessageId? message)
         {
@@ -387,7 +383,6 @@ namespace CarMessenger.Controllers
             });
         }
 
-        //
         // POST: /Manage/LinkLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -397,7 +392,6 @@ namespace CarMessenger.Controllers
             return new AccountController.ChallengeResult(provider, Url.Action("LinkLoginCallback", "Manage"), User.Identity.GetUserId());
         }
 
-        //
         // GET: /Manage/LinkLoginCallback
         public async Task<ActionResult> LinkLoginCallback()
         {

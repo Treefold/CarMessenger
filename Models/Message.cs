@@ -36,6 +36,8 @@ namespace CarMessenger.Models
     }
     public class SentMessage
     {
+        public string Id { get; set; }
+
         public string chatId { get; set; }
 
         public string nickname { get; set; }
@@ -52,8 +54,9 @@ namespace CarMessenger.Models
         {
         }
 
-        public SentMessage(string chatId, string nickname, bool owned, string content, DateTime sendTime, DateTime expiry)
+        public SentMessage(string Id, string chatId, string nickname, bool owned, string content, DateTime sendTime, DateTime expiry)
         {
+            this.Id = Id;
             this.chatId = chatId;
             this.nickname = nickname;
             this.owned = owned;
@@ -64,6 +67,7 @@ namespace CarMessenger.Models
 
         public SentMessage(Message msg)
         {
+            this.Id = msg.Id;
             this.chatId = msg.chatId;
             this.content = msg.content;
             this.sendTime = msg.sendTime;

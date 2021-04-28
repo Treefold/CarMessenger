@@ -22,6 +22,7 @@ namespace CarMessenger.Hubs
             if (chatHub == null)
                 chatHub = this;
         }
+        
         public void Send (string name, string message)
         {
             Clients.All.broadcastMessage(name, message);
@@ -31,6 +32,7 @@ namespace CarMessenger.Hubs
         {
             Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
         }
+        
         public void JoinChats(List<string> chatIdList)
         {
             foreach (var chatId in chatIdList)
@@ -51,6 +53,18 @@ namespace CarMessenger.Hubs
         {
             if (chatHub != null)
                 chatHub.Clients.Group(chatGroupPrefix+chatId).DeleteChat(chatId);
+        }
+
+        public static void UpdateCarChat(string chatId, string plate, string code)
+        {
+            if (chatHub != null)
+                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateCarChat(chatId, plate, code);
+        }
+
+        public static void UpdateNickChat(string chatId, string nick)
+        {
+            if (chatHub != null)
+                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
         }
     }
 }

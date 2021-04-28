@@ -75,7 +75,7 @@
                                 for(var i = chat.Value.Count - 1; i >= 0; --i)
                                 {
                                     msg = chat.Value[i];
-                                    <div class="messege">
+                                    <div id="m_@msg.Id" class="messege">
                                         @if (msg.owned)
                                         {
                                             <strong>You</strong>
@@ -89,7 +89,7 @@
                                             <strong> @msg.nickname </strong>
                                             if (!chat.Key.owning)
                                             {
-                                                <text> (@chat.Key.code-@chat.Key.plate)</text>
+                                                <text> (<text class="carCode">@chat.Key.code</text>-<text class="carPlate">@chat.Key.plate</text>)</text>
                                             }
                                         }
                                         <text>: @msg.content</text>
@@ -199,7 +199,7 @@
                 '<div class="alert warning"> \
                     <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Well... </strong> The "'
-                    + chatH.innerHTML
+                + chatH.innerHTML
                 + '" Chat was removed by the Car Owner</div>')[0];
             $('#Msgs')[0].append(warningMsgEl);
 
@@ -211,7 +211,20 @@
                 $("#chat_box").css('display', 'none');
                 _selectedChatId = undefined;
             }
-        }
+        };
+        chat.client.UpdateCarChat = function (chatId, plate, code) {
+            $("#h_" + chatId + " .carPlate")[0].innerHTML = plate;
+            $("#h_" + chatId + " .carCode")[0].innerHTML = code;
+
+            $("#b_" + chatId + " .carPlate").each((ind, el) => el.innerHTML = plate);
+            $("#b_" + chatId + " .carCode").each((ind, el) => el.innerHTML = code);
+        };
+        chat.client.UpdateNickChat = function (chatId, nick) {
+            $("#h_" + chatId + " .nickname")[0].innerHTML = nick;
+        };
+        chat.client.UpdateNickMsg = function (chatId, msgList) {
+            console.log(msgList);
+        };
 
         var userId = "@User.Identity.GetUserId()";
         var nickname = "@User.GetClaimValue("Nickname")";

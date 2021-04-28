@@ -258,7 +258,9 @@ namespace CarMessenger.Controllers
                 return Redirect("../../Manage");
             }
 
-            var car = context.Cars.Find(id);
+            CarModel car = context.Cars.Find(id);
+            string plate = car.Plate;
+            string code = car.CountryCode;
             if (car == null)
             {
                 TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
@@ -277,6 +279,9 @@ namespace CarMessenger.Controllers
                     if (TryUpdateModel(car))
                     {
                         context.SaveChanges();
+                        if (car.Plate != plate || car.CountryCode != code)
+                            context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                                .ForEach((chat) => ChatHub.UpdateCarChat(chat, car.Plate, car.CountryCode));
                         TempData["SuccessMsgs"] = new List<string> { "Car Updated" };
                         return RedirectToAction("Details/" + id);
                     }
