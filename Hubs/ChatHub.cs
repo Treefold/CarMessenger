@@ -18,25 +18,8 @@ namespace CarMessenger
         }
         public void Send (string name, string message)
         {
-            // Call the broadcastMessage method to update clients.
             Clients.All.broadcastMessage(name, message);
         }
-        //private string CarGroup (string carPlate, string carCountryCode)
-        //{
-        //    return carPlate + "_" + carCountryCode;
-        //}
-        //public void JoinCar (string carPlate, string carCountryCode)
-
-        //{
-        //    Groups.Add(Context.ConnectionId, CarGroup(carPlate, carCountryCode));
-        //}
-        //public void JoinCars (List<(string plate, string countryCode)> cars)
-        //{
-        //    foreach (var car in cars)
-        //    {
-        //        JoinCar(car.plate, car.countryCode);
-        //    }
-        //}
 
         public void JoinChat(string chatId)
         {
@@ -52,7 +35,6 @@ namespace CarMessenger
 
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
-            
             Message msg = new Message(chatId, userId, content);
             Clients.OthersInGroup(chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
             context.Messages.Add(msg);

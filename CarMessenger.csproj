@@ -422,7 +422,7 @@
     <Compile Include="Models\IdentityExtensions.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="ChatHub.cs" />
+    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\OwnerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -607,9 +607,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\NewChat.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hubs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
