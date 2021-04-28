@@ -156,7 +156,7 @@
 
     function select_head(id) {
         _selectedChatId = id;
-        $("#messageInput").val("");
+        resetContent()
         $(".chat_head").css('background-color', '#FFF');
         $("#h_" + id).css('background-color', "#C0FFEE");
         $('#chat-with-id').html($("#h_" + id).html());
@@ -191,6 +191,26 @@
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
             addMessage(msg.chatId, msg.nickname, msg.content);
+        };
+        chat.client.DeleteChat = function (chatId) {
+            var chatH = $("#h_" + chatId)[0];
+            var chatB = $("#b_" + chatId)[0];
+            var warningMsgEl = $(
+                '<div class="alert warning"> \
+                    <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
+                    <strong>Well... </strong> The "'
+                    + chatH.innerHTML
+                + '" Chat was removed by the Car Owner</div>')[0];
+            $('#Msgs')[0].append(warningMsgEl);
+
+            chatH.remove();
+            chatB.remove();
+
+            if (chatId == _selectedChatId) {
+                resetContent()
+                $("#chat_box").css('display', 'none');
+                _selectedChatId = undefined;
+            }
         }
 
         var userId = "@User.Identity.GetUserId()";
@@ -216,7 +236,6 @@
                 $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
                 //chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
-                console.log(_selectedChatId, userId, nickname, getContent())
                 chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
             });

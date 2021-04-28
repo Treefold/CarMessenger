@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
+using CarMessenger.Hubs;
 
 namespace CarMessenger.Controllers
 {
@@ -650,7 +651,7 @@ namespace CarMessenger.Controllers
                 }
                 else
                 {
-                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
+                    // context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
 
                     var car = context.Cars.Find(id);
                     if (car == null)
@@ -659,6 +660,9 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
+                        context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                            .ForEach((chat) => ChatHub.DeleteChat(chat));
+
                         context.Cars.Remove(car);
                     }
                 } 

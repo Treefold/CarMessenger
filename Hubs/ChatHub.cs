@@ -6,15 +6,21 @@ using Microsoft.AspNet.SignalR;
 using System.Text.Json;
 using Microsoft.AspNet.Identity;
 
-namespace CarMessenger
+namespace CarMessenger.Hubs
 {
     public class ChatHub : Hub
     {
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = null;
+        private static string chatGroupPrefix = "Chat_";
+        private static ChatHub chatHub = null;
 
         public ChatHub()
         {
-            context = new ApplicationDbContext();
+            if (context == null)
+                context = new ApplicationDbContext();
+
+            if (chatHub == null)
+                chatHub = this;
         }
         public void Send (string name, string message)
         {
@@ -23,7 +29,7 @@ namespace CarMessenger
 
         public void JoinChat(string chatId)
         {
-            Groups.Add(Context.ConnectionId, chatId);
+            Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
         }
         public void JoinChats(List<string> chatIdList)
         {
@@ -36,9 +42,15 @@ namespace CarMessenger
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
             Message msg = new Message(chatId, userId, content);
-            Clients.OthersInGroup(chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
+            Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
             context.Messages.Add(msg);
             context.SaveChanges();
+        }
+
+        public static void DeleteChat(string chatId)
+        {
+            if (chatHub != null)
+                chatHub.Clients.Group(chatGroupPrefix+chatId).DeleteChat(chatId);
         }
     }
 }

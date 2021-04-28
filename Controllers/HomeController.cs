@@ -35,6 +35,10 @@ namespace CarMessenger.Controllers
                 var ownedCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
 
                 var userChats   = context.Chats.Where(c => c.userId == userID || ownedCarIds.Contains(c.carId)).ToList();
+
+                bool contextChanged = false;
+                // TODO: Delete expired chats
+
                 var allCarsIds  = userChats.Select(c => c.carId).ToList();
                 var carDetails  = context.Cars.Where(c => allCarsIds.Contains(c.Id)).ToList();
 
@@ -44,7 +48,6 @@ namespace CarMessenger.Controllers
                         users => users.Id,
                         (userKey, users) => new KeyValuePair<string, string> (userKey, users.Nickname)
                     ).ToList().ToDictionary(pair => pair.Key, pair => pair.Value);
-
 
 
                 var chatsDetails = userChats.Join(
@@ -59,12 +62,6 @@ namespace CarMessenger.Controllers
                             info: (string) (chat.userId == null || chat.userId == userID ? null : infoDict[chat.userId]),
                             createTime: chat.createTime
                         )
-                        //{
-                        //    chatId = chat.Id,
-                        //    owning = chat.userId != userID,
-                        //    plate  = car.Plate,
-                        //    code   = car.CountryCode,
-                        //}
                      ).ToList();
 
 
@@ -91,6 +88,11 @@ namespace CarMessenger.Controllers
                         ).OrderByDescending(m => m.sendTime).ToList();
 
                     chats.Add(currChat, finalChatMessages);
+                }
+
+                if (contextChanged)
+                {
+                    context.SaveChanges();
                 }
 
                 ViewBag.chats = chats.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : d.Key.createTime).ToList();
