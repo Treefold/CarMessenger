@@ -8,7 +8,7 @@
         </ul>
     </div>*@
 @{
-    var chats = ViewBag.chats as List<KeyValuePair<(string chatId, bool owning, string plate, string code), List<SentMessage>>>;
+    var chats = ViewBag.chats as List<KeyValuePair<(string chatId, bool owning, string plate, string code, string info, DateTime created), List<SentMessage>>>;
 }
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -32,7 +32,7 @@
                         var cnt_h = 0;
                         foreach (var chat in chats)
                         {
-                            var personNickname = chat.Value.Count > 0 ? chat.Value[0].nickname : null;
+                            var personNickname = chat.Key.info;
                              <div id="h_@chat.Key.chatId" class="contacts_card chat_head h_@cnt_h @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
                                     style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
                                 (<text class="carCode">@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
@@ -44,7 +44,7 @@
                                     }
                                     else
                                     {
-                                        <text><strong> (You) </strong></text>
+                                        <text><strong> #</strong></text>
                                     }
                                 }
                             </div>

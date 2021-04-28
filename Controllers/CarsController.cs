@@ -179,6 +179,7 @@ namespace CarMessenger.Controllers
                     {
                         context.Cars.Add(car);
                         context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
+                        context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
                         context.SaveChanges();
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("../Manage");

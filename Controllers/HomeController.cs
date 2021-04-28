@@ -31,18 +31,34 @@ namespace CarMessenger.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userID      = User.Identity.GetUserId();
-                var userMail    = User.Identity.GetUserName();
+                //var userMail    = User.Identity.GetUserName();
                 var ownedCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
 
                 var userChats   = context.Chats.Where(c => c.userId == userID || ownedCarIds.Contains(c.carId)).ToList();
                 var allCarsIds  = userChats.Select(c => c.carId).ToList();
                 var carDetails  = context.Cars.Where(c => allCarsIds.Contains(c.Id)).ToList();
 
+                Dictionary<string, string> infoDict = userChats.Select(c => c.userId).Distinct().Where(c => c != null && c != userID).Join(
+                        context.Users,
+                        userKey => userKey,
+                        users => users.Id,
+                        (userKey, users) => new KeyValuePair<string, string> (userKey, users.Nickname)
+                    ).ToList().ToDictionary(pair => pair.Key, pair => pair.Value);
+
+
+
                 var chatsDetails = userChats.Join(
                         carDetails,
                         chat => chat.carId,
                         car  => car.Id,
-                        (chat, car) => (chatId: chat.Id, owning: chat.userId != userID, plate: car.Plate, code: car.CountryCode)
+                        (chat, car) => (
+                            chatId: chat.Id, 
+                            owning: chat.userId != userID, 
+                            plate: car.Plate, 
+                            code: car.CountryCode, 
+                            info: (string) (chat.userId == null || chat.userId == userID ? null : infoDict[chat.userId]),
+                            createTime: chat.createTime
+                        )
                         //{
                         //    chatId = chat.Id,
                         //    owning = chat.userId != userID,
@@ -52,7 +68,7 @@ namespace CarMessenger.Controllers
                      ).ToList();
 
 
-                var chats = new Dictionary<(string chatId, bool owning, string plate, string code), List<SentMessage>>();
+                var chats = new Dictionary<(string chatId, bool owning, string plate, string code, string info, DateTime createTime), List<SentMessage>>();
 
                 foreach (var currChat in chatsDetails)
                 {
@@ -77,7 +93,7 @@ namespace CarMessenger.Controllers
                     chats.Add(currChat, finalChatMessages);
                 }
 
-                ViewBag.chats = chats.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : DateTime.MinValue).ToList();
+                ViewBag.chats = chats.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : d.Key.createTime).ToList();
                 return View();
             }
             else
@@ -88,6 +104,7 @@ namespace CarMessenger.Controllers
 
         // Get: /Home/NewChat
         [HttpGet]
+        [Authorize]
         public ActionResult NewChat ()
         {
             Console.WriteLine(context.Cars);
@@ -96,6 +113,7 @@ namespace CarMessenger.Controllers
 
         // Post: /Home/NewChat
         [HttpPost]
+        [Authorize]
         public ActionResult NewChat(NewChat newChat)
         {
             try
@@ -109,7 +127,7 @@ namespace CarMessenger.Controllers
                     return View(newChat);
                 }
 
-                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId); // && c.userId == userId);
+                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId && c.userId == userId); // && c.userId == userId);
                 if (chat != null)
                 {
                     ViewData["WarningMsgs"] = new List<string> { "This chat already exists. If you cannot find it, please contact us for technical support!" };

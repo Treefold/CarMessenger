@@ -20,6 +20,10 @@ namespace CarMessenger.Models
         [Index("UniqueChat", 1, IsUnique = true)]
         public string carId { get; set; }
 
+        public DateTime createTime { get; set; } = DateTime.Now;
+
+        public DateTime deleteTime { get; set; } = DateTime.Now.AddDays(2);
+
         public Chat()
         {
         }
@@ -28,6 +32,11 @@ namespace CarMessenger.Models
         {
             this.userId = userId;
             this.carId = carId;
+        }
+
+        public Chat(string userId, string carId, DateTime deleteTime) : this(userId, carId)
+        {
+            this.deleteTime = deleteTime;
         }
     }
 

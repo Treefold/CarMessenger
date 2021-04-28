@@ -411,6 +411,10 @@
     <Compile Include="Migrations\202103241115599_Chas.Designer.cs">
       <DependentUpon>202103241115599_Chas.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202104281202041_chatdates.cs" />
+    <Compile Include="Migrations\202104281202041_chatdates.Designer.cs">
+      <DependentUpon>202104281202041_chatdates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
@@ -630,6 +634,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103241115599_Chas.resx">
       <DependentUpon>202103241115599_Chas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104281202041_chatdates.resx">
+      <DependentUpon>202104281202041_chatdates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
