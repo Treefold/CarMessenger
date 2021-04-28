@@ -28,6 +28,7 @@ namespace CarMessenger.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<CarModel> Cars { get; set; }
         public DbSet<OwnerModel> Owners { get; set; }

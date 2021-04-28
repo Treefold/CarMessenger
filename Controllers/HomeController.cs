@@ -7,6 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CarMessenger.Models;
+using keyType = System.Tuple<string, bool, string, string>;
 
 namespace CarMessenger.Controllers
 {
@@ -29,40 +30,54 @@ namespace CarMessenger.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                var userID = User.Identity.GetUserId();
-                var userMail = User.Identity.GetUserName();
-                var carsMessages = new Dictionary<(bool owning, string plate, string code), List<Message>>();
-
+                var userID      = User.Identity.GetUserId();
+                var userMail    = User.Identity.GetUserName();
                 var ownedCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
-                var ownedCars = context.Cars.Where(c => ownedCarIds.Contains(c.Id)).ToList();
-                foreach (var car in ownedCars)
+
+                var userChats   = context.Chats.Where(c => c.userId == userID || ownedCarIds.Contains(c.carId)).ToList();
+                var allCarsIds  = userChats.Select(c => c.carId).ToList();
+                var carDetails  = context.Cars.Where(c => allCarsIds.Contains(c.Id)).ToList();
+
+                var chatsDetails = userChats.Join(
+                        carDetails,
+                        chat => chat.carId,
+                        car  => car.Id,
+                        (chat, car) => (chatId: chat.Id, owning: chat.userId != userID, plate: car.Plate, code: car.CountryCode)
+                        //{
+                        //    chatId = chat.Id,
+                        //    owning = chat.userId != userID,
+                        //    plate  = car.Plate,
+                        //    code   = car.CountryCode,
+                        //}
+                     ).ToList();
+
+
+                var chats = new Dictionary<(string chatId, bool owning, string plate, string code), List<SentMessage>>();
+
+                foreach (var currChat in chatsDetails)
                 {
-                    var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
-                    carsMessages.Add((true, car.Plate, car.CountryCode), carMessages);
+                    var rawChatMessages = context.Messages.Where(m => m.chatId == currChat.chatId);
+                    // TODO: Delete expired messages
+
+                    var finalChatMessages = rawChatMessages.Join(
+                            context.Users,
+                            msg => msg.userId,
+                            user => user.Id,
+                            (msg, user) => new SentMessage // (msg, user.Nickname)
+                            {
+                                chatId = msg.chatId,
+                                content = msg.content,
+                                sendTime = msg.sendTime,
+                                expiry = msg.expiry,
+                                nickname = user.Nickname,
+                                owned = msg.userId == userID
+                            }
+                        ).OrderByDescending(m => m.sendTime).ToList();
+
+                    chats.Add(currChat, finalChatMessages);
                 }
 
-                var otherCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Conversation")).Select(o => o.CarId);
-                var otherdCars = context.Cars.Where(c => otherCarIds.Contains(c.Id)).ToList();
-                foreach (var car in otherdCars)
-                {
-                    var carMessages = context.Messages.Where(m => m.carPlate == car.Plate && m.carCountryCode == car.CountryCode).OrderByDescending(m => m.sendTime).ToList();
-                    carsMessages.Add((false, car.Plate, car.CountryCode), carMessages);
-                }
-
-                //var otherMessages = context.Messages.Where(m => m.personMail == userMail).OrderByDescending(m => m.sendTime).ToList();
-                //foreach(var msg in otherMessages)
-                //{
-                //    if (carsMessages.ContainsKey((false, msg.carPlate, msg.carCountryCode)))
-                //    {
-                //        carsMessages[(false, msg.carPlate, msg.carCountryCode)].Add(msg);
-                //    }
-                //    else
-                //    {
-                //        carsMessages.Add((false, msg.carPlate, msg.carCountryCode), new List<Message> { msg });
-                //    }
-                //}
-
-                ViewBag.carsMessages = carsMessages.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : DateTime.MinValue).ToList();
+                ViewBag.chats = chats.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : DateTime.MinValue).ToList();
                 return View();
             }
             else
@@ -71,64 +86,60 @@ namespace CarMessenger.Controllers
             }
         }
 
+        // Get: /Home/NewChat
         [HttpGet]
-        public ActionResult NewMessage ()
+        public ActionResult NewChat ()
         {
+            Console.WriteLine(context.Cars);
             return View();
         }
 
-        // Post: Car/InviteCoOwner/id/mail
+        // Post: /Home/NewChat
         [HttpPost]
-        public ActionResult NewMessage(NewMessage msg)
+        public ActionResult NewChat(NewChat newChat)
         {
             try
             {
                 string userId = User.Identity.GetUserId();
-                string carId = context.Cars.FirstOrDefault(c => c.Plate == msg.carPlate && c.CountryCode == msg.carCountryCode)?.Id;
 
+                string carId = context.Cars.FirstOrDefault(c => c.Plate == newChat.carPlate && c.CountryCode == newChat.carCountryCode)?.Id;
                 if (carId == null)
                 {
-                    ViewBag["WarningMsgs"] = new List<string> { "We coudn't find that car" };
-                    return View(msg);
+                    ViewData["WarningMsgs"] = new List<string> { "We coudn't find that car" };
+                    return View(newChat);
                 }
+
+                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId); // && c.userId == userId);
+                if (chat != null)
+                {
+                    ViewData["WarningMsgs"] = new List<string> { "This chat already exists. If you cannot find it, please contact us for technical support!" };
+                    return View(newChat);
+                }
+
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
-                if (owner?.Category == "Invited")
+                if (owner?.Category == "Owner")
                 {
-                    ViewBag["WarningMsgs"] = new List<string> { "You are already invited to CoOwn that car", "Please accept the inviation to be automatically added to the car private group", "Or you can decline the invitation to be able to start a new conversation with the car Owners"};
-                    return View(msg);
-                } else if (owner?.Category == "Requested")
+                    ViewData["WarningMsgs"] = new List<string> { "You are the Owner of the car. If you cannot find your car chat, please contact us for technical support!" };
+                    return View(newChat);
+                } else if (owner?.Category == "CoOwner")
                 {
-                    ViewBag["WarningMsgs"] = new List<string> { "You are already send a request to CoOwn that car", "Please wait to be accepted so that you will be automatically added to the car private group", "Or you can remove the request to be able to start a new conversation with the car Owners" };
-                    return View(msg);
-                }
+                    ViewData["WarningMsgs"] = new List<string> { "You are the CoOwner of the car. If you cannot find your car chat, please contact us for technical support!" };
+                    return View(newChat);
+                } else
+                {
+                    /*ViewBag["DangerMsgs"] = new List<string> { "Your relationship with that car is Unknown. Please contact us for technical support!" };
+                    return View(msg);*/
 
-                if (owner == null)
-                {
-                    owner = new OwnerModel(userId, carId, "Conversation", DateTime.Now.AddDays(2));
-                    context.Owners.Add(owner);
-                    //context.Messages.Add(new Message(User.Identity.GetUserName(), User.Identity.GetNickname(), msg.carCountryCode, msg.carCountryCode, User.Identity.GetNickname(), false, "*Joined the group*"));
+                    context.Chats.Add(new Chat(userId, carId));
                     context.SaveChanges();
-                } 
-                else if (owner.Category == "Owner")
-                {
-
-                } 
-                else if (owner.Category == "CoOwner")
-                {
-
-                } 
-                else
-                {
-                    ViewBag["DangerMsgs"] = new List<string> { "Your relationship with that car is Unknown. Please contact us for technical support!" };
-                    return View(msg);
                 }
                 
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception e)
             {
-                TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                ViewData["DangerMsgs"] = new List<string> { e.Message };
+                return View(newChat);
             }
         }
 

@@ -4,6 +4,7 @@ using System.Web;
 using CarMessenger.Models;
 using Microsoft.AspNet.SignalR;
 using System.Text.Json;
+using Microsoft.AspNet.Identity;
 
 namespace CarMessenger
 {
@@ -20,26 +21,40 @@ namespace CarMessenger
             // Call the broadcastMessage method to update clients.
             Clients.All.broadcastMessage(name, message);
         }
-        private string CarGroup (string carPlate, string carCountryCode)
+        //private string CarGroup (string carPlate, string carCountryCode)
+        //{
+        //    return carPlate + "_" + carCountryCode;
+        //}
+        //public void JoinCar (string carPlate, string carCountryCode)
+
+        //{
+        //    Groups.Add(Context.ConnectionId, CarGroup(carPlate, carCountryCode));
+        //}
+        //public void JoinCars (List<(string plate, string countryCode)> cars)
+        //{
+        //    foreach (var car in cars)
+        //    {
+        //        JoinCar(car.plate, car.countryCode);
+        //    }
+        //}
+
+        public void JoinChat(string chatId)
         {
-            return carPlate + "_" + carCountryCode;
+            Groups.Add(Context.ConnectionId, chatId);
         }
-        public void JoinCar (string carPlate, string carCountryCode)
+        public void JoinChats(List<string> chatIdList)
         {
-            Groups.Add(Context.ConnectionId, CarGroup(carPlate, carCountryCode));
-        }
-        public void JoinCars (List<(string plate, string countryCode)> cars)
-        {
-            foreach (var car in cars)
+            foreach (var chatId in chatIdList)
             {
-                JoinCar(car.plate, car.countryCode);
+                JoinChat(chatId);
             }
         }
-        public void MessageCar(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
+
+        public void MessageChat(string chatId, string userId, string nickname, string content)
         {
-            Message msg = new Message(null, senderNickname, carPlate, carCountryCode, personNickname, owning, content);
-            Clients.OthersInGroup(CarGroup(carPlate, carCountryCode)).addMessage(JsonSerializer.Serialize(msg));
-            msg.senderEmail = senderEmail;
+            
+            Message msg = new Message(chatId, userId, content);
+            Clients.OthersInGroup(chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
             context.Messages.Add(msg);
             context.SaveChanges();
         }

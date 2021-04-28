@@ -7,7 +7,7 @@ using System.Web;
 
 namespace CarMessenger.Models
 {
-    public class OwnerModel
+    public class OwnerModel // Owners
     {
 
         [Key]

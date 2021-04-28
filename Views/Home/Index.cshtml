@@ -8,7 +8,7 @@
         </ul>
     </div>*@
 @{
-    var carsMessages = ViewBag.carsMessages as List<KeyValuePair<(bool owning, string plate, string code), List<Message>>>;
+    var chats = ViewBag.chats as List<KeyValuePair<(string chatId, bool owning, string plate, string code), List<SentMessage>>>;
 }
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -26,17 +26,17 @@
                             </div>
                         </div>
                     </div>*@
-                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewMessage")</button>
+                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewChat")</button>
                 <div id="heads_box" class="card-body contacts_body" style="overflow-y: scroll; height:400px;">
                     @{
                         var cnt_h = 0;
-                        foreach (var carMessages in carsMessages)
+                        foreach (var chat in chats)
                         {
-                            var personNickname = carMessages.Value.Count > 0 ? carMessages.Value[0].personNickname : null;
-                            <div id="h_@cnt_h" class="contacts_card chat_head @carMessages.Key.code @carMessages.Key.plate @(carMessages.Key.owning == true ? "Owned" : "")"
-                                    style="border: 1px solid; border-color: black" onclick="select_head('@cnt_h');">
-                                (<text class="carCode">@carMessages.Key.code</text>) <strong class="carPlate">@carMessages.Key.plate</strong>
-                                @if (carMessages.Key.owning)
+                            var personNickname = chat.Value.Count > 0 ? chat.Value[0].nickname : null;
+                             <div id="h_@chat.Key.chatId" class="contacts_card chat_head h_@cnt_h @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
+                                    style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
+                                (<text class="carCode">@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
+                                @if (chat.Key.owning)
                                 {
                                     if (personNickname != null)
                                     {
@@ -66,30 +66,30 @@
                 </div>
                 @{
                     var cnt_b = 0;
-                    foreach (var carMessages in carsMessages)
+                    foreach (var chat in chats)
                     {
-                        <div id="b_@cnt_b" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">
-                            @if(carMessages.Value.Count > 0)
+                        <div id="b_@chat.Key.chatId" class="card-body msg_card_body contact_body chat_body b_@cnt_b" style="overflow-y: scroll; height:400px;">
+                            @if(chat.Value.Count > 0)
                             {
-                                Message msg;
-                                for(var i = carMessages.Value.Count - 1; i >= 0; --i)
+                                SentMessage msg;
+                                for(var i = chat.Value.Count - 1; i >= 0; --i)
                                 {
-                                    msg = carMessages.Value[i];
+                                    msg = chat.Value[i];
                                     <div class="messege">
-                                        @if ((msg.senderEmail ?? "") == "")
-                                        {
-                                            <strong>Anonymus</strong>
-                                        }
-                                        else if (msg.senderEmail == User.Identity.GetUserName())
+                                        @if (msg.owned)
                                         {
                                             <strong>You</strong>
                                         }
+                                        else if ((msg.nickname ?? "") == "")
+                                        {
+                                            <strong>Anonymus</strong>
+                                        }
                                         else
                                         {
-                                            <strong> @msg.senderNickname </strong>
-                                            if (carMessages.Key.owning)
+                                            <strong> @msg.nickname </strong>
+                                            if (!chat.Key.owning)
                                             {
-                                                <text>@msg.carCountryCode-@msg.carPlate</text>
+                                                <text> (@chat.Key.code-@chat.Key.plate)</text>
                                             }
                                         }
                                         <text>: @msg.content</text>
@@ -125,12 +125,6 @@
 <script src="~/signalr/hubs"></script>
 <!--Add script to update the page and send messages.-->
 <script type="text/javascript">
-    var registeredCars;
-
-    function regiterCar(id=0, plate="", code="") {
-        console.log(plate + " " + code + " " + id);
-    }
-
     var _selectedChatId = undefined;
 
     function getCarPlate(headId) {
@@ -195,21 +189,17 @@
         };
         chat.client.addMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
-            // console.log(msg);
-            var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
-            addMessage(id, msg.senderNickname, msg.content);
+            //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
+            addMessage(msg.chatId, msg.nickname, msg.content);
         }
 
-        var email = "@User.Identity.GetUserName()";
+        var userId = "@User.Identity.GetUserId()";
         var nickname = "@User.GetClaimValue("Nickname")";
-
 
         // Start the connection.
         $.connection.hub.start().done(function () {
             $('#heads_box .chat_head').each((index, el) => {
-                var carPlate = getCarPlate(el.id);
-                var carCode = getCarCode(el.id);
-                chat.server.joinCar(carPlate, carCode);
+                chat.server.joinChat(el.id?.substring(2));
             });
 
             $('#messageInput').val('').focus();
@@ -220,12 +210,14 @@
                     return;
                 }
                 //chat.server.send(nickname, $('#messageInput').val());
-
                 var id = "h_" + _selectedChatId;
                 var owned = getOwned(id)
                 addMessage(_selectedChatId, "You", getContent());
                 $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
-                chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
+
+                //chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
+                console.log(_selectedChatId, userId, nickname, getContent())
+                chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
             });
         });
