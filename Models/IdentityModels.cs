@@ -28,6 +28,9 @@ namespace CarMessenger.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        private static ApplicationDbContext AppBdContextEntity = new ApplicationDbContext();
+
+        public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<CarModel> Cars { get; set; }
         public DbSet<OwnerModel> Owners { get; set; }
@@ -35,6 +38,11 @@ namespace CarMessenger.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+        }
+
+        public static ApplicationDbContext GetApplicationDbContext()
+        {
+            return AppBdContextEntity;
         }
 
         public static ApplicationDbContext Create()

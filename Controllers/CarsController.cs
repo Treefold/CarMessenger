@@ -5,24 +5,24 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
+using CarMessenger.Hubs;
 
 namespace CarMessenger.Controllers
 {
     [Authorize]
     public class CarsController : Controller
     {
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
 
         public CarsController()
         {
-            context = new ApplicationDbContext();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            context.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    context.Dispose();
+        //    base.Dispose(disposing);
+        //}
 
         // GET: Car
         [HttpGet]
@@ -179,6 +179,7 @@ namespace CarMessenger.Controllers
                     {
                         context.Cars.Add(car);
                         context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
+                        context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
                         context.SaveChanges();
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("../Manage");
@@ -256,7 +257,9 @@ namespace CarMessenger.Controllers
                 return Redirect("../../Manage");
             }
 
-            var car = context.Cars.Find(id);
+            CarModel car = context.Cars.Find(id);
+            string plate = car.Plate;
+            string code = car.CountryCode;
             if (car == null)
             {
                 TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
@@ -275,6 +278,9 @@ namespace CarMessenger.Controllers
                     if (TryUpdateModel(car))
                     {
                         context.SaveChanges();
+                        if (car.Plate != plate || car.CountryCode != code)
+                            context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                                .ForEach((chat) => ChatHub.UpdateCarChat(chat, car.Plate, car.CountryCode));
                         TempData["SuccessMsgs"] = new List<string> { "Car Updated" };
                         return RedirectToAction("Details/" + id);
                     }
@@ -649,7 +655,7 @@ namespace CarMessenger.Controllers
                 }
                 else
                 {
-                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
+                    // context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
 
                     var car = context.Cars.Find(id);
                     if (car == null)
@@ -658,6 +664,9 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
+                        context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                            .ForEach((chat) => ChatHub.DeleteChat(chat));
+
                         context.Cars.Remove(car);
                     }
                 } 

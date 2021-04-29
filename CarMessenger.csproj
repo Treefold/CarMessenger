@@ -399,13 +399,30 @@
     <Compile Include="Migrations\202103231947500_CreateChatMessages.Designer.cs">
       <DependentUpon>202103231947500_CreateChatMessages.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103241026024_NewMessage.cs" />
+    <Compile Include="Migrations\202103241026024_NewMessage.Designer.cs">
+      <DependentUpon>202103241026024_NewMessage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103241029350_NewChat.cs" />
+    <Compile Include="Migrations\202103241029350_NewChat.Designer.cs">
+      <DependentUpon>202103241029350_NewChat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202103241115599_Chas.cs" />
+    <Compile Include="Migrations\202103241115599_Chas.Designer.cs">
+      <DependentUpon>202103241115599_Chas.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202104281202041_chatdates.cs" />
+    <Compile Include="Migrations\202104281202041_chatdates.Designer.cs">
+      <DependentUpon>202104281202041_chatdates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\CarModel.cs" />
+    <Compile Include="Models\Chat.cs" />
     <Compile Include="Models\IdentityExtensions.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="ChatHub.cs" />
+    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\OwnerModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -588,12 +605,9 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
-    <Content Include="Views\Home\NewMessage.cshtml" />
+    <Content Include="Views\Home\NewChat.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hubs\" />
-    <Folder Include="Views\Car\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
@@ -609,6 +623,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103231947500_CreateChatMessages.resx">
       <DependentUpon>202103231947500_CreateChatMessages.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103241026024_NewMessage.resx">
+      <DependentUpon>202103241026024_NewMessage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103241029350_NewChat.resx">
+      <DependentUpon>202103241029350_NewChat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103241115599_Chas.resx">
+      <DependentUpon>202103241115599_Chas.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202104281202041_chatdates.resx">
+      <DependentUpon>202104281202041_chatdates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
