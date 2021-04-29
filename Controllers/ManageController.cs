@@ -17,12 +17,11 @@ namespace CarMessenger.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
 
 
         public ManageController()
         {
-            context = new ApplicationDbContext();
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -284,6 +283,8 @@ namespace CarMessenger.Controllers
             if (userApp.Nickname == model.Nickname)
                 return RedirectToAction("Index", "Manage");//RedirectToAction("Index", "Home");
 
+            context = ApplicationDbContext.GetApplicationDbContext();
+
             userApp.Nickname = model.Nickname;
 
             await UserManager.UpdateAsync(userApp);
@@ -421,7 +422,11 @@ namespace CarMessenger.Controllers
                 _userManager = null;
             }
 
-            context.Dispose();
+            //if (disposing && context != null)
+            //{
+            //    context.Dispose();
+            //    context = null;
+            //}
 
             base.Dispose(disposing);
         }

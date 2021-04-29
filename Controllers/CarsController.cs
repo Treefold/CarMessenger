@@ -12,18 +12,17 @@ namespace CarMessenger.Controllers
     [Authorize]
     public class CarsController : Controller
     {
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
 
         public CarsController()
         {
-            context = new ApplicationDbContext();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            context.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    context.Dispose();
+        //    base.Dispose(disposing);
+        //}
 
         // GET: Car
         [HttpGet]

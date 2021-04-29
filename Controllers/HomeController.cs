@@ -13,11 +13,10 @@ namespace CarMessenger.Controllers
 {
     public class HomeController : Controller
     {
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
 
         public HomeController()
         {
-            context = new ApplicationDbContext();
         }
 
         private static (string Plate, string CountryCode) CarTuple (CarModel car)

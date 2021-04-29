@@ -4,20 +4,21 @@ using System.Web;
 using CarMessenger.Models;
 using Microsoft.AspNet.SignalR;
 using System.Text.Json;
+using System.Linq;
 using Microsoft.AspNet.Identity;
 
 namespace CarMessenger.Hubs
 {
     public class ChatHub : Hub
     {
-        private static ApplicationDbContext context = null;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
         private static string chatGroupPrefix = "Chat_";
         private static ChatHub chatHub = null;
 
         public ChatHub()
         {
-            if (context == null)
-                context = new ApplicationDbContext();
+            //if (context == null)
+            //    context = ApplicationDbContext.GetApplicationDbContext();
 
             if (chatHub == null)
                 chatHub = this;
@@ -47,9 +48,10 @@ namespace CarMessenger.Hubs
             if (user == null) return;
             nickname = user.Nickname;
             Message msg = new Message(chatId, userId, content);
-            Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
             context.Messages.Add(msg);
             context.SaveChanges();
+
+            Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
         }
 
         public static void DeleteChat(string chatId)
