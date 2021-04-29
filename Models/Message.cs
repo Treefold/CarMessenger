@@ -27,6 +27,10 @@ namespace CarMessenger.Models
         [Required]
         public DateTime expiry { get; private set; } = DateTime.Now.AddDays(2);
 
+        public Message()
+        {
+        }
+
         public Message(string chatId, string userId, string content)
         {
             this.chatId = chatId;

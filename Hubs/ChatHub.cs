@@ -43,6 +43,9 @@ namespace CarMessenger.Hubs
 
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
+            ApplicationUser user = context.Users.Find(userId);
+            if (user == null) return;
+            nickname = user.Nickname;
             Message msg = new Message(chatId, userId, content);
             Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
             context.Messages.Add(msg);
@@ -65,6 +68,11 @@ namespace CarMessenger.Hubs
         {
             if (chatHub != null)
                 chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
+        }
+        public static void UpdateNickMsg(string chatId, string nick, List<string> msgs)
+        {
+            if (chatHub != null)
+                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickMsg(chatId, nick, msgs);
         }
     }
 }

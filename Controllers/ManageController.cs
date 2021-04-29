@@ -298,6 +298,15 @@ namespace CarMessenger.Controllers
             context.Chats.Where(c => c.userId == userID).Select(c => c.Id).ToList()
                             .ForEach((chat) => ChatHub.UpdateNickChat(chat, model.Nickname));
 
+            //var userCars = context.Owners.Where(o => o.UserId == userID && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId).ToList();
+            //context.Chats.Where(c => c.userId == userID || userCars.Contains(c.carId)).ToList()
+            //                .ForEach((chat) => ChatHub.UpdateNickChat(chat.Id, model.Nickname));
+
+            var msgsGroup = context.Messages.Where(m => m.userId == userID).GroupBy(m => m.chatId);
+            
+            msgsGroup.Select(g => new {chatId = g.Key, msgs = g.Select(m => m.Id).ToList() }).ToList()
+                .ForEach((chat) => ChatHub.UpdateNickMsg(chat.chatId, model.Nickname, chat.msgs));
+
             //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             return RedirectToAction("Index","Manage");//RedirectToAction("Index", "Home");
         }

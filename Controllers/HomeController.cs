@@ -78,6 +78,7 @@ namespace CarMessenger.Controllers
                             user => user.Id,
                             (msg, user) => new SentMessage // (msg, user.Nickname)
                             {
+                                Id = msg.Id,
                                 chatId = msg.chatId,
                                 content = msg.content,
                                 sendTime = msg.sendTime,

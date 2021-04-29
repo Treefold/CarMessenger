@@ -86,7 +86,7 @@
                                         }
                                         else
                                         {
-                                            <strong> @msg.nickname </strong>
+                                            <strong class="nickname"> @msg.nickname </strong>
                                             if (!chat.Key.owning)
                                             {
                                                 <text> (<text class="carCode">@chat.Key.code</text>-<text class="carPlate">@chat.Key.plate</text>)</text>
@@ -166,7 +166,7 @@
         $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
     }
 
-    function addMessage(chatId, nickname, msg) {
+    function addMessage(chatId, msgId, nickname, msg) {
         // move chat head
         var el = $("#h_" + chatId);
         $("#h_" + chatId).remove();
@@ -177,7 +177,7 @@
         //var name_ = $("strong").innerHTML = "You";
         //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
         //msg_.append(name_);
-        $("#b_" + chatId).append('<div class="messege"><strong>' + nickname + '</strong><text> : ' + msg + '</text></div>');
+        $("#b_" + chatId).append('<div class="messege"><strong id="m_' + msgId + '">' + nickname + '</strong><text> : ' + msg + '</text></div>');
     }
 
     $(document).ready(function () {
@@ -190,7 +190,7 @@
         chat.client.addMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
-            addMessage(msg.chatId, msg.nickname, msg.content);
+            addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
         chat.client.DeleteChat = function (chatId) {
             var chatH = $("#h_" + chatId)[0];
@@ -220,10 +220,21 @@
             $("#b_" + chatId + " .carCode").each((ind, el) => el.innerHTML = code);
         };
         chat.client.UpdateNickChat = function (chatId, nick) {
-            $("#h_" + chatId + " .nickname")[0].innerHTML = nick;
+            var els = $("#h_" + chatId + " .nickname")
+            if (els.length > 0)
+                els[0].innerHTML = nick;
         };
-        chat.client.UpdateNickMsg = function (chatId, msgList) {
-            console.log(msgList);
+        chat.client.UpdateNickMsg = function (chatId, nick, msgIdList) {
+            //for (var idx in msgIdList) {
+            //    var els = $("#b_" + chatId + " #m_" + msgIdList[idx] + " .nickname")
+            //    if (els.length > 0)
+            //        els[0].innerHTML = nick;
+            //}
+            msgIdList.forEach((msgId) => {
+                var els = $("#b_" + chatId + " #m_" + msgId + " .nickname")
+                if (els.length > 0)
+                    els[0].innerHTML = nick;
+            });
         };
 
         var userId = "@User.Identity.GetUserId()";
@@ -245,7 +256,7 @@
                 //chat.server.send(nickname, $('#messageInput').val());
                 var id = "h_" + _selectedChatId;
                 var owned = getOwned(id)
-                addMessage(_selectedChatId, "You", getContent());
+                addMessage(_selectedChatId, "", "You", getContent());
                 $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
                 //chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
