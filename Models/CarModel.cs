@@ -74,6 +74,11 @@ namespace CarMessenger.Models
         [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
         public string Color { get; set; }
 
+        //[Required]
+        [StringLength(128)]
+        //[Index(IsUnique = true)]
+        public string chatInviteToken { get; private set; } = Guid.NewGuid().ToString().ToUpper();
+
         public CarModel(string plate, string countryCode, string modelName, string color)
         {
             Plate       = plate       ?? throw new ArgumentNullException(nameof(plate));
@@ -88,6 +93,11 @@ namespace CarMessenger.Models
             CountryCode = "Unknown";
             ModelName   = "Unknown";
             Color       = "Unknown";
+        }
+
+        public void generateNewChatInviteToken()
+        {
+            this.chatInviteToken = Guid.NewGuid().ToString().ToUpper();
         }
     }
 }

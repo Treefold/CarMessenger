@@ -95,6 +95,15 @@ namespace CarMessenger.Controllers
                     context.SaveChanges();
                 }
 
+                if (TempData["DangerMsgs"] != null)
+                    ViewBag.DangerMsgs = (List<string>)TempData["DangerMsgs"];
+                if (TempData["WarningMsgs"] != null)
+                    ViewBag.WarningMsgs = (List<string>)TempData["WarningMsgs"];
+                if (TempData["SuccessMsgs"] != null)
+                    ViewBag.SuccessMsgs = (List<string>)TempData["SuccessMsgs"];
+                if (TempData["InfoMsgs"] != null)
+                    ViewBag.InfoMsgs = (List<string>)TempData["InfoMsgs"];
+
                 ViewBag.chats = chats.OrderByDescending(d => d.Value.Count > 0 ? d.Value[0].sendTime : d.Key.createTime).ToList();
                 return View();
             }
@@ -109,7 +118,6 @@ namespace CarMessenger.Controllers
         [Authorize]
         public ActionResult NewChat ()
         {
-            Console.WriteLine(context.Cars);
             return View();
         }
 
@@ -118,11 +126,12 @@ namespace CarMessenger.Controllers
         [Authorize]
         public ActionResult NewChat(NewChat newChat)
         {
+
+            string carId = context.Cars.FirstOrDefault(c => c.Plate == newChat.carPlate && c.CountryCode == newChat.carCountryCode)?.Id;
             try
             {
                 string userId = User.Identity.GetUserId();
 
-                string carId = context.Cars.FirstOrDefault(c => c.Plate == newChat.carPlate && c.CountryCode == newChat.carCountryCode)?.Id;
                 if (carId == null)
                 {
                     ViewData["WarningMsgs"] = new List<string> { "We coudn't find that car" };
@@ -160,6 +169,58 @@ namespace CarMessenger.Controllers
             {
                 ViewData["DangerMsgs"] = new List<string> { e.Message };
                 return View(newChat);
+            }
+        }
+
+        // GET: /Home/NewChatInvite/token
+        [HttpGet]
+        [Authorize]
+        public ActionResult NewChatInvite (string token)
+        {
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                string carId = context.Cars.FirstOrDefault(c => c.chatInviteToken == token)?.Id;
+
+                if (carId == null)
+                {
+                    TempData["WarningMsgs"] = new List<string> { "We coudn't find that invitation. It might heve been changed." };
+                    return RedirectToAction("Index", "Home");
+                }
+
+                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId && c.userId == userId); // && c.userId == userId);
+                if (chat != null)
+                {
+                    TempData["WarningMsgs"] = new List<string> { "This chat already exists. If you cannot find it, please contact us for technical support!" };
+                    return RedirectToAction("Index", "Home");
+                }
+
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
+                if (owner?.Category == "Owner")
+                {
+                    TempData["WarningMsgs"] = new List<string> { "You are the Owner of the car. If you cannot find your car chat, please contact us for technical support!" };
+                    return RedirectToAction("Index", "Home");
+                }
+                else if (owner?.Category == "CoOwner")
+                {
+                    TempData["WarningMsgs"] = new List<string> { "You are the CoOwner of the car. If you cannot find your car chat, please contact us for technical support!" };
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    /*ViewBag["DangerMsgs"] = new List<string> { "Your relationship with that car is Unknown. Please contact us for technical support!" };
+                    return View(msg);*/
+
+                    context.Chats.Add(new Chat(userId, carId));
+                    context.SaveChanges();
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception e)
+            {
+                TempData["DangerMsgs"] = new List<string> { e.Message };
+                return RedirectToAction("Index", "Home");
             }
         }
 
