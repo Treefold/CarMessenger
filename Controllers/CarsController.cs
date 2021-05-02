@@ -6,6 +6,7 @@ using System;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
 using CarMessenger.Hubs;
+using System.Threading.Tasks;
 
 namespace CarMessenger.Controllers
 {
@@ -198,14 +199,14 @@ namespace CarMessenger.Controllers
             }
 
             ViewBag.ChatToken = car.chatInviteToken;
-            ViewBag.ChatLink = "https://192.168.42.249:45455/Home/NewChatInvite/?token=" + car.chatInviteToken;
+            ViewBag.ChatLink = car.chatInviteLink;
 
             return View(car);
         }
 
         // GET: Car/NewChatInvite/id/token
         [HttpGet]
-        public ActionResult NewChatInvite(string id, string token)
+        public async Task<ActionResult> NewChatInvite(string id, string token)
         {
             if (id == null)
             {
@@ -230,7 +231,7 @@ namespace CarMessenger.Controllers
 
             if (car.chatInviteToken == token)
             {
-                car.generateNewChatInviteToken();
+                await car.GenerateNewChatInviteToken();
                 context.SaveChanges();
                 TempData["SuccessMsgs"] = new List<string> { "Chat Invite Changed" };
             }
@@ -253,7 +254,7 @@ namespace CarMessenger.Controllers
 
         // POST: Car/Create
         [HttpPost]
-        public ActionResult Create(CarModel car)
+        public async Task<ActionResult> Create(CarModel car)
         {
             try
             {
@@ -263,6 +264,7 @@ namespace CarMessenger.Controllers
                     if (existingCar == null)
                     {
                         context.Cars.Add(car);
+                        await car.UpdateChatInviteLinkAsync();
                         context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
                         context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
                         context.SaveChanges();
