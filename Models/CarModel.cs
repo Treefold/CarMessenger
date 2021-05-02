@@ -4,6 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+using System.Text;
+using RestSharp;
+using Newtonsoft.Json;
 
 namespace CarMessenger.Models
 {
@@ -54,6 +60,8 @@ namespace CarMessenger.Models
 
     public class CarModel
     {
+        private static readonly RestClient client;
+
         [Key]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
@@ -74,20 +82,82 @@ namespace CarMessenger.Models
         [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
         public string Color { get; set; }
 
-        public CarModel(string plate, string countryCode, string modelName, string color)
+        [Required]
+        [StringLength(64)]
+        [Index(IsUnique = true)]
+        public string chatInviteToken { get; private set; } = Guid.NewGuid().ToString().ToUpper();
+
+        [Required]
+        [StringLength(128)]
+        [Index(IsUnique = true)]
+        public string chatInviteLink { get; private set; }
+
+        static CarModel()
         {
-            Plate       = plate       ?? throw new ArgumentNullException(nameof(plate));
-            CountryCode = countryCode ?? throw new ArgumentNullException(nameof(countryCode));
-            ModelName   = modelName   ?? throw new ArgumentNullException(nameof(modelName));
-            Color       = color;
+            client = new RestClient("https://api-ssl.bitly.com/v4/shorten") {Timeout = -1};
+        }
+
+        public CarModel(string plate, string countryCode, string modelName, string color, bool shorten = false)
+        {
+            this.Plate       = plate       ?? throw new ArgumentNullException(nameof(plate));
+            this.CountryCode = countryCode ?? throw new ArgumentNullException(nameof(countryCode));
+            this.ModelName   = modelName   ?? throw new ArgumentNullException(nameof(modelName));
+            this.Color       = color;
+            this.UpdateChatInviteLinkSync();
         }
 
         public CarModel()
+        { 
+            this.Plate          = "Unknown";
+            this.CountryCode    = "Unknown";
+            this.ModelName      = "Unknown";
+            this.Color          = "Unknown";
+            this.UpdateChatInviteLinkSync();
+        }
+
+        public async Task<bool> GenerateNewChatInviteToken(bool shorten = true)
         {
-            Plate       = "Unknown";
-            CountryCode = "Unknown";
-            ModelName   = "Unknown";
-            Color       = "Unknown";
+            this.chatInviteToken = Guid.NewGuid().ToString().ToUpper();
+            return await UpdateChatInviteLinkAsync(shorten);
+        }
+
+        public bool UpdateChatInviteLinkSync()
+        {
+            if (this.chatInviteToken == null) return false;
+
+            this.chatInviteLink = "https://192.168.42.249:45455/Home/NewChatInvite/?token=" + chatInviteToken;
+
+            return true;
+        }
+
+        public async Task<bool> UpdateChatInviteLinkAsync(bool shorten = false)
+        {
+            if (this.chatInviteToken == null) return false;
+            this.chatInviteLink = null;
+
+            if (shorten)
+            {
+                var request = new RestRequest(Method.POST);
+                request.AddHeader("Authorization", "4a9a89cf2fb309371f4e8a4604b1763e18d18f87");
+                request.AddHeader("Content-Type", "application/json");
+                request.AddParameter(
+                    "application/json", 
+                    "{\r\n  \"long_url\": \"https://192.168.42.249:45455/Home/NewChatInvite/?token="+ this.chatInviteToken + "\"\r\n}",
+                    ParameterType.RequestBody
+                );
+                IRestResponse response = await client.ExecuteAsync(request);
+
+                if (response != null && response.IsSuccessful)
+                {
+                    dynamic json = JsonConvert.DeserializeObject(response.Content);
+                    this.chatInviteLink = json["link"];
+                }
+            }
+
+            if (this.chatInviteLink == null)
+                this.chatInviteLink = "https://192.168.42.249:45455/Home/NewChatInvite/?token=" + chatInviteToken;
+
+            return true;
         }
     }
 }

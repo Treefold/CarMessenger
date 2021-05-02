@@ -6,6 +6,7 @@ using System;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
 using CarMessenger.Hubs;
+using System.Threading.Tasks;
 
 namespace CarMessenger.Controllers
 {
@@ -34,7 +35,7 @@ namespace CarMessenger.Controllers
             return View();
         }
 
-        // GET: Car/Details/
+        // GET: Car/Details/id
         [HttpGet]
         public ActionResult Details(string id)
         {
@@ -53,7 +54,7 @@ namespace CarMessenger.Controllers
                 TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
                 return Redirect("../../Manage");
             }
-            
+
             if (owner != null && owner.Category == "Owner")
             {
                 ViewBag.Owned = true;
@@ -159,6 +160,91 @@ namespace CarMessenger.Controllers
             return View(car);
         }
 
+        // GET: Car/ChatInvite/id
+        [HttpGet]
+        public ActionResult ChatInvite(string id)
+        {
+            if (id == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
+                return Redirect("../Manage");
+            }
+
+            CarModel car = null;
+            if (TempData["Car"] != null && ((CarModel)TempData["Car"]).Id == id)
+            {
+                car = (CarModel)TempData["Car"];
+                if (TempData["SuccessMsgs"] != null)
+                    ViewBag.SuccessMsgs = (List<string>) TempData["SuccessMsgs"];
+                if (TempData["WarningMsgs"] != null)
+                    ViewBag.WarningMsgs = (List<string>) TempData["WarningMsgs"];
+            }
+            else
+            {
+                string userId = User.Identity.GetUserId();
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+                if (owner == null && !User.IsInRole("Admin"))
+                {
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                    return Redirect("../Manage");
+                }
+
+                car = context.Cars.Find(id);
+                if (car == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                    return Redirect("../Manage");
+                }
+            }
+
+            ViewBag.ChatToken = car.chatInviteToken;
+            ViewBag.ChatLink = car.chatInviteLink;
+
+            return View(car);
+        }
+
+        // GET: Car/NewChatInvite/id/token
+        [HttpGet]
+        public async Task<ActionResult> NewChatInvite(string id, string token)
+        {
+            if (id == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
+                return Redirect("../Manage");
+            }
+            string userId = User.Identity.GetUserId();
+            OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+            if (owner == null && !User.IsInRole("Admin"))
+            {
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return Redirect("../Manage");
+            }
+
+            var car = context.Cars.Find(id);
+            if (car == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                return Redirect("../Manage");
+            }
+
+            if (car.chatInviteToken == token)
+            {
+                await car.GenerateNewChatInviteToken();
+                context.SaveChanges();
+                TempData["SuccessMsgs"] = new List<string> { "Chat Invite Changed" };
+            }
+            else
+            {
+                TempData["WarningMsg"] = new List<string> { "The Chat Invite was changed by somebody else" };
+            }
+
+            TempData["Car"] = car;
+
+            return RedirectToAction("ChatInvite", new { id = car.Id });
+        }
+
         // GET: Car/Create
         [HttpGet]
         public ActionResult Create()
@@ -168,7 +254,7 @@ namespace CarMessenger.Controllers
 
         // POST: Car/Create
         [HttpPost]
-        public ActionResult Create(CarModel car)
+        public async Task<ActionResult> Create(CarModel car)
         {
             try
             {
@@ -178,6 +264,7 @@ namespace CarMessenger.Controllers
                     if (existingCar == null)
                     {
                         context.Cars.Add(car);
+                        await car.UpdateChatInviteLinkAsync();
                         context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
                         context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
                         context.SaveChanges();

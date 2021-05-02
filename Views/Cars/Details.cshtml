@@ -4,7 +4,12 @@
     ViewBag.Title = "Details";
 }
 
-<h2>Car Details</h2>
+<div>
+    <h2 style="display: inline-block;">Car Details</h2>
+    &nbsp;&nbsp;&nbsp;
+    <button class="btn btn-info" style="vertical-align: top;">@Html.ActionLink("See Chat Invite", "ChatInvite", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+</div>
+
 
 <div>
     <hr />
@@ -77,16 +82,16 @@
                                 </li>
                             }
                         }
-                    <li>
-                        @if(ViewBag.Owned || User.IsInRole("Admin"))
-                        {
-                            <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
-                        }
-                        else
-                        {
-                            <text>None</text>
-                        }
-                    </li>
+                        <li>
+                            @if (ViewBag.Owned || User.IsInRole("Admin"))
+                            {
+                                <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
+                            }
+                            else
+                            {
+                                <text>None</text>
+                            }
+                        </li>
                     </ul>
                 </dd>
 
@@ -140,6 +145,6 @@
         </span>
     }
     <span>
-        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned^User.IsInRole("Admin") ? "Delete":"Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned ^ User.IsInRole("Admin") ? "Delete" : "Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
     </span>
 </div>
