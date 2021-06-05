@@ -41,13 +41,11 @@ namespace CarMessenger.Migrations
             }
 
             // TestUsers and their cars Seed
-            ApplicationUser user;
-            CarModel car;
-
-            for (int i=1; i <= 3; ++i)
+            const int N = 3;
+            ApplicationUser user = null;
+            for (int i = 1; i <= N; ++i)
             {
-                user = context.Users.First(u => u.Email == "test" + i.ToString() + "@gmail.com");
-                if (user == null)
+                if (!context.Users.Any(u => u.Email == "test" + i.ToString() + "@gmail.com"))
                 {
                     user = new ApplicationUser
                     {
@@ -57,6 +55,12 @@ namespace CarMessenger.Migrations
                     };
                     userManager.CreateAsync(user, "Ttest" + i.ToString() + ".").Wait();
                 }
+            }
+
+            CarModel car = null;
+            for (int i=1; i <= N; ++i)
+            {
+                user = context.Users.First(u => u.Email == "test" + i.ToString() + "@gmail.com");
 
                 car = new CarModel
                 {
