@@ -63,23 +63,28 @@ namespace CarMessenger.Models
         private static readonly RestClient client;
 
         [Key]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
         [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [Index("UniquePlateNumber", 1, IsUnique = true)]
+        [StringLength(19, ErrorMessage = "CarPlate excedeed length limit")]
         public string Plate { get; set; }
 
         [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
         [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
         [Index("UniquePlateNumber", 2, IsUnique = true)]
+        [StringLength(3, ErrorMessage = "Car CountryCode excedeed length limit")]
         public string CountryCode { get; set; }
 
         [Required]
         [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
+        [StringLength(20, ErrorMessage = "Car ModelName excedeed length limit")]
         public string ModelName { get; set; }
 
         [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
+        [StringLength(20, ErrorMessage = "Car Color excedeed length limit")]
         public string Color { get; set; }
 
         [Required]

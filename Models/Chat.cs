@@ -10,14 +10,17 @@ namespace CarMessenger.Models
     public class Chat
     {
         [Key]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
         // [Required] // when null it is the car private group
         [Index("UniqueChat", 2, IsUnique = true)]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string userId { get; set; }
 
         [Required]
         [Index("UniqueChat", 1, IsUnique = true)]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string carId { get; set; }
 
         public DateTime createTime { get; set; } = DateTime.Now;
