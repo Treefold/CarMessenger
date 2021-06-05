@@ -10,15 +10,19 @@ namespace CarMessenger.Models
     public class Message
     {
         [Key]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
         [Required]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string chatId { get; set; }
 
         [Required]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string userId { get; set; }
 
         [Required]
+        [StringLength(500, ErrorMessage = "Message content excedeed length limit")]
         public string content { get; set; }
 
         [Required]

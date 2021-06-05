@@ -23,6 +23,7 @@ namespace CarMessenger.Models
 
         [Required]
         [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
+        [StringLength(30, ErrorMessage = "User Nickname excedeed length limit")]
         public string Nickname { get; set; }
     }
 
