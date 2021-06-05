@@ -1,0 +1,58 @@
+﻿@model  CarMessenger.Models.CarModel
+
+@{
+    ViewBag.Title = "ChatInvite";
+}
+
+<h2>Chat Invitation for (@(Model.CountryCode)) @(Model.Plate)</h2>
+<br>
+<div>
+
+    @*<form asp-controller="Car" asp-action="ChatInvite2" method="post" role="form">
+            <button class="btn btn-info" type="submit" style="color:White; text-decoration: none;">Generate New Token</button>
+        </form>*@
+
+    <button class="btn btn-info">
+        @Html.ActionLink(
+            "Generate New Token",
+            "NewChatInvite",
+            new { id = Model.Id, token = Model.chatInviteToken },
+            new
+                 {
+                Style = "color:White; text-decoration: none;",
+                onclick = "return confirm('Are you sure you want to regenerate your Invite Link?');"
+            }
+        )
+    </button>
+    <br><br>
+    @if (Model.chatInviteToken != null)
+    {
+        <img src="https://api.qrserver.com/v1/create-qr-code/?data=@(ViewBag.ChatLink ?? "")&amp;size=256x256" alt="" title="" />
+    }
+    @*//else{*@
+    <dl class="dl-horizontal">
+
+
+        <dt> Invitation Token: </dt>
+
+        <dd> @(Model.chatInviteToken ?? "No Token")</dd>
+
+        <dt> Invitation Link: </dt>
+
+        <dd><a href="@(ViewBag.ChatLink)">@(ViewBag.ChatLink ?? "No Link") </a> </dd>
+
+    </dl>
+    @* } *@
+</div>
+<p>
+    <button class="btn btn-info">
+        @Html.ActionLink(
+            "Back To Car Details",
+            "Details",
+            new { id = Model.Id},
+            new {
+                Style = "color:White; text-decoration: none;",
+            }
+        )
+    </button>
+</p>
