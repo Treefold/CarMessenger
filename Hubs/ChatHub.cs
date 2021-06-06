@@ -11,18 +11,12 @@ namespace CarMessenger.Hubs
 {
     public class ChatHub : Hub
     {
-        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
+        private static ApplicationDbContext contextdb = ApplicationDbContext.GetApplicationDbContext();
         private static string chatGroupPrefix = "Chat_";
-        private static ChatHub chatHub = null;
+        private static string carGroupPrefix  = "Car_";
+        private static IHubContext chatHub = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
 
-        public ChatHub()
-        {
-            //if (context == null)
-            //    context = ApplicationDbContext.GetApplicationDbContext();
-
-            if (chatHub == null)
-                chatHub = this;
-        }
+        public ChatHub() {}
         
         public void Send (string name, string message)
         {
@@ -42,14 +36,32 @@ namespace CarMessenger.Hubs
             }
         }
 
+        private void JoinCarById(string carId)
+        {
+            Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
+            //chatHub.Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
+        }
+
+        public void JoinMyCars(string userId)
+        {
+            contextdb.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner"))
+                .Select(o => o.CarId).ToList().ForEach(carId => { JoinCarById(carId); });
+        }
+
+        public static void NewChat(string carId, ChatHead head)
+        {
+            var ser = JsonSerializer.Serialize(head);
+            chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
+        }
+
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
-            ApplicationUser user = context.Users.Find(userId);
+            ApplicationUser user = contextdb.Users.Find(userId);
             if (user == null) return;
             nickname = user.Nickname;
             Message msg = new Message(chatId, userId, content);
-            context.Messages.Add(msg);
-            context.SaveChanges();
+            contextdb.Messages.Add(msg);
+            contextdb.SaveChanges();
 
             Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
         }

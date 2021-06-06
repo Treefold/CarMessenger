@@ -8,7 +8,8 @@
         </ul>
     </div>*@
 @{
-    var chats = ViewBag.chats as List<KeyValuePair<(string chatId, bool owning, string plate, string code, string info, DateTime created), List<SentMessage>>>;
+    var chats = ViewBag.chats as List<KeyValuePair<ChatHead, List<SentMessage>>>;
+    //var newChats = ViewBag.newChats ? (ViewBag.newChats as List<String>) : (List<String>());
 }
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -29,11 +30,10 @@
                 <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewChat")</button>
                 <div id="heads_box" class="card-body contacts_body" style="overflow-y: scroll; height:400px;">
                     @{
-                        var cnt_h = 0;
                         foreach (var chat in chats)
                         {
                             var personNickname = chat.Key.info;
-                             <div id="h_@chat.Key.chatId" class="contacts_card chat_head h_@cnt_h @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
+                             <div id="h_@chat.Key.chatId" class="contacts_card chat_head @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
                                     style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
                                 (<text class="carCode">@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
                                 @if (chat.Key.owning)
@@ -48,7 +48,6 @@
                                     }
                                 }
                             </div>
-                            cnt_h += 1;
                         }
                     }
                 </div>
@@ -64,42 +63,42 @@
                         </div>
                     </div>
                 </div>
-                @{
-                    var cnt_b = 0;
-                    foreach (var chat in chats)
-                    {
-                        <div id="b_@chat.Key.chatId" class="card-body msg_card_body contact_body chat_body b_@cnt_b" style="overflow-y: scroll; height:400px;">
-                            @if(chat.Value.Count > 0)
-                            {
-                                SentMessage msg;
-                                for(var i = chat.Value.Count - 1; i >= 0; --i)
+                <div id="chat_body">
+                    @{
+                        foreach (var chat in chats)
+                        {
+                            <div id="b_@chat.Key.chatId" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">
+                                @if (chat.Value.Count > 0)
                                 {
-                                    msg = chat.Value[i];
-                                    <div id="m_@msg.Id" class="messege">
-                                        @if (msg.owned)
-                                        {
-                                            <strong>You</strong>
-                                        }
-                                        else if ((msg.nickname ?? "") == "")
-                                        {
-                                            <strong>Anonymus</strong>
-                                        }
-                                        else
-                                        {
-                                            <strong class="nickname"> @msg.nickname </strong>
-                                            if (!chat.Key.owning)
+                                    SentMessage msg;
+                                    for (var i = chat.Value.Count - 1; i >= 0; --i)
+                                    {
+                                        msg = chat.Value[i];
+                                        <div id="m_@msg.Id" class="messege">
+                                            @if (msg.owned)
                                             {
-                                                <text> (<text class="carCode">@chat.Key.code</text>-<text class="carPlate">@chat.Key.plate</text>)</text>
+                                                <strong>You</strong>
                                             }
-                                        }
-                                        <text>: @msg.content</text>
-                                    </div>
+                                            else if ((msg.nickname ?? "") == "")
+                                            {
+                                                <strong>Anonymus</strong>
+                                            }
+                                            else
+                                            {
+                                                <strong class="nickname"> @msg.nickname </strong>
+                                                if (!chat.Key.owning)
+                                                {
+                                                    <text> (<text class="carCode">@chat.Key.code</text>-<text class="carPlate">@chat.Key.plate</text>)</text>
+                                                }
+                                            }
+                                            <text>: @msg.content</text>
+                                        </div>
+                                    }
                                 }
-                            }
-                        </div>
-                        cnt_b += 1;
+                            </div>
+                        }
                     }
-                }
+                </div>
                 <div class="card-footer">
                     <div class="input-group">
                         <div class="input-group-append">
@@ -236,6 +235,28 @@
                     els[0].innerHTML = nick;
             });
         };
+        chat.client.AddChat = function (newChat) {
+            if ($("#h_" + newChat.chatId).length > 0) return; // error already exists
+            $("#heads_box").prepend(
+                '<div id="h_' + newChat.chatId
+                + '" class="contacts_card chat_head ' + newChat.plate + " " + newChat.code + (newChat.owned == true ? " Owned" : "") + '" style="border: 1px solid; border-color: black">'
+                + '(<text class="carCode">' + newChat.code + '</text>) <strong class="carPlate">' + newChat.plate + '</strong> '
+                + ((newChat.owning == false) ? ('') : (
+                        (newChat.info != null) ? (
+                            '<text>(<text class="nickname">' + newChat.info + '</text>)</text>'
+                        ) : (
+                                '<text><strong>#</strong></text>'
+                        )
+                )) + '</div>'
+            );
+            var id = newChat.chatId;
+            $("#h_" + newChat.chatId).click(function () { select_head(id); });
+            $("#chat_body").append(
+                '<div id="b_' + newChat.chatId + '" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
+                + '</div>'
+            );
+            chat.server.joinChat(newChat.chatId);
+        }
 
         var userId = "@User.Identity.GetUserId()";
         var nickname = "@User.GetClaimValue("Nickname")";
@@ -245,6 +266,8 @@
             $('#heads_box .chat_head').each((index, el) => {
                 chat.server.joinChat(el.id?.substring(2));
             });
+
+            chat.server.joinMyCars(userId);
 
             $('#messageInput').val('').focus();
 

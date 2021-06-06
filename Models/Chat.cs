@@ -55,4 +55,28 @@ namespace CarMessenger.Models
         [Display(Name = "CountryCode")]
         public string carCountryCode { get; set; }
     }
+
+    public class ChatHead
+    {
+        public string chatId;
+        public bool owning;
+        public string plate;
+        public string code;
+        public string info;
+        public DateTime createTime;
+
+        public ChatHead()
+        {
+        }
+
+        public ChatHead(Chat chat, CarModel car, string nickname)
+        {
+            this.chatId = chat.Id;
+            this.owning = true;
+            this.plate = car.Plate;
+            this.code = car.CountryCode;
+            this.info = nickname;
+            this.createTime = chat.createTime;
+        }
+    }
 }
