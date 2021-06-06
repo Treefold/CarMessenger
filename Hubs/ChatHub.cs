@@ -39,7 +39,6 @@ namespace CarMessenger.Hubs
         private void JoinCarById(string carId)
         {
             Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
-            //chatHub.Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
         }
 
         public void JoinMyCars(string userId)
@@ -50,7 +49,6 @@ namespace CarMessenger.Hubs
 
         public static void NewChat(string carId, ChatHead head)
         {
-            var ser = JsonSerializer.Serialize(head);
             chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
         }
 
