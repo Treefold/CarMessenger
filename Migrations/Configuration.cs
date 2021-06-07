@@ -40,7 +40,7 @@ namespace CarMessenger.Migrations
                 userManager.AddToRole(admin.Id, "Admin");
             }
 
-            // TestUsers and their cars Seed
+            // Test Users
             const int N = 3;
             ApplicationUser user = null;
             for (int i = 1; i <= N; ++i)
@@ -57,6 +57,7 @@ namespace CarMessenger.Migrations
                 }
             }
 
+            // Test Cars
             CarModel car = null;
             for (int i=1; i <= N; ++i)
             {
@@ -80,6 +81,23 @@ namespace CarMessenger.Migrations
                     });
                 }
             }
+
+            // Test Chats
+            Chat chat = null;
+            for (int i = 1; i <= N; ++i)
+            {
+                car = context.Cars.First(c => c.Plate == ("TEST00" + i.ToString()) && c.CountryCode == "TC");
+
+                chat = new Chat
+                {
+                    carId = car.Id
+                };
+                if (!context.Chats.Any(c => c.userId == chat.userId && c.carId == chat.carId))
+                {
+                    context.Chats.Add(chat);
+                }
+            }
+
             context.SaveChanges();
         }
     }
