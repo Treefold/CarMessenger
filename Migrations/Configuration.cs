@@ -17,12 +17,21 @@ namespace CarMessenger.Migrations
 
         protected override void Seed(CarMessenger.Models.ApplicationDbContext context)
         {
-           // Roles seed
+            // Roles seed
             if (!context.Roles.Any(r => r.Name == "Admin"))
             {
                 var roleStore = new RoleStore<IdentityRole>(context);
                 roleStore.CreateAsync(new IdentityRole { Id = "0", Name = "Admin" }).Wait();
-                //context.Roles.AddOrUpdate(new IdentityRole { Id = "0", Name = "Admin" });
+            }
+            if (!context.Roles.Any(r => r.Name == "Support"))
+            {
+                var roleStore = new RoleStore<IdentityRole>(context);
+                roleStore.CreateAsync(new IdentityRole { Id = "1", Name = "Support" }).Wait();
+            }
+            if (!context.Roles.Any(r => r.Name == "VIP"))
+            {
+                var roleStore = new RoleStore<IdentityRole>(context);
+                roleStore.CreateAsync(new IdentityRole { Id = "2", Name = "VIP" }).Wait();
             }
 
             // Administrator Seed
@@ -40,9 +49,11 @@ namespace CarMessenger.Migrations
                 userManager.AddToRole(admin.Id, "Admin");
             }
 
-            // TestUsers and their cars Seed
+            // Test Users
             const int N = 3;
             ApplicationUser user = null;
+            CarModel car = null;
+            Chat chat = null;
             for (int i = 1; i <= N; ++i)
             {
                 if (!context.Users.Any(u => u.Email == "test" + i.ToString() + "@gmail.com"))
@@ -54,30 +65,28 @@ namespace CarMessenger.Migrations
                         Nickname = "Test" + i.ToString()
                     };
                     userManager.CreateAsync(user, "Ttest" + i.ToString() + ".").Wait();
-                }
-            }
 
-            CarModel car = null;
-            for (int i=1; i <= N; ++i)
-            {
-                user = context.Users.First(u => u.Email == "test" + i.ToString() + "@gmail.com");
-
-                car = new CarModel
-                {
-                    Plate = "TEST00" + i.ToString(),
-                    CountryCode = "TC",
-                    ModelName = "TESTING",
-                    Color = "None"
-                };
-                if (!context.Cars.Any(c => c.Plate == car.Plate && c.CountryCode == car.CountryCode))
-                {
-                    context.Cars.Add(car);
-                    context.Owners.Add(new OwnerModel
+                    // Test Cars
+                    car = new CarModel
                     {
-                        CarId = car.Id,
-                        UserId = user.Id,
-                        Category = "Owner"
-                    });
+                        Plate = "TEST00" + i.ToString(),
+                        CountryCode = "TC",
+                        ModelName = "TESTING",
+                        Color = "None"
+                    };
+                    if (!context.Cars.Any(c => c.Plate == car.Plate && c.CountryCode == car.CountryCode))
+                    {
+                        context.Cars.Add(car);
+                        context.Owners.Add(new OwnerModel
+                        {
+                            CarId = car.Id,
+                            UserId = user.Id,
+                            Category = "Owner"
+                        });
+
+                        // Test Chats
+                        context.Chats.Add(new Chat { carId = car.Id });
+                    }
                 }
             }
             context.SaveChanges();
