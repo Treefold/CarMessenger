@@ -5,28 +5,29 @@ using Microsoft.AspNet.Identity;
 using System;
 using System.Data.Entity.Infrastructure;
 using System.Collections.Generic;
+using CarMessenger.Hubs;
+using System.Threading.Tasks;
 
 namespace CarMessenger.Controllers
 {
     [Authorize]
     public class CarsController : Controller
     {
-        private ApplicationDbContext context;
+        private static ApplicationDbContext context = ApplicationDbContext.GetApplicationDbContext();
 
         public CarsController()
         {
-            context = new ApplicationDbContext();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            context.Dispose();
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    context.Dispose();
+        //    base.Dispose(disposing);
+        //}
 
         // GET: Car
         [HttpGet]
-        [Authorize(Roles = "SuperUser")]
+        [Authorize(Roles = "Admin")]
         public ActionResult Index()
         {
             ViewData["cars"] = context.Cars.ToList();
@@ -34,14 +35,14 @@ namespace CarMessenger.Controllers
             return View();
         }
 
-        // GET: Car/Details/
+        // GET: Car/Details/id
         [HttpGet]
         public ActionResult Details(string id)
         {
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-            if (owner == null)
+            if (owner == null && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -53,35 +54,44 @@ namespace CarMessenger.Controllers
                 TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
                 return Redirect("../../Manage");
             }
-            
-            if (owner.Category == "Owner")
+
+            if (owner != null && owner.Category == "Owner")
             {
                 ViewBag.Owned = true;
                 ViewBag.OwnerName = User.Identity.GetUserName();
             }
-            else if (owner.Category == "CoOwner")
+            else if (User.IsInRole("Admin") || owner.Category == "CoOwner")
             {
                 ViewBag.Owned = false;
                 OwnerModel realOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.Category == "Owner");
                 ApplicationUser realOwnerUser = null;
                 if (realOwner != null)
                     realOwnerUser = context.Users.Find(realOwner.UserId);
-                if (realOwner == null || realOwnerUser == null)
+                if ((realOwner == null || realOwnerUser == null))
                 {
-                    owner.Category = "Owner";
-                    context.SaveChanges();
-                    ViewBag.Owned = true;
-                    ViewBag.OwnerName = User.Identity.GetUserName();
+                    string msg = "";
+                    if (User.IsInRole("Admin"))
+                    {
+                        msg = "This car is not Owned";
+                    }
+                    else
+                    {
+                        owner.Category = "Owner";
+                        context.SaveChanges();
+                        ViewBag.Owned = true;
+                        ViewBag.OwnerName = User.Identity.GetUserName();
+                        msg = "This car didn't have an Owner. Now it choosed you!";
+                    }
                     if (TempData["InfoMsgs"] == null)
                     {
-                        TempData["InfoMsgs"] = new List<string> { "This car didn't have an Owner. Now it choosed you!" };
+                        TempData["InfoMsgs"] = new List<string> { msg };
                     }
                     else
                     {
                         //List<string> infoMsgs = TempData["InfoMsgs"] as List<string>;
                         //infoMsgs.Add("This car didn't have an Owner. Now it choosed you!");
                         //TempData["InfoMsgs"] = infoMsgs;
-                        (TempData["InfoMsgs"] as List<string>).Add("This car didn't have an Owner. Now it choosed you!");
+                        (TempData["InfoMsgs"] as List<string>).Add(msg);
                     }
                 }
                 else
@@ -132,7 +142,7 @@ namespace CarMessenger.Controllers
                 ViewBag.CoOwners = context.Users.Where(u => coOwnersId.Contains(u.Id)).Select(u => u.UserName).ToList();
             }
 
-            if (owner.Category == "Owner")
+            if (User.IsInRole("Admin") || owner.Category == "Owner")
             {
                 List<String> pendingRequests = carOwners.Where(o => o.Category == "Requested").Select(o => o.UserId).ToList();
                 if (pendingRequests.Count > 0)
@@ -150,6 +160,91 @@ namespace CarMessenger.Controllers
             return View(car);
         }
 
+        // GET: Car/ChatInvite/id
+        [HttpGet]
+        public ActionResult ChatInvite(string id)
+        {
+            if (id == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
+                return Redirect("../Manage");
+            }
+
+            CarModel car = null;
+            if (TempData["Car"] != null && ((CarModel)TempData["Car"]).Id == id)
+            {
+                car = (CarModel)TempData["Car"];
+                if (TempData["SuccessMsgs"] != null)
+                    ViewBag.SuccessMsgs = (List<string>) TempData["SuccessMsgs"];
+                if (TempData["WarningMsgs"] != null)
+                    ViewBag.WarningMsgs = (List<string>) TempData["WarningMsgs"];
+            }
+            else
+            {
+                string userId = User.Identity.GetUserId();
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+                if (owner == null && !User.IsInRole("Admin"))
+                {
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                    return Redirect("../Manage");
+                }
+
+                car = context.Cars.Find(id);
+                if (car == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                    return Redirect("../Manage");
+                }
+            }
+
+            ViewBag.ChatToken = car.chatInviteToken;
+            ViewBag.ChatLink = car.chatInviteLink;
+
+            return View(car);
+        }
+
+        // GET: Car/NewChatInvite/id/token
+        [HttpGet]
+        public async Task<ActionResult> NewChatInvite(string id, string token)
+        {
+            if (id == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
+                return Redirect("../Manage");
+            }
+            string userId = User.Identity.GetUserId();
+            OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+
+            if (owner == null && !User.IsInRole("Admin"))
+            {
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return Redirect("../Manage");
+            }
+
+            var car = context.Cars.Find(id);
+            if (car == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                return Redirect("../Manage");
+            }
+
+            if (car.chatInviteToken == token)
+            {
+                await car.GenerateNewChatInviteToken();
+                context.SaveChanges();
+                TempData["SuccessMsgs"] = new List<string> { "Chat Invite Changed" };
+            }
+            else
+            {
+                TempData["WarningMsg"] = new List<string> { "The Chat Invite was changed by somebody else" };
+            }
+
+            TempData["Car"] = car;
+
+            return RedirectToAction("ChatInvite", new { id = car.Id });
+        }
+
         // GET: Car/Create
         [HttpGet]
         public ActionResult Create()
@@ -159,7 +254,7 @@ namespace CarMessenger.Controllers
 
         // POST: Car/Create
         [HttpPost]
-        public ActionResult Create(CarModel car)
+        public async Task<ActionResult> Create(CarModel car)
         {
             try
             {
@@ -169,7 +264,9 @@ namespace CarMessenger.Controllers
                     if (existingCar == null)
                     {
                         context.Cars.Add(car);
+                        await car.UpdateChatInviteLinkAsync();
                         context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
+                        context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
                         context.SaveChanges();
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("../Manage");
@@ -213,7 +310,7 @@ namespace CarMessenger.Controllers
         {
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-            if (owner == null || owner.Category != "Owner")
+            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -240,17 +337,16 @@ namespace CarMessenger.Controllers
 
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-            if (owner == null || owner.Category != "Owner")
+            ViewBag.Owned = !(owner == null || owner.Category != "Owner");
+            if (!((bool) ViewBag.Owned || User.IsInRole("Admin")))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
             }
-            else
-            {
-                ViewBag.Owned = true;
-            }
 
-            var car = context.Cars.Find(id);
+            CarModel car = context.Cars.Find(id);
+            string plate = car.Plate;
+            string code = car.CountryCode;
             if (car == null)
             {
                 TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
@@ -269,6 +365,9 @@ namespace CarMessenger.Controllers
                     if (TryUpdateModel(car))
                     {
                         context.SaveChanges();
+                        if (car.Plate != plate || car.CountryCode != code)
+                            context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                                .ForEach((chat) => ChatHub.UpdateCarChat(chat, car.Plate, car.CountryCode));
                         TempData["SuccessMsgs"] = new List<string> { "Car Updated" };
                         return RedirectToAction("Details/" + id);
                     }
@@ -399,7 +498,7 @@ namespace CarMessenger.Controllers
         {
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-            if (owner == null || owner.Category != "Owner")
+            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                 return Redirect("../../Manage");
@@ -425,7 +524,7 @@ namespace CarMessenger.Controllers
 
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-                if (owner == null || owner.Category != "Owner")
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
                     return Redirect("../../Manage");
@@ -526,7 +625,7 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-                if (owner == null || owner.Category != "Owner")
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
                     return Redirect("../../Manage");
@@ -570,7 +669,7 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
 
-                if (owner == null || owner.Category != "Owner")
+                if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return Redirect("../../Manage");
@@ -630,19 +729,20 @@ namespace CarMessenger.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-                if (owner == null)
+                ViewBag.Owned = owner?.Category == "Owner";
+                if (!(owner != null || User.IsInRole("Admin")))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return Redirect("../../Manage");
                 }
+
+                if (owner?.Category == "CoOwner")
+                {
+                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == userId));
+                }
                 else
                 {
-                    ViewBag.Owned = true;
-                }
-
-                if (owner.Category == "Owner")
-                {
-                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
+                    // context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
 
                     var car = context.Cars.Find(id);
                     if (car == null)
@@ -651,26 +751,25 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
+                        context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
+                            .ForEach((chat) => ChatHub.DeleteChat(chat));
+
                         context.Cars.Remove(car);
                     }
                 } 
-                else
-                {
-                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == userId));
-                }
 
                 context.SaveChanges();
 
                 string msg;
 
-                if (owner.Category == "Owner" || owner.Category == "CoOwner")
+                if (owner?.Category == "Owner" || owner?.Category == "CoOwner")
                 {
                     msg = "Car Removed";
                 }
-                else if (owner.Category == "Invited")
+                else if (owner?.Category == "Invited")
                 {
                     msg = "Invitation Removed";
-                } else if (owner.Category == "Requested")
+                } else if (owner?.Category == "Requested")
                 {
                     msg = "Request Removed";
                 } else

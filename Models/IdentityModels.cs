@@ -23,11 +23,15 @@ namespace CarMessenger.Models
 
         [Required]
         [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
+        [StringLength(30, ErrorMessage = "User Nickname excedeed length limit")]
         public string Nickname { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        private static ApplicationDbContext AppBdContextEntity = new ApplicationDbContext();
+
+        public DbSet<Chat> Chats { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<CarModel> Cars { get; set; }
         public DbSet<OwnerModel> Owners { get; set; }
@@ -35,6 +39,11 @@ namespace CarMessenger.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+        }
+
+        public static ApplicationDbContext GetApplicationDbContext()
+        {
+            return AppBdContextEntity;
         }
 
         public static ApplicationDbContext Create()

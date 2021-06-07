@@ -39,15 +39,17 @@
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Make Request" class="btn btn-default" />
-            </div>
+            <span class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Make Request" class="btn btn-info" />
+            </span>
+            <span>
+                <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
+            </span>
         </div>
     </div>
 }
 
 <div>
-    <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage") </button>
 </div>
 
 @section Scripts {

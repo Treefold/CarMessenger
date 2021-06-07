@@ -7,13 +7,13 @@ namespace CarMessenger.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class AddNickname : IMigrationMetadata
+    public sealed partial class CreateAppDB : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddNickname));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CreateAppDB));
         
         string IMigrationMetadata.Id
         {
-            get { return "202101101806532_AddNickname"; }
+            get { return "0_CreateAppDB"; }
         }
         
         string IMigrationMetadata.Source

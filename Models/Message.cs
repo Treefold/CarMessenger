@@ -1,45 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace CarMessenger.Models
 {
-    public class NewMessage
-    {
-        //[Key]
-        //public string id { get; set; }
-
-        [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
-        [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
-        public string carPlate { get; set; }
-
-        [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
-        [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
-        public string carCountryCode { get; set; }
-    }
     public class Message
     {
         [Key]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string Id { get; private set; } = Guid.NewGuid().ToString();
 
-        public string senderEmail { get; set; } // can be null if the user is anonymous
-
-        public string senderNickname { get; set; }// can be null if the user is anonymous
+        [Required]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
+        public string chatId { get; set; }
 
         [Required]
-        public string carPlate { get; set; }
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
+        public string userId { get; set; }
 
         [Required]
-        public string carCountryCode { get; set; }
-
-        public string personNickname { get; set; } // null if you own the car
-
-        [Required]
-        public bool owning { get; set; }
-
-        [Required]
+        [StringLength(500, ErrorMessage = "Message content excedeed length limit")]
         public string content { get; set; }
 
         [Required]
@@ -52,15 +35,57 @@ namespace CarMessenger.Models
         {
         }
 
-        public Message(string senderEmail, string senderNickname, string carPlate, string carCountryCode, string personNickname, bool owning, string content)
+        public Message(string chatId, string userId, string content)
         {
-            this.senderEmail = senderEmail;
-            this.senderNickname = senderNickname;
-            this.carPlate = carPlate;
-            this.carCountryCode = carCountryCode;
-            this.personNickname = personNickname;
-            this.owning = owning;
+            this.chatId = chatId;
+            this.userId = userId;
             this.content = content;
+        }
+    }
+    public class SentMessage
+    {
+        public string Id { get; set; }
+
+        public string chatId { get; set; }
+
+        public string nickname { get; set; }
+
+        public bool owned { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime sendTime { get; set; } = DateTime.Now;
+
+        public DateTime expiry { get; set; } = DateTime.Now.AddDays(2);
+
+        public SentMessage()
+        {
+        }
+
+        public SentMessage(string Id, string chatId, string nickname, bool owned, string content, DateTime sendTime, DateTime expiry)
+        {
+            this.Id = Id;
+            this.chatId = chatId;
+            this.nickname = nickname;
+            this.owned = owned;
+            this.content = content;
+            this.sendTime = sendTime;
+            this.expiry = expiry;
+        }
+
+        public SentMessage(Message msg)
+        {
+            this.Id = msg.Id;
+            this.chatId = msg.chatId;
+            this.content = msg.content;
+            this.sendTime = msg.sendTime;
+            this.expiry = msg.expiry;
+        }
+
+        public SentMessage(Message msg, string nickname, bool owned) : this(msg)
+        {
+            this.nickname = nickname;
+            this.owned = owned;
         }
     }
 }

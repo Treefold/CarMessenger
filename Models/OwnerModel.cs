@@ -7,20 +7,24 @@ using System.Web;
 
 namespace CarMessenger.Models
 {
-    public class OwnerModel
+    public class OwnerModel // Owners
     {
 
         [Key]
         [Column(Order = 1)]
         [Required]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string UserId { get; set; }
 
         [Key]
         [Column(Order = 2)]
         [Required]
+        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
         public string CarId { get; set; }
+        public CarModel car { get; set; }
 
         [Required]
+        [StringLength(10, ErrorMessage = "Owner Category excedeed length limit")]
         public string Category { get; set; } = "Owner";
         // Owner     - The first one to have the car (the ownership can be passed to a CoOwner)
         // CoOwner   - The others that use that car
