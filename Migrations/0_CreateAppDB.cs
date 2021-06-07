@@ -164,7 +164,6 @@ namespace CarMessenger.Migrations
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.OwnerModels");
             DropTable("dbo.Messages");
-            DropTable("dbo.InvitationModels");
             DropTable("dbo.Chats");
             DropTable("dbo.CarModels");
         }
