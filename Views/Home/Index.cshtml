@@ -146,7 +146,8 @@
     }
 
     function getContent() {
-        return $('#messageInput').val();
+        // return $('#messageInput').val(); // faulty - keeps html tags
+        return (new DOMParser().parseFromString($('#messageInput').val(), 'text/html')).body.textContent;
     }
 
     function resetContent(cnt = '') {
