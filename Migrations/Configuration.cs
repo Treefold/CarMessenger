@@ -53,7 +53,6 @@ namespace CarMessenger.Migrations
             const int N = 3;
             ApplicationUser user = null;
             CarModel car = null;
-            Chat chat = null;
             for (int i = 1; i <= N; ++i)
             {
                 if (!context.Users.Any(u => u.Email == "test" + i.ToString() + "@gmail.com"))
