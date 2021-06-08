@@ -61,6 +61,7 @@ namespace CarMessenger.Models
     public class CarModel
     {
         private static readonly RestClient client;
+        private static readonly string HOST = "https://192.168.42.269:45455";
 
         [Key]
         [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
@@ -130,7 +131,7 @@ namespace CarMessenger.Models
         {
             if (this.chatInviteToken == null) return false;
 
-            this.chatInviteLink = "https://192.168.42.249:45455/Home/NewChatInvite/?token=" + chatInviteToken;
+            this.chatInviteLink = HOST + "/Home/NewChatInvite/?token=" + chatInviteToken;
 
             return true;
         }
@@ -147,7 +148,7 @@ namespace CarMessenger.Models
                 request.AddHeader("Content-Type", "application/json");
                 request.AddParameter(
                     "application/json", 
-                    "{\r\n  \"long_url\": \"https://192.168.42.249:45455/Home/NewChatInvite/?token="+ this.chatInviteToken + "\"\r\n}",
+                    "{\r\n  \"long_url\": \""+ HOST +"/Home/NewChatInvite/?token="+ this.chatInviteToken + "\"\r\n}",
                     ParameterType.RequestBody
                 );
                 IRestResponse response = await client.ExecuteAsync(request);
@@ -160,7 +161,7 @@ namespace CarMessenger.Models
             }
 
             if (this.chatInviteLink == null)
-                this.chatInviteLink = "https://192.168.42.249:45455/Home/NewChatInvite/?token=" + chatInviteToken;
+                this.chatInviteLink = HOST + "/Home/NewChatInvite/?token=" + chatInviteToken;
 
             return true;
         }
