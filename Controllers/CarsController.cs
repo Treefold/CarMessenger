@@ -373,20 +373,20 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
-                        TempData["WarningMsgs"] = new List<string> { "This car plate is already registered" };
+                        ViewBag.WarningMsgs = new List<string> { "This car plate is already registered" };
                     }
                 }
             }
             catch (DbUpdateException)
             {
-                TempData["InfoMsgs"] = new List<string> { "This car plate is already registered" };
+                ViewBag.InfoMsgs = new List<string> { "This car plate is already registered" };
             }
             catch (Exception e)
             {
-                TempData["DangerMsgs"] = new List<string> { e.Message };
+                ViewBag.DangerMsgs = new List<string> { e.Message };
             }
 
-            return View(id);
+            return View(car);
         }
 
         // GET: Car/RequestCoOwner
