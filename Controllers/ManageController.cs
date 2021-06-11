@@ -159,7 +159,7 @@ namespace CarMessenger.Controllers
         public ActionResult IncreaseCoOwnedCarLimit()
         {
             var userId = User.Identity.GetUserId();
-            var user = UserManager.FindById(userId);
+            var user = context.Users.Find(userId);
 
             if (user.MaxCoOwned >= 100)
             {

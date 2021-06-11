@@ -150,7 +150,12 @@
             </ul>
         </dd>
 
-        <dt>CoOwned Cars:</dt>
+        <dt>CoOwned Cars (@(coOwnedCars?.Count() ?? 0)/@(Model.MaxCoOwned)) 
+        @if((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
+        {
+            <text>[@Html.ActionLink("Increase CoOwned Car Limit", "IncreaseCoOwnedCarLimit")]</text>
+        }
+        </dt>
         <dd>
             <ul>
                 @if (ViewBag.CoOwnedCars != null)
