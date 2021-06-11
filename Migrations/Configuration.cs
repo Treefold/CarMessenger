@@ -71,7 +71,8 @@ namespace CarMessenger.Migrations
                         Plate = "TEST00" + i.ToString(),
                         CountryCode = "TC",
                         ModelName = "TESTING",
-                        Color = "None"
+                        Color = "None",
+                        maxCoOwners = 0
                     };
                     if (!context.Cars.Any(c => c.Plate == car.Plate && c.CountryCode == car.CountryCode))
                     {

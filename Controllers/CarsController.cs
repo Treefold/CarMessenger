@@ -45,14 +45,14 @@ namespace CarMessenger.Controllers
             if (owner == null && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
 
             var car = context.Cars.Find(id);
             if (car == null)
             {
-                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                return Redirect("../../Manage");
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
             }
 
             if (owner != null && owner.Category == "Owner")
@@ -102,7 +102,7 @@ namespace CarMessenger.Controllers
             else
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
 
             List<OwnerModel> carOwners = context.Owners.Where(o => o.CarId == id).ToList();
@@ -167,7 +167,7 @@ namespace CarMessenger.Controllers
             if (id == null)
             {
                 TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
-                return Redirect("../Manage");
+                return RedirectToAction("../Manage");
             }
 
             CarModel car = null;
@@ -187,14 +187,14 @@ namespace CarMessenger.Controllers
                 if (owner == null && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                    return Redirect("../Manage");
+                    return RedirectToAction("../Manage");
                 }
 
                 car = context.Cars.Find(id);
                 if (car == null)
                 {
-                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                    return Redirect("../Manage");
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                    return RedirectToAction("../Manage");
                 }
             }
 
@@ -211,7 +211,7 @@ namespace CarMessenger.Controllers
             if (id == null)
             {
                 TempData["InfoMsgs"] = new List<string> { "No Car Id Selected" };
-                return Redirect("../Manage");
+                return RedirectToAction("../Manage");
             }
             string userId = User.Identity.GetUserId();
             OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
@@ -219,14 +219,14 @@ namespace CarMessenger.Controllers
             if (owner == null && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../Manage");
+                return RedirectToAction("../Manage");
             }
 
             var car = context.Cars.Find(id);
             if (car == null)
             {
-                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                return Redirect("../Manage");
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
             }
 
             if (car.chatInviteToken == token)
@@ -313,7 +313,7 @@ namespace CarMessenger.Controllers
             if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
             else
             {
@@ -324,7 +324,7 @@ namespace CarMessenger.Controllers
             if (car == null)
             {
                 TempData["SuccessMsgs"] = new List<string> { "Car Created" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
 
             return View(car);
@@ -341,7 +341,7 @@ namespace CarMessenger.Controllers
             if (!((bool) ViewBag.Owned || User.IsInRole("Admin")))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
 
             CarModel car = context.Cars.Find(id);
@@ -349,8 +349,8 @@ namespace CarMessenger.Controllers
             string code = car.CountryCode;
             if (car == null)
             {
-                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                return Redirect("../../Manage");
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
             }
 
             try
@@ -411,7 +411,7 @@ namespace CarMessenger.Controllers
                 if (User.Identity.GetUserName() == ownerEmail)
                 {
                     TempData["InfoMsgs"] = new List<string> { "You can't request to join a car that might belong to you" };
-                    return Redirect("../Manage");
+                    return RedirectToAction("../Manage");
                 }
 
                 ApplicationUser ownerUser = context.Users.FirstOrDefault(u => u.UserName == ownerEmail);
@@ -486,9 +486,9 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../Manage");
+                return RedirectToAction("../Manage");
             }
-            return Redirect("../Manage");
+            return RedirectToAction("../Manage");
         }
 
         // GET: Car/InviteCoOwner/id/mail
@@ -501,14 +501,20 @@ namespace CarMessenger.Controllers
             if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
             {
                 TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
 
             var car = context.Cars.Find(id);
             if (car == null)
             {
-                TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                return Redirect("../../Manage");
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
+            }
+            var coOwnersNumber = context.Owners.Count(o => o.CarId == id && o.Category == "CoOwner");
+            if (coOwnersNumber >= car.maxCoOwners)
+            {
+                TempData["InfoMsgs"] = new List<string> { "The limit of CoOwners has been reached!" };
+                return Redirect("../Details/" + car.Id);
             }
 
             return View();
@@ -527,7 +533,20 @@ namespace CarMessenger.Controllers
                 if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
-                    return Redirect("../../Manage");
+                    return RedirectToAction("../Manage");
+                }
+                var car = context.Cars.Find(id);
+                if (car == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
+                    return RedirectToAction("../Manage");
+                }
+
+                var coOwnersNumber = context.Owners.Count(o => o.CarId == id && o.Category == "CoOwner");
+                if (coOwnersNumber >= car.maxCoOwners)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "The limit of CoOwners has been reached!" };
+                    return Redirect("../Details/" + car.Id);
                 }
 
                 ApplicationUser user = context.Users.FirstOrDefault(u => u.UserName == mail);
@@ -537,14 +556,7 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("Details/" + id);
                 }
 
-                if (context.Cars.Find(id) == null)
-                {
-                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                    return Redirect("../../Manage");
-                }
-
                 OwnerModel coOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.UserId == user.Id);
-
                 if (coOwner == null)
                 {
                     TempData["InfoMsgs"] = new List<string> { "Invitation Sent" };
@@ -583,7 +595,7 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
         }
 
@@ -599,7 +611,7 @@ namespace CarMessenger.Controllers
                 if (owner == null || owner.Category != "Invited")
                 {
                     TempData["InfoMsgs"] = new List<string> { "You invitation is not valid" };
-                    return Redirect("../../Manage");
+                    return RedirectToAction("../Manage");
                 }
 
                 owner.Category = "CoOwner";
@@ -612,7 +624,7 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
         }
 
@@ -627,22 +639,34 @@ namespace CarMessenger.Controllers
 
                 if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
-                    TempData["InfoMsgs"] = new List<string> { "That was not your car (You can't invite people)" };
-                    return Redirect("../../Manage");
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                    return RedirectToAction("../Manage");
+                }
+                var car = context.Cars.Find(id);
+                if (car == null)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                    return RedirectToAction("../Manage");
+                }
+                var coOwnersNumber = context.Owners.Count(o => o.CarId == id && o.Category == "CoOwner");
+                if (coOwnersNumber >= car.maxCoOwners)
+                {
+                    TempData["InfoMsgs"] = new List<string> { "The limit of CoOwners has been reached!" };
+                    return Redirect("../Details/" + car.Id);
                 }
 
-                ApplicationUser user = context.Users.FirstOrDefault(u => u.UserName == mail);
-                if (user == null || userId == user.Id)
+                ApplicationUser userReq = context.Users.FirstOrDefault(u => u.UserName == mail);
+                if (userReq == null || userId == userReq.Id)
                 {
-                    TempData["InfoMsgs"] = new List<string> { "User Not Found" };
+                    TempData["InfoMsgs"] = new List<string> { "Faulty Invitation" };
                     return RedirectToAction("Details/" + id);
                 }
 
-                OwnerModel coOwner = context.Owners.FirstOrDefault(o => o.UserId == user.Id && o.CarId == id);
+                OwnerModel coOwner = context.Owners.FirstOrDefault(o => o.UserId == userReq.Id && o.CarId == id);
                 if (coOwner == null || coOwner.Category == "Owner")
                 {
-                    TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
-                    return Redirect("../../Manage");
+                    TempData["InfoMsgs"] = new List<string> { "Faulty Invitation" };
+                    return RedirectToAction("../Manage");
                 }
 
                 coOwner.Category = "CoOwner";
@@ -655,7 +679,7 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
         }
 
@@ -672,7 +696,7 @@ namespace CarMessenger.Controllers
                 if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                    return Redirect("../../Manage");
+                    return RedirectToAction("../Manage");
                 }
 
                 ApplicationUser user = context.Users.FirstOrDefault(u => u.UserName == mail);
@@ -717,7 +741,7 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
         }
 
@@ -733,7 +757,7 @@ namespace CarMessenger.Controllers
                 if (!(owner != null || User.IsInRole("Admin")))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
-                    return Redirect("../../Manage");
+                    return RedirectToAction("../Manage");
                 }
 
                 if (owner?.Category == "CoOwner")
@@ -747,7 +771,7 @@ namespace CarMessenger.Controllers
                     var car = context.Cars.Find(id);
                     if (car == null)
                     {
-                        TempData["InfoMsgs"] = new List<string> { "We coudn't find that car" };
+                        TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     }
                     else
                     {
@@ -783,8 +807,48 @@ namespace CarMessenger.Controllers
             catch (Exception e)
             {
                 TempData["DangerMsgs"] = new List<string> { e.Message };
-                return Redirect("../../Manage");
+                return RedirectToAction("../Manage");
             }
+        }
+
+        [HttpGet]
+        public ActionResult IncreaseCoOwnersLimit(string id)
+        {
+            string userId = User.Identity.GetUserId();
+            OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+            if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
+            {
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
+            }
+
+            var car = context.Cars.Find(id);
+            if (car == null)
+            {
+                TempData["InfoMsgs"] = new List<string> { "That was not your car" };
+                return RedirectToAction("../Manage");
+            }
+
+            if (car.maxCoOwners >= 1)
+            {
+                TempData["InfoMsgs"] = new List<string> { "This car already has the maximum number of CoOwners" };
+                return Redirect("../Details/" + car.Id);
+            }
+
+            try
+            {
+                // no payment validation
+
+                car.maxCoOwners += 1;
+                context.SaveChanges();
+                TempData["SuccessMsgs"] = new List<string> { "The limit of CoOwners has increased" };
+            }
+            catch
+            {
+                TempData["DangerMsgs"] = new List<string> { "The limit of CoOwners couldn't be increased" };
+            }
+
+            return Redirect("../Details/" + car.Id);
         }
     }
 }
