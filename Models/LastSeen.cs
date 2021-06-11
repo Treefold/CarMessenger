@@ -16,17 +16,17 @@ namespace CarMessenger.Models
 
         [Required]
         [StringLength(128, ErrorMessage = "User GUID excedeed length limit")]
-        public string userId { get; private set; }
+        public string userId { get; set; }
 
 
         [Required]
         [StringLength(40, ErrorMessage = "Chat GUID excedeed length limit")]
-        public string chatId { get; private set; }
+        public string chatId { get; set; }
 
 
         //NOT [Required]
         [StringLength(40, ErrorMessage = "Message GUID excedeed length limit")]
-        public string messageId { get; private set; }
+        public string messageId { get; set; }
 
         public LastSeen()
         {

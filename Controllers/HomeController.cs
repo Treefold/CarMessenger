@@ -163,6 +163,11 @@ namespace CarMessenger.Controllers
 
                     Chat ch = new Chat(userId, carId);
                     context.Chats.Add(ch);
+                    context.LastSeens.Add(new LastSeen (userId, ch.Id)); // add the curent user seen to the new chat
+                    // add the car owners & co-owners seen to the new chat
+                    context.Owners.Where(o => o.CarId == carId && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.UserId)
+                        .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, ch.Id)));
+
                     context.SaveChanges();
                     ChatHub.NewChat(carId, new ChatHead(ch, car, User.Identity.GetNickname()));
                 }
@@ -217,6 +222,11 @@ namespace CarMessenger.Controllers
                     return View(msg);*/
                     Chat newChat = new Chat(userId, carId);
                     context.Chats.Add(newChat);
+                    context.LastSeens.Add(new LastSeen(userId, chat.Id));// add the curent user seen to the new chat
+                    // add the car owners & co-owners seen to the new chat
+                    context.Owners.Where(o => o.CarId == carId && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.UserId)
+                        .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, chat.Id)));
+
                     context.SaveChanges();
                     ChatHub.NewChat(carId, new ChatHead(newChat, car, User.Identity.GetNickname()));
                 }

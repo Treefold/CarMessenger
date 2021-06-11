@@ -15,7 +15,7 @@ namespace CarMessenger.Models
 
         // [Required] // when null it is the car private group
         [Index("UniqueChat", 2, IsUnique = true)]
-        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
+        [StringLength(128, ErrorMessage = "GUID excedeed length limit")]
         public string userId { get; set; }
 
         [Required]
@@ -31,7 +31,7 @@ namespace CarMessenger.Models
         {
         }
 
-        public Chat(string userId, string carId)
+        public Chat(string userId, string carId) : this()
         {
             this.userId = userId;
             this.carId = carId;
