@@ -15,7 +15,7 @@ namespace CarMessenger.Migrations
                         Plate = c.String(nullable: false, maxLength: 19),
                         CountryCode = c.String(nullable: false, maxLength: 3),
                         ModelName = c.String(nullable: false, maxLength: 20),
-                        Color = c.String(maxLength: 20),
+                        Color = c.String(nullable: false, maxLength: 20),
                         maxCoOwners = c.Short(nullable: false),
                         chatInviteToken = c.String(nullable: false, maxLength: 64),
                         chatInviteLink = c.String(nullable: false, maxLength: 128),
