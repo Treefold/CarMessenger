@@ -44,6 +44,7 @@ namespace CarMessenger.Models
         public DbSet<Message> Messages { get; set; }
         public DbSet<CarModel> Cars { get; set; }
         public DbSet<OwnerModel> Owners { get; set; }
+        public DbSet<LastSeen> LastSeens { get; set; }
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

@@ -139,7 +139,21 @@ namespace CarMessenger.Migrations
                 .PrimaryKey(t => new { t.LoginProvider, t.ProviderKey, t.UserId })
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId);
-            
+
+            CreateTable(
+                "dbo.LastSeens",
+                c => new
+                {
+                    Id = c.String(nullable: false, maxLength: 40),
+                    userId = c.String(nullable: false, maxLength: 128),
+                    chatId = c.String(nullable: false, maxLength: 40),
+                    messageId = c.String(maxLength: 40),
+                })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.userId, cascadeDelete: true)
+                .ForeignKey("dbo.Chats", t => t.chatId, cascadeDelete: true)
+                .ForeignKey("dbo.Messages", t => t.messageId, cascadeDelete: true);
+
         }
         
         public override void Down()
@@ -160,6 +174,7 @@ namespace CarMessenger.Migrations
             DropIndex("dbo.CarModels", new[] { "chatInviteLink" });
             DropIndex("dbo.CarModels", new[] { "chatInviteToken" });
             DropIndex("dbo.CarModels", "UniquePlateNumber");
+            DropTable("dbo.LastSeens");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
