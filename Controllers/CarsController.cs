@@ -634,8 +634,8 @@ namespace CarMessenger.Controllers
                 var coOwnersNumber = context.Owners.Count(o => o.CarId == id && o.Category == "CoOwner");
                 if (coOwnersNumber >= car.maxCoOwners)
                 {
-                    TempData["InfoMsgs"] = new List<string> { "The limit of that car CoOwners has been reached!" };
-                    return Redirect("../Details/" + car.Id);
+                    TempData["WarningMsgs"] = new List<string> { "That Car has reached its CoOwners limit" };
+                    return RedirectToAction("Index", "Manage");
                 }
 
                 owner.Category = "CoOwner";
