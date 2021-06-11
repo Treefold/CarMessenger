@@ -61,7 +61,9 @@ namespace CarMessenger.Migrations
                     {
                         UserName = "test" + i.ToString() + "@gmail.com",
                         Email = "test" + i.ToString() + "@gmail.com",
-                        Nickname = "Test" + i.ToString()
+                        Nickname = "Test" + i.ToString(),
+                        MaxOwned = 0,
+                        MaxCoOwned = 0
                     };
                     userManager.CreateAsync(user, "Ttest" + i.ToString() + ".").Wait();
 

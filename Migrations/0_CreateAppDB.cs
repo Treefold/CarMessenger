@@ -98,6 +98,8 @@ namespace CarMessenger.Migrations
                     {
                         Id = c.String(nullable: false, maxLength: 40),
                         Nickname = c.String(nullable: false, maxLength: 30),
+                        MaxOwned = c.Short(nullable: false),
+                        MaxCoOwned = c.Short(nullable: false),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),
