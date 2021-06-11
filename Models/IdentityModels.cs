@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace CarMessenger.Models
             // Add custom user claims here
 
             userIdentity.AddClaim(new Claim("Nickname", this.Nickname));
+            //userIdentity.AddClaim(new Claim("MaxOwned", this.MaxOwned.ToString()));
+            //userIdentity.AddClaim(new Claim("MaxCoOwned", this.MaxCoOwned.ToString()));
 
             return userIdentity;
         }
@@ -25,6 +28,12 @@ namespace CarMessenger.Models
         [RegularExpression(@"[A-Za-z0-9]{2,30}", ErrorMessage = ("Your nickname should have only letters and numbers (min 2, max30)"))]
         [StringLength(30, ErrorMessage = "User Nickname excedeed length limit")]
         public string Nickname { get; set; }
+
+        [Required]
+        public Int16 MaxOwned { get; set; } = 2;
+
+        [Required]
+        public Int16 MaxCoOwned { get; set; } = 3;
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

@@ -16,6 +16,7 @@ namespace CarMessenger.Migrations
                         CountryCode = c.String(nullable: false, maxLength: 3),
                         ModelName = c.String(nullable: false, maxLength: 20),
                         Color = c.String(maxLength: 20),
+                        maxCoOwners = c.Short(nullable: false),
                         chatInviteToken = c.String(nullable: false, maxLength: 64),
                         chatInviteLink = c.String(nullable: false, maxLength: 128),
                     })
@@ -97,6 +98,8 @@ namespace CarMessenger.Migrations
                     {
                         Id = c.String(nullable: false, maxLength: 40),
                         Nickname = c.String(nullable: false, maxLength: 30),
+                        MaxOwned = c.Short(nullable: false),
+                        MaxCoOwned = c.Short(nullable: false),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),

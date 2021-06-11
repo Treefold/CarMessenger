@@ -61,7 +61,9 @@ namespace CarMessenger.Migrations
                     {
                         UserName = "test" + i.ToString() + "@gmail.com",
                         Email = "test" + i.ToString() + "@gmail.com",
-                        Nickname = "Test" + i.ToString()
+                        Nickname = "Test" + i.ToString(),
+                        MaxOwned = 0,
+                        MaxCoOwned = 0
                     };
                     userManager.CreateAsync(user, "Ttest" + i.ToString() + ".").Wait();
 
@@ -71,7 +73,8 @@ namespace CarMessenger.Migrations
                         Plate = "TEST00" + i.ToString(),
                         CountryCode = "TC",
                         ModelName = "TESTING",
-                        Color = "None"
+                        Color = "None",
+                        maxCoOwners = 0
                     };
                     if (!context.Cars.Any(c => c.Plate == car.Plate && c.CountryCode == car.CountryCode))
                     {

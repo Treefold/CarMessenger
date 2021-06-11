@@ -2,6 +2,8 @@
 
 @{
     ViewBag.Title = "Details";
+    var maxCoOwnersUpperLimit = 100;
+    var coOwners = ViewBag.CoOwners as List<String>;
 }
 
 <div>
@@ -34,13 +36,10 @@
             <dt>@Html.DisplayNameFor(model => model.Color)</dt>
             <dd>@Html.DisplayFor(model => model.Color)</dd>
 
-            <dt>CoOwners</dt>
+            <dt>CoOwners (@(coOwners?.Count ?? 0) / @Html.DisplayFor(model => model.maxCoOwners))</dt>
             <dd>
-                @{
-                    var coOwners = ViewBag.CoOwners as List<String>;
-                }
 
-                @if (coOwners != null && coOwners.Count > 0)
+                @if ( coOwners?.Count > 0)
                 {
                     <ul>
                         @foreach (var coOwnerMail in coOwners)
@@ -63,7 +62,7 @@
                 }
             </dd>
 
-            @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("Admin"))
+            @if (ViewBag?.Owned || User.IsInRole("Admin"))
             {
                 <dt>Invitations Sent</dt>
                 <dd>
@@ -81,18 +80,26 @@
                                     [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = invitationMail })&nbsp;&nbsp;]
                                 </li>
                             }
+
                         }
-                        <li>
-                            @if (ViewBag.Owned || User.IsInRole("Admin"))
-                            {
-                                <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
-                            }
-                            else
-                            {
-                                <text>None</text>
-                            }
-                        </li>
+                        @if ((coOwners?.Count ?? 0) < maxCoOwnersUpperLimit) // max limit of CoOwners
+                        {
+                            <li>
+                                @if ((coOwners?.Count ?? 0) >= Model.maxCoOwners)
+                                {
+                                    <text>[&nbsp; &nbsp; @Html.ActionLink("Increase CoOwners limit", "IncreaseCoOwnersLimit", new { id = Model.Id }) &nbsp; &nbsp;]</text>
+                                }
+                                else
+                                {
+                                    <text>[&nbsp; &nbsp; @Html.ActionLink("Send Invitation", "InviteCoOwner", new { id = Model.Id }) &nbsp; &nbsp;]</text>
+                                }
+                            </li>
+                        }
                     </ul>
+                    @if ((invitations == null || invitations.Count == 0) && (coOwners?.Count ?? 0) > maxCoOwnersUpperLimit)
+                    {
+                        <text>None</text>
+                    }
                 </dd>
 
                 <dt>Requests Received</dt>

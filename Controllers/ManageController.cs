@@ -96,15 +96,17 @@ namespace CarMessenger.Controllers
                 }
             }
 
-
+            var user = context.Users.Find(userId);
             var model = new IndexViewModel
             {
-                Nickname = UserManager.FindById(User.Identity.GetUserId()).Nickname,
+                Nickname = user.Nickname,
                 HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
+                PhoneNumber = user.PhoneNumber,
+                TwoFactor = user.TwoFactorEnabled,
                 Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
+                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId),
+                MaxOwned = user.MaxOwned,
+                MaxCoOwned = user.MaxCoOwned
             };
 
             if (TempData["DangerMsgs"] != null)
@@ -125,6 +127,60 @@ namespace CarMessenger.Controllers
             }
 
             return View(model);
+        }
+
+        public ActionResult IncreaseOwnedCarLimit()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = context.Users.Find(userId);
+
+            if (user.MaxOwned >= 100)
+            {
+                TempData["InfoMsgs"] = new List<string> { "You have already reached the maximum number of Owned Cars!" };
+                return RedirectToAction("Index", "Manage");
+            }
+
+            try
+            {
+                // no payment required
+
+                user.MaxOwned += 1;
+                context.SaveChanges();
+                TempData["SuccessMsgs"] = new List<string> { "The limit of Owned Cars has increased" };
+            }
+            catch
+            {
+                TempData["DangerMsgs"] = new List<string> { "The limit of Owned Cars couldn't be increased!" };
+            }
+
+            return RedirectToAction("Index", "Manage");
+        }
+
+        public ActionResult IncreaseCoOwnedCarLimit()
+        {
+            var userId = User.Identity.GetUserId();
+            var user = context.Users.Find(userId);
+
+            if (user.MaxCoOwned >= 100)
+            {
+                TempData["InfoMsgs"] = new List<string> { "You have already reached the maximum number of CoOwned Cars!" };
+                return RedirectToAction("Index", "Manage");
+            }
+
+            try
+            {
+                // no payment required
+
+                user.MaxCoOwned += 1;
+                context.SaveChanges();
+                TempData["SuccessMsgs"] = new List<string> { "The limit of CoOwned Cars has increased" };
+            }
+            catch
+            {
+                TempData["DangerMsgs"] = new List<string> { "The limit of CoOwned Cars couldn't be increased!" };
+            }
+
+            return RedirectToAction("Index", "Manage");
         }
 
         // POST: /Manage/RemoveLogin

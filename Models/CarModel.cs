@@ -89,6 +89,9 @@ namespace CarMessenger.Models
         public string Color { get; set; }
 
         [Required]
+        public Int16 maxCoOwners { get; set; } = 4;
+
+        [Required]
         [StringLength(64)]
         [Index(IsUnique = true)]
         public string chatInviteToken { get; private set; } = Guid.NewGuid().ToString().ToUpper();

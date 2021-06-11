@@ -1,6 +1,18 @@
 ﻿@using CarMessenger.Models
 @model CarMessenger.Models.IndexViewModel
 
+@{ 
+    var maxOwnedLimit = 100;
+    var maxCoOwnedLimit = 100;
+    //var maxOwned = ViewBag?.Owned ?? 0;
+    //var maxCoOwned = ViewBag?.CoOwned ?? 0;
+
+    var ownedCars = ViewBag.OwnedCars as List<CarModel>;
+    var coOwnedCars = ViewBag.CoOwnedCars as List<CarModel>;
+    var carRequests = ViewBag.Requests as List<CarModel>;
+    var carInvitations = ViewBag.Invitations as List<CarModel>;
+}
+
 <h2>Manage your account</h2>
 
 <p class="text-success">@ViewBag.StatusMessage</p>
@@ -104,13 +116,12 @@
             }
         </dd>*@
 
-        <dt>Owned Cars:</dt>
+        <dt>Owned Cars (@(ownedCars?.Count() ?? 0)/@(Model.MaxOwned))</dt>
         <dd>
             <ul>
                 @if (ViewBag.OwnedCars != null)
                 {
-                    var cars = ViewBag.OwnedCars as List<CarModel>;
-                    foreach (var car in cars)
+                    foreach (var car in ownedCars)
                     {
                         <li>
                             <text> (@car.CountryCode) @car.Plate </text>
@@ -122,25 +133,41 @@
                 {
                     <text>None</text></li>
                 }*@
-                <li><text>[&nbsp;&nbsp;@Html.ActionLink("Add Car", "../Cars/Create")&nbsp;&nbsp;]</text></li>
+                @if((ownedCars?.Count() ?? 0) < maxOwnedLimit)
+                {
+                    <li>
+                        @if ((ownedCars?.Count() ?? 0) >= Model.MaxOwned)
+                        {
+                            <text>[&nbsp;&nbsp;@Html.ActionLink("Increase Owned Car Limit", "IncreaseOwnedCarLimit")&nbsp;&nbsp;]</text>
+                        }
+                        else
+                        {
+                            <text>[&nbsp;&nbsp;@Html.ActionLink("Add Car", "../Cars/Create")&nbsp;&nbsp;]</text>
+                        }
 
+                    </li>
+                }
             </ul>
         </dd>
 
-        <dt>CoOwned Cars:</dt>
+        <dt>CoOwned Cars (@(coOwnedCars?.Count() ?? 0)/@(Model.MaxCoOwned)) 
+        @if((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
+        {
+            <text>[@Html.ActionLink("Increase CoOwned Car Limit", "IncreaseCoOwnedCarLimit")]</text>
+        }
+        </dt>
         <dd>
             <ul>
                 @if (ViewBag.CoOwnedCars != null)
                 {
-                    var cars = ViewBag.CoOwnedCars as List<CarModel>;
-                    foreach (var car in cars)
-                    {
+                        foreach (var car in coOwnedCars)
+                        {
                         <li>
                             <text> (@car.CountryCode) @car.Plate </text>
                             <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) &nbsp; &nbsp;] </text>
                         </li>
+                        }
                     }
-                }
                 @**@else
                 {
                     <li>None</li>
@@ -155,8 +182,7 @@
             <ul>
                 @if (ViewBag.Requests != null)
                 {
-                    var cars = ViewBag.Requests as List<CarModel>;
-                    foreach (var car in cars)
+                    foreach (var car in carRequests)
                     {
                         <li>
                             <text> (@car.CountryCode) @car.Plate </text>
@@ -178,8 +204,7 @@
             <ul>
                 @if (ViewBag.Invitations != null)
                 {
-                    var cars = ViewBag.Invitations as List<CarModel>;
-                    foreach (var car in cars)
+                    foreach (var car in carInvitations)
                     {
                         <li>
                             <text> (@car.CountryCode) @car.Plate </text>
