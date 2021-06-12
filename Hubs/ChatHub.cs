@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity;
 
 namespace CarMessenger.Hubs
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private static ApplicationDbContext contextdb = ApplicationDbContext.GetApplicationDbContext();
