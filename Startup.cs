@@ -55,7 +55,10 @@ namespace CarMessenger
 }
 /*/
 
+using CarMessenger.Hubs;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
+using Microsoft.Owin.Security.Cookies;
 using Owin;
 
 [assembly: OwinStartup(typeof(CarMessenger.Startup))]
@@ -65,6 +68,16 @@ namespace CarMessenger
     {
         public void Configuration(IAppBuilder app)
         {
+            // Enable the application to use a cookie to store information for the signed i user
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/Home/Index")
+            });
+
+            // Use a cookie to temporarily store information about a user logging in with a third party login provider
+            app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
+
             app.MapSignalR();//"/ChatHub", new HubConfiguration());
             ConfigureAuth(app);
         }
