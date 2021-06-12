@@ -76,12 +76,12 @@ namespace CarMessenger.Hubs
             Message msg = new Message(chatId, userId, content);
             contextdb.Messages.Add(msg);
             contextdb.SaveChanges();
-            //LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
-            //if (lastSeen != null)
-            //{
-            //    lastSeen.messageId = msg.Id;
-            //}
-            //contextdb.SaveChanges();
+            LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
+            if (lastSeen != null)
+            {
+                lastSeen.messageId = msg.Id;
+            }
+            contextdb.SaveChanges();
 
             Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
         }
