@@ -196,6 +196,11 @@
     }
 
     $(document).ready(function () {
+        // notifications test
+        //Notification.requestPermission().then(permision => {
+        //    new Notification("CarMessanger", {body: "Test Notificationswd"});
+        //})
+
         // all server functions have the first letter lowered
 
         // Declare a proxy to reference the hub.
@@ -230,6 +235,14 @@
                         NUM.css("display", "inline");
                     }
                     headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
+
+                    // add notification if message was not read
+                    //new Notification("CarMessanger", { body: "New Message in: " +});
+                    notMsgComp = el.children();
+                    notificationMsg = "New Message in chat: " + notMsgComp[0].innerHTML + " " + notMsgComp[1].innerHTML + (notMsgComp.length > 3 ? (" " + notMsgComp[2].innerHTML) : "");
+                    Notification.requestPermission().then(permision => {
+                        new Notification("CarMessanger", { body: notificationMsg });
+                    });
                 }
                 else {
                     // remove unreadcounter 
