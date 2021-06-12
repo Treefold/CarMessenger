@@ -367,7 +367,8 @@
                 }
             });
 
-            $('#sendButton').click(function () {
+
+            function send() {
                 if (getContent() === "") {
                     $('#messageInput').focus();
                     return;
@@ -386,6 +387,13 @@
 
                 chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
+            }
+
+            $('#sendButton').click(send);
+            $("#messageInput").keyup(function (event) {
+                if (event.keyCode === 13) { // enter
+                    send();
+                }
             });
 
             $('div.chat_head').click(function (event) {
