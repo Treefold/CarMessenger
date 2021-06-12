@@ -282,8 +282,10 @@ namespace CarMessenger.Controllers
                     {
                         context.Cars.Add(car);
                         await car.UpdateChatInviteLinkAsync();
-                        context.Owners.Add(new OwnerModel(User.Identity.GetUserId(), car.Id));
-                        context.Chats.Add(new Chat(null, car.Id, DateTime.MaxValue));
+                        context.Owners.Add(new OwnerModel(userId, car.Id));
+                        var chat = new Chat(null, car.Id, DateTime.MaxValue);
+                        context.Chats.Add(chat);
+                        context.LastSeens.Add(new LastSeen(userId, chat.Id));
                         context.SaveChanges();
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("Index", "Manage");
@@ -665,6 +667,11 @@ namespace CarMessenger.Controllers
 
                 owner.Category = "CoOwner";
                 owner.Expiry = DateTime.MaxValue;
+
+                // add not seen to all chats for the existing car
+                context.Chats.Where(c => c.carId == car.Id).Select(c => c.Id)
+                    .ToList().ForEach(chatId => context.LastSeens.Add(new LastSeen(userId, chatId)));
+
                 context.SaveChanges();
 
                 TempData["SuccessMsgs"] = new List<string> { "You are now a CoOwner" };
@@ -725,6 +732,11 @@ namespace CarMessenger.Controllers
 
                 coOwner.Category = "CoOwner";
                 coOwner.Expiry   = DateTime.MaxValue;
+
+                // add not seen to all chats for the existing car
+                context.Chats.Where(c => c.carId == car.Id).Select(c => c.Id)
+                    .ToList().ForEach(chatId => context.LastSeens.Add(new LastSeen(userReq.Id, chatId)));
+
                 context.SaveChanges();
 
                 TempData["SuccessMsgs"] = new List<string> { mail + " is now a CoOwner" };
@@ -740,12 +752,12 @@ namespace CarMessenger.Controllers
         // GET: Car/RemoveCoOwner/5
         // used to remove CoOwners (or their invitation/request)
         [HttpGet]
-        public ActionResult RemoveCoOwner(string id, string mail)
+        public ActionResult RemoveCoOwner(string carId, string mail)
         {
             try
             {
                 string userId = User.Identity.GetUserId();
-                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
+                OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
 
                 if ((owner == null || owner.Category != "Owner") && !User.IsInRole("Admin"))
                 {
@@ -753,20 +765,23 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("Index", "Manage");
                 }
 
-                ApplicationUser user = context.Users.FirstOrDefault(u => u.UserName == mail);
-                if (user == null)
+                ApplicationUser userRem = context.Users.FirstOrDefault(u => u.UserName == mail);
+                if (userRem == null)
                 {
                     TempData["InfoMsgs"] = new List<string> { "User Not Found" };
-                    return RedirectToAction("Details/" + id);
+                    return RedirectToAction("Details/" + carId);
                 }
 
-                OwnerModel removedOwner = context.Owners.FirstOrDefault(o => o.CarId == id && o.UserId == user.Id);
+                OwnerModel removedOwner = context.Owners.FirstOrDefault(o => o.CarId == carId && o.UserId == userRem.Id);
                 if (removedOwner == null)
                 {
                     TempData["InfoMsgs"] = new List<string> { "Not a CoOwner" };
-                    return RedirectToAction("Details/" + id);
+                    return RedirectToAction("Details/" + carId);
                 }
                 context.Owners.Remove(removedOwner);
+                var chatIds = context.Chats.Where(c => c.carId == carId).Select(c => c.Id).ToList();
+                var lastSeens = context.LastSeens.Where(s => s.userId == userRem.Id && chatIds.Contains(s.chatId));
+                context.LastSeens.RemoveRange(lastSeens);
                 context.SaveChanges();
 
 
@@ -790,7 +805,7 @@ namespace CarMessenger.Controllers
                 }
 
                 TempData["SuccessMsgs"] = new List<string> { mail + msg };
-                return RedirectToAction("Details/" + id);
+                return RedirectToAction("Details/" + carId);
             }
             catch (Exception e)
             {

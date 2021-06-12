@@ -80,11 +80,12 @@ namespace CarMessenger.Models
         public string CountryCode { get; set; }
 
         [Required]
-        [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
+        [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
         [StringLength(20, ErrorMessage = "Car ModelName excedeed length limit")]
         public string ModelName { get; set; }
 
-        [RegularExpression(@"[A-Za-z0-9]{0,20}", ErrorMessage = ("Please enter the color"))]
+        [Required]
+        [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
         [StringLength(20, ErrorMessage = "Car Color excedeed length limit")]
         public string Color { get; set; }
 

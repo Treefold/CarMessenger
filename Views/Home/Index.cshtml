@@ -1,12 +1,6 @@
 ﻿@using Microsoft.AspNet.Identity
 @using CarMessenger.Models
-@*<div class="container">
-        <input type="text" id="message" />
-        <input type="button" id="sendmessage" value="Send" />
-        <input type="hidden" id="displayname" />
-        <ul id="discussion">
-        </ul>
-    </div>*@
+
 @{
     var chats = ViewBag.chats as List<KeyValuePair<ChatHead, List<SentMessage>>>;
     //var newChats = ViewBag.newChats ? (ViewBag.newChats as List<String>) : (List<String>());
@@ -35,7 +29,7 @@
                             var personNickname = chat.Key.info;
                              <div id="h_@chat.Key.chatId" class="contacts_card chat_head @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
                                     style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
-                                (<text class="carCode">@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
+                                (<text class="carCode" st>@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
                                 @if (chat.Key.owning)
                                 {
                                     if (personNickname != null)
@@ -47,6 +41,7 @@
                                         <text><strong> #</strong></text>
                                     }
                                 }
+                                <text><text class="NewMsgs" style="display: @(chat.Key.newMsgs == 0 ? "none" : "inline")">@chat.Key.newMsgs</text></text>
                             </div>
                         }
                     }
@@ -73,6 +68,12 @@
                                     SentMessage msg;
                                     for (var i = chat.Value.Count - 1; i >= 0; --i)
                                     {
+                                        if (i == chat.Key.newMsgs-1)
+                                        {
+                                            <div class="NUM">
+                                                New Unread Messages
+                                            </div>
+                                        }
                                         msg = chat.Value[i];
                                         <div id="m_@msg.Id" class="messege">
                                             @if (msg.owned)
@@ -94,6 +95,12 @@
                                             <text>: @msg.content</text>
                                         </div>
                                     }
+                                }
+                                @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
+                                {
+                                    <div class="NUM" style="display: none">
+                                        New Unread Messages
+                                    </div>
                                 }
                             </div>
                         }
@@ -154,7 +161,25 @@
         $('#messageInput').val(cnt);
     }
 
+    function getLastMsgs(chatId) {
+        var msgArr = $("#b_" + chatId + " .messege:last");
+        if (msgArr.length > 0) {
+            var msgId = msgArr.attr('id').substring(2);
+            return msgId;
+        }
+        return null;
+    }
+
     function select_head(id) {
+        // for the old chat
+        if (_selectedChatId) { // if there was a previous chat
+            var oldHeadNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+            if (oldHeadNewMsgs[0].innerHTML == 0) { // all messages were read
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none') // hide new messages banner
+            }
+        }
+
+        // for the new chat
         _selectedChatId = id;
         resetContent()
         $(".chat_head").css('background-color', '#FFF');
@@ -164,25 +189,68 @@
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
         $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
-    }
 
-    function addMessage(chatId, msgId, nickname, msg) {
-        // move chat head
-        var el = $("#h_" + chatId);
-        $("#h_" + chatId).remove();
-        $("#heads_box").prepend(el);
-
-        // add chat message
-        //var msg_ = $("div").addClass("message");
-        //var name_ = $("strong").innerHTML = "You";
-        //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
-        //msg_.append(name_);
-        $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
+        var headNewMsgs = $("#h_" + id + " .NewMsgs");
+        headNewMsgs.css('display', 'none');
+        headNewMsgs[0].innerHTML = "0";
     }
 
     $(document).ready(function () {
+        // all server functions have the first letter lowered
+
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
+        var userId = "@User.Identity.GetUserId()";
+        var nickname = "@User.GetClaimValue("Nickname")";
+
+        function addMessage(chatId, msgId, nickname, msg, mine = false) {
+            // move chat head
+            var el = $("#h_" + chatId);
+            //$("#h_" + chatId).remove();
+            $("#heads_box").prepend(el);
+
+            var readMsg = mine;
+            if (!mine) {
+                if (chatId == _selectedChatId) { // new message in the current chat
+                    var currChatbox = $("#b_" + chatId);
+                    var chatboxHeight = $("#chat_body").height();
+                    if (currChatbox.scrollTop() + chatboxHeight >= currChatbox[0].scrollHeight) {
+                        //console.log("this message was read")
+                        readMsg = true;
+                    }
+                }
+                var headNewMsgs = $("#h_" + chatId + " .NewMsgs");
+                if (!readMsg) {
+                    // update new messages counter
+                    headNewMsgs.css('display', 'inline');
+                    if (headNewMsgs[0].innerHTML == 0) { // First new message
+                        var NUM = $("#b_" + chatId + " .NUM");
+                        //$("#b_" + chatId + " .NUM")[0].remove();
+                        $("#b_" + chatId).append(NUM);
+                        NUM.css("display", "inline");
+                    }
+                    headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
+                }
+                else {
+                    // remove unreadcounter 
+                    headNewMsgs[0].innerHTML = 0;
+                    headNewMsgs.css('display', 'none');
+                    // remove last read marker
+                    $("#b_" + chatId + " .NUM").css("display", "none");
+                }
+            }
+
+            $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
+
+            if (readMsg) {
+                var currChatbox = $("#b_" + chatId);
+                currChatbox.scrollTop(currChatbox[0].scrollHeight*2);
+                if (!mine) {
+                    chat.server.newSeen(userId, chatId, msgId)
+                }
+            }
+        }
+
         // Create a function that the hub can call to broadcast messages.
         chat.client.broadcastMessage = function (name, message) {
             console.log(name + ": " + message);
@@ -259,9 +327,6 @@
             chat.server.joinChat(newChat.chatId);
         }
 
-        var userId = "@User.Identity.GetUserId()";
-        var nickname = "@User.GetClaimValue("Nickname")";
-
         // Start the connection.
         $.connection.hub.start().done(function () {
             $('#heads_box .chat_head').each((index, el) => {
@@ -272,20 +337,52 @@
 
             $('#messageInput').val('').focus();
 
+            $("#messageInput").click(function () {
+               
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
+
+                
+                if (_selectedChatId) {
+                    var msgId = getLastMsgs(_selectedChatId);
+                    if (msgId) {
+                        chat.server.newSeen(userId, _selectedChatId, msgId);
+                    }
+                }
+            });
+
             $('#sendButton').click(function () {
                 if (getContent() === "") {
                     $('#messageInput').focus();
                     return;
                 }
-                //chat.server.send(nickname, $('#messageInput').val());
                 var id = "h_" + _selectedChatId;
-                var owned = getOwned(id)
-                addMessage(_selectedChatId, "", "You", getContent());
-                $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
+                var owned = getOwned(id);
 
-                //chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none')
+
+                addMessage(_selectedChatId, "", "You", getContent(), true);
+                //$("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
+
                 chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
+            });
+
+            $('div.chat_head').click(function (event) {
+                var e = $(event.currentTarget);
+                if (!e.is('div')) return;
+                var chatId = e.attr('id').substring(2);
+                var lastMsgId = getLastMsgs(chatId);
+                if (lastMsgId) {
+                    chat.server.newSeen(userId, chatId, lastMsgId);
+                }
             });
         });
     });

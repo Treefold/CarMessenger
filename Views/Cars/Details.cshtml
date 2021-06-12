@@ -49,8 +49,8 @@
                                 @if ((ViewBag.Owned != null && ViewBag.Owned) || User.IsInRole("Admin"))
                                 {
                                     <text><text onclick="return confirm('Are you sure?')">
-                                            [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
-                                        </text></text>
+                                            [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { carId = Model.Id, mail = coOwnerMail })&nbsp;&nbsp;]
+                                    </text></text>
                                 }
                             </li>
                         }
@@ -77,7 +77,7 @@
                             {
                                 <li>
                                     <text>@invitationMail</text>
-                                    [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { id = Model.Id, mail = invitationMail })&nbsp;&nbsp;]
+                                    [&nbsp;&nbsp;@Html.ActionLink("Remove", "RemoveCoOwner", new { carId = Model.Id, mail = invitationMail })&nbsp;&nbsp;]
                                 </li>
                             }
 
@@ -116,7 +116,7 @@
                                 <li>
                                     <text>@requestMail</text>
                                     [&nbsp;&nbsp;@Html.ActionLink("Accept", "OwnerAccept", new { id = Model.Id, mail = requestMail })&nbsp;
-                                    |&nbsp;&nbsp;@Html.ActionLink("Reject", "RemoveCoOwner", new { id = Model.Id, mail = requestMail })&nbsp;&nbsp;]
+                                    |&nbsp;&nbsp;@Html.ActionLink("Reject", "RemoveCoOwner", new { carId = Model.Id, mail = requestMail })&nbsp;&nbsp;]
                                 </li>
                             }
                         </ul>

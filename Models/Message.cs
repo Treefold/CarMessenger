@@ -18,7 +18,7 @@ namespace CarMessenger.Models
         public string chatId { get; set; }
 
         [Required]
-        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
+        [StringLength(128, ErrorMessage = "GUID excedeed length limit")]
         public string userId { get; set; }
 
         [Required]

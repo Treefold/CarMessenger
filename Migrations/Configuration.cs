@@ -87,7 +87,9 @@ namespace CarMessenger.Migrations
                         });
 
                         // Test Chats
-                        context.Chats.Add(new Chat { carId = car.Id });
+                        Chat chat = new Chat { carId = car.Id };
+                        context.Chats.Add(chat);
+                        context.LastSeens.Add(new LastSeen(user.Id, chat.Id));
                     }
                 }
             }

@@ -13,7 +13,7 @@ namespace CarMessenger.Models
         [Key]
         [Column(Order = 1)]
         [Required]
-        [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
+        [StringLength(128, ErrorMessage = "GUID excedeed length limit")]
         public string UserId { get; set; }
 
         [Key]
