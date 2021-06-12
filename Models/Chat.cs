@@ -64,6 +64,7 @@ namespace CarMessenger.Models
         public string code;
         public string info;
         public DateTime createTime;
+        public int newMsgs = 0;
 
         public ChatHead()
         {

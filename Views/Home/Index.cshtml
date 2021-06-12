@@ -35,7 +35,7 @@
                             var personNickname = chat.Key.info;
                              <div id="h_@chat.Key.chatId" class="contacts_card chat_head @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
                                     style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
-                                (<text class="carCode">@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
+                                (<text class="carCode" st>@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
                                 @if (chat.Key.owning)
                                 {
                                     if (personNickname != null)
@@ -47,6 +47,7 @@
                                         <text><strong> #</strong></text>
                                     }
                                 }
+                                <text><text class="NewMsgs" style="display: @(chat.Key.newMsgs == 0 ? "none" : "inline")">@chat.Key.newMsgs</text></text>
                             </div>
                         }
                     }
@@ -73,6 +74,12 @@
                                     SentMessage msg;
                                     for (var i = chat.Value.Count - 1; i >= 0; --i)
                                     {
+                                        if (i == chat.Key.newMsgs-1)
+                                        {
+                                            <div class="NUM">
+                                                New Unread Messages
+                                            </div>
+                                        }
                                         msg = chat.Value[i];
                                         <div id="m_@msg.Id" class="messege">
                                             @if (msg.owned)
@@ -154,6 +161,15 @@
         $('#messageInput').val(cnt);
     }
 
+    function getLastMsgs(chatId) {
+        var msgArr = $("#b_" + chatId + " .messege:last");
+        if (msgArr.length > 0) {
+            var msgId = msgArr.attr('id').substring(2);
+            return msgId;
+        }
+        return null;
+    }
+
     function select_head(id) {
         _selectedChatId = id;
         resetContent()
@@ -164,25 +180,38 @@
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
         $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
-    }
 
-    function addMessage(chatId, msgId, nickname, msg) {
-        // move chat head
-        var el = $("#h_" + chatId);
-        $("#h_" + chatId).remove();
-        $("#heads_box").prepend(el);
-
-        // add chat message
-        //var msg_ = $("div").addClass("message");
-        //var name_ = $("strong").innerHTML = "You";
-        //var content_ = $("text").innerHTML = ": Eu sunt";// + getContent();
-        //msg_.append(name_);
-        $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
+        var headNewMsgs = $("#h_" + id + " .NewMsgs");
+        headNewMsgs.css('display', 'none');
+        headNewMsgs[0].innerHTML = "0";
+        // update last read
+        //getLastMsgs(id);
     }
 
     $(document).ready(function () {
+        // all server functions have the first letter lowered
+
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
+        var userId = "@User.Identity.GetUserId()";
+        var nickname = "@User.GetClaimValue("Nickname")";
+
+        function addMessage(chatId, msgId, nickname, msg) {
+            // move chat head
+            var el = $("#h_" + chatId);
+            $("#h_" + chatId).remove();
+            $("#heads_box").prepend(el);
+            $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
+
+            if (chatId != _selectedChatId) {
+                // update new messages counter
+                var headNewMsgs = $("#h_" + chatId + " .NewMsgs");
+                headNewMsgs.css('display', 'inline');
+                headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
+            }
+            // else: last read already updated at send
+        }
+
         // Create a function that the hub can call to broadcast messages.
         chat.client.broadcastMessage = function (name, message) {
             console.log(name + ": " + message);
@@ -259,9 +288,6 @@
             chat.server.joinChat(newChat.chatId);
         }
 
-        var userId = "@User.Identity.GetUserId()";
-        var nickname = "@User.GetClaimValue("Nickname")";
-
         // Start the connection.
         $.connection.hub.start().done(function () {
             $('#heads_box .chat_head').each((index, el) => {
@@ -277,15 +303,24 @@
                     $('#messageInput').focus();
                     return;
                 }
-                //chat.server.send(nickname, $('#messageInput').val());
                 var id = "h_" + _selectedChatId;
-                var owned = getOwned(id)
+                var owned = getOwned(id);
+
                 addMessage(_selectedChatId, "", "You", getContent());
                 $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
-                //chat.server.messageCar(email, nickname, getCarPlate(id), getCarCode(id), owned ? getNickname(id) : null, owned, getContent());
                 chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
+            });
+
+            $('div.chat_head').click(function (event) {
+                var e = $(event.currentTarget);
+                if (!e.is('div')) return;
+                var chatId = e.attr('id').substring(2);
+                var lastMsgId = getLastMsgs(chatId);
+                if (lastMsgId) {
+                    chat.server.newSeen(userId, chatId, lastMsgId);
+                }
             });
         });
     });

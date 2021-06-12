@@ -52,6 +52,22 @@ namespace CarMessenger.Hubs
             chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
         }
 
+        public void NewSeen(string userId, string chatId, string messageId)
+        {
+            try
+            { 
+                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.userId == userId && s.chatId == chatId);
+                if (lastSeen != null)
+                {
+                    lastSeen.messageId = messageId;
+                    contextdb.SaveChanges();
+                }
+            } catch
+            {
+                // do nothing
+            }
+        }
+
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
             ApplicationUser user = contextdb.Users.Find(userId);
@@ -60,6 +76,12 @@ namespace CarMessenger.Hubs
             Message msg = new Message(chatId, userId, content);
             contextdb.Messages.Add(msg);
             contextdb.SaveChanges();
+            //LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
+            //if (lastSeen != null)
+            //{
+            //    lastSeen.messageId = msg.Id;
+            //}
+            //contextdb.SaveChanges();
 
             Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
         }

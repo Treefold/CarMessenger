@@ -30,11 +30,11 @@ namespace CarMessenger.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                var userID = User.Identity.GetUserId();
+                var userId = User.Identity.GetUserId();
                 //var userMail    = User.Identity.GetUserName();
-                var ownedCarIds = context.Owners.Where(o => o.UserId == userID && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
+                var ownedCarIds = context.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
 
-                var userChats = context.Chats.Where(c => c.userId == userID || ownedCarIds.Contains(c.carId)).ToList();
+                var userChats = context.Chats.Where(c => c.userId == userId || ownedCarIds.Contains(c.carId)).ToList();
 
                 bool contextChanged = false;
                 // TODO: Delete expired chats
@@ -42,13 +42,12 @@ namespace CarMessenger.Controllers
                 var allCarsIds = userChats.Select(c => c.carId).ToList();
                 var carDetails = context.Cars.Where(c => allCarsIds.Contains(c.Id)).ToList();
 
-                Dictionary<string, string> infoDict = userChats.Select(c => c.userId).Distinct().Where(c => c != null && c != userID).Join(
+                Dictionary<string, string> infoDict = userChats.Select(c => c.userId).Distinct().Where(c => c != null && c != userId).Join(
                         context.Users,
                         userKey => userKey,
                         users => users.Id,
                         (userKey, users) => new KeyValuePair<string, string>(userKey, users.Nickname)
                     ).ToList().ToDictionary(pair => pair.Key, pair => pair.Value);
-
 
                 List<ChatHead> chatsDetails = userChats.Join(
                         carDetails,
@@ -57,10 +56,10 @@ namespace CarMessenger.Controllers
                         (chat, car) => new ChatHead 
                         {
                             chatId = chat.Id, 
-                            owning = chat.userId != userID, 
+                            owning = chat.userId != userId, 
                             plate = car.Plate, 
                             code = car.CountryCode, 
-                            info = (string)(chat.userId == null || chat.userId == userID ? null : infoDict[chat.userId]),
+                            info = (string)(chat.userId == null || chat.userId == userId ? null : infoDict[chat.userId]),
                             createTime = chat.createTime
                         }
                      ).ToList();
@@ -73,7 +72,7 @@ namespace CarMessenger.Controllers
                     var rawChatMessages = context.Messages.Where(m => m.chatId == currChat.chatId);
                     // TODO: Delete expired messages
 
-                    var finalChatMessages = rawChatMessages.Join(
+                    List<SentMessage> finalChatMessages = rawChatMessages.Join(
                             context.Users,
                             msg => msg.userId,
                             user => user.Id,
@@ -85,9 +84,20 @@ namespace CarMessenger.Controllers
                                 sendTime = msg.sendTime,
                                 expiry = msg.expiry,
                                 nickname = user.Nickname,
-                                owned = msg.userId == userID
+                                owned = msg.userId == userId
                             }
-                        ).OrderByDescending(m => m.sendTime).ToList();
+                        ).OrderByDescending(m => m.sendTime).ThenBy(c => c.Id).ToList();
+
+                    string seenMsgId = context.LastSeens.First(s => s.chatId == currChat.chatId && s.userId == userId).messageId;
+
+                    if (String.IsNullOrEmpty(seenMsgId))
+                    {
+                        currChat.newMsgs = finalChatMessages.Count;
+                    }
+                    else
+                    {
+                        currChat.newMsgs = finalChatMessages.FindIndex(msg => msg.Id == seenMsgId);
+                    }
 
                     chats.Add(currChat, finalChatMessages);
                 }
