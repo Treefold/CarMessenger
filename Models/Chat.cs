@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CarMessenger.Hubs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -40,6 +41,19 @@ namespace CarMessenger.Models
         public Chat(string userId, string carId, DateTime deleteTime) : this(userId, carId)
         {
             this.deleteTime = deleteTime;
+        }
+
+        public bool HasExpired()
+        {
+            return DateTime.Now >= this.deleteTime;
+        }
+
+        public void Delete(ApplicationDbContext context)
+        {
+            ChatHub.DeleteChat(this.Id); // notify users of this chat deletion
+            var seens = context.LastSeens.Where(s => s.chatId == this.Id); 
+            context.LastSeens.RemoveRange(seens); // get rid of all seen markers
+            context.Chats.Remove(this); // remove this chat
         }
     }
 

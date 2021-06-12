@@ -62,5 +62,14 @@ namespace CarMessenger.Models
             //    Expiry = DateTime.MaxValue;
             //}
         }
+        public bool HasExpired()
+        {
+            return DateTime.Now >= this.Expiry;
+        }
+
+        public void Delete(ApplicationDbContext context)
+        {
+            context.Owners.Remove(this);
+        }
     }
 }

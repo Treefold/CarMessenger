@@ -337,15 +337,13 @@
                 '<div id="b_' + newChat.chatId + '" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
                 + '</div>'
             );
-            chat.server.joinChat(newChat.chatId);
+            chat.server.joinNewChat(newChat.chatId);
         }
 
         // Start the connection.
         $.connection.hub.start().done(function () {
-            $('#heads_box .chat_head').each((index, el) => {
-                chat.server.joinChat(el.id?.substring(2));
-            });
 
+            chat.server.joinMyChats()
             chat.server.joinMyCars(userId);
 
             $('#messageInput').val('').focus();
