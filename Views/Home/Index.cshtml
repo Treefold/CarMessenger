@@ -1,12 +1,6 @@
 ﻿@using Microsoft.AspNet.Identity
 @using CarMessenger.Models
-@*<div class="container">
-        <input type="text" id="message" />
-        <input type="button" id="sendmessage" value="Send" />
-        <input type="hidden" id="displayname" />
-        <ul id="discussion">
-        </ul>
-    </div>*@
+
 @{
     var chats = ViewBag.chats as List<KeyValuePair<ChatHead, List<SentMessage>>>;
     //var newChats = ViewBag.newChats ? (ViewBag.newChats as List<String>) : (List<String>());
@@ -102,6 +96,12 @@
                                         </div>
                                     }
                                 }
+                                @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
+                                {
+                                    <div class="NUM" style="display: none">
+                                        New Unread Messages
+                                    </div>
+                                }
                             </div>
                         }
                     }
@@ -171,6 +171,15 @@
     }
 
     function select_head(id) {
+        // for the old chat
+        if (_selectedChatId) { // if there was a previous chat
+            var oldHeadNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+            if (oldHeadNewMsgs[0].innerHTML == 0) { // all messages were read
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none') // hide new messages banner
+            }
+        }
+
+        // for the new chat
         _selectedChatId = id;
         resetContent()
         $(".chat_head").css('background-color', '#FFF');
@@ -184,8 +193,6 @@
         var headNewMsgs = $("#h_" + id + " .NewMsgs");
         headNewMsgs.css('display', 'none');
         headNewMsgs[0].innerHTML = "0";
-        // update last read
-        //getLastMsgs(id);
     }
 
     $(document).ready(function () {
@@ -196,20 +203,52 @@
         var userId = "@User.Identity.GetUserId()";
         var nickname = "@User.GetClaimValue("Nickname")";
 
-        function addMessage(chatId, msgId, nickname, msg) {
+        function addMessage(chatId, msgId, nickname, msg, mine = false) {
             // move chat head
             var el = $("#h_" + chatId);
-            $("#h_" + chatId).remove();
+            //$("#h_" + chatId).remove();
             $("#heads_box").prepend(el);
+
+            var readMsg = mine;
+            if (!mine) {
+                if (chatId == _selectedChatId) { // new message in the current chat
+                    var currChatbox = $("#b_" + chatId);
+                    var chatboxHeight = $("#chat_body").height();
+                    if (currChatbox.scrollTop() + chatboxHeight >= currChatbox[0].scrollHeight) {
+                        //console.log("this message was read")
+                        readMsg = true;
+                    }
+                }
+                var headNewMsgs = $("#h_" + chatId + " .NewMsgs");
+                if (!readMsg) {
+                    // update new messages counter
+                    headNewMsgs.css('display', 'inline');
+                    if (headNewMsgs[0].innerHTML == 0) { // First new message
+                        var NUM = $("#b_" + chatId + " .NUM");
+                        //$("#b_" + chatId + " .NUM")[0].remove();
+                        $("#b_" + chatId).append(NUM);
+                        NUM.css("display", "inline");
+                    }
+                    headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
+                }
+                else {
+                    // remove unreadcounter 
+                    headNewMsgs[0].innerHTML = 0;
+                    headNewMsgs.css('display', 'none');
+                    // remove last read marker
+                    $("#b_" + chatId + " .NUM").css("display", "none");
+                }
+            }
+
             $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
 
-            if (chatId != _selectedChatId) {
-                // update new messages counter
-                var headNewMsgs = $("#h_" + chatId + " .NewMsgs");
-                headNewMsgs.css('display', 'inline');
-                headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
+            if (readMsg) {
+                var currChatbox = $("#b_" + chatId);
+                currChatbox.scrollTop(currChatbox[0].scrollHeight*2);
+                if (!mine) {
+                    chat.server.newSeen(userId, chatId, msgId)
+                }
             }
-            // else: last read already updated at send
         }
 
         // Create a function that the hub can call to broadcast messages.
@@ -298,6 +337,23 @@
 
             $('#messageInput').val('').focus();
 
+            $("#messageInput").click(function () {
+               
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
+
+                
+                if (_selectedChatId) {
+                    var msgId = getLastMsgs(_selectedChatId);
+                    if (msgId) {
+                        chat.server.newSeen(userId, _selectedChatId, msgId);
+                    }
+                }
+            });
+
             $('#sendButton').click(function () {
                 if (getContent() === "") {
                     $('#messageInput').focus();
@@ -306,8 +362,14 @@
                 var id = "h_" + _selectedChatId;
                 var owned = getOwned(id);
 
-                addMessage(_selectedChatId, "", "You", getContent());
-                $("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none')
+
+                addMessage(_selectedChatId, "", "You", getContent(), true);
+                //$("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
                 chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
                 $('#messageInput').val('').focus();
