@@ -364,8 +364,16 @@ namespace CarMessenger.Controllers
             msgsGroup.Select(g => new {chatId = g.Key, msgs = g.Select(m => m.Id).ToList() }).ToList()
                 .ForEach((chat) => ChatHub.UpdateNickMsg(chat.chatId, model.Nickname, chat.msgs));
 
+
+            var user = await UserManager.FindByIdAsync(User.Identity.GetUserId()); 
+            if (user != null)
+            {
+                // TODO: Notify user in the other browsers (open connections)
+                await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+            }
+
             //AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index","Manage");//RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Manage"); //RedirectToAction("Index", "Home");
         }
 
         // GET: /Manage/ChangePassword

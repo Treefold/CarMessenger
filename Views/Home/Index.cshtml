@@ -259,7 +259,7 @@
                 var currChatbox = $("#b_" + chatId);
                 currChatbox.scrollTop(currChatbox[0].scrollHeight*2);
                 if (!mine) {
-                    chat.server.newSeen(userId, chatId, msgId)
+                    chat.server.newSeen(chatId, msgId)
                 }
             }
         }
@@ -292,6 +292,9 @@
                 $("#chat_box").css('display', 'none');
                 _selectedChatId = undefined;
             }
+
+            // callback function
+            chat.server.disconnectChat(chatId);
         };
         chat.client.UpdateCarChat = function (chatId, plate, code) {
             $("#h_" + chatId + " .carPlate")[0].innerHTML = plate;
@@ -337,16 +340,14 @@
                 '<div id="b_' + newChat.chatId + '" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
                 + '</div>'
             );
-            chat.server.joinChat(newChat.chatId);
+            chat.server.joinNewChat(newChat.chatId);
         }
 
         // Start the connection.
         $.connection.hub.start().done(function () {
-            $('#heads_box .chat_head').each((index, el) => {
-                chat.server.joinChat(el.id?.substring(2));
-            });
 
-            chat.server.joinMyCars(userId);
+            chat.server.joinMyChats()
+            chat.server.joinMyCars();
 
             $('#messageInput').val('').focus();
 
@@ -362,7 +363,7 @@
                 if (_selectedChatId) {
                     var msgId = getLastMsgs(_selectedChatId);
                     if (msgId) {
-                        chat.server.newSeen(userId, _selectedChatId, msgId);
+                        chat.server.newSeen(_selectedChatId, msgId);
                     }
                 }
             });
@@ -370,7 +371,7 @@
 
             function send() {
                 if (getContent() === "") {
-                    $('#messageInput').focus();
+                    $('#messageInput').val('').focus();
                     return;
                 }
                 var id = "h_" + _selectedChatId;
@@ -385,7 +386,7 @@
                 addMessage(_selectedChatId, "", "You", getContent(), true);
                 //$("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
-                chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
+                chat.server.messageChat(_selectedChatId, getContent())
                 $('#messageInput').val('').focus();
             }
 
@@ -402,7 +403,7 @@
                 var chatId = e.attr('id').substring(2);
                 var lastMsgId = getLastMsgs(chatId);
                 if (lastMsgId) {
-                    chat.server.newSeen(userId, chatId, lastMsgId);
+                    chat.server.newSeen(chatId, lastMsgId);
                 }
             });
         });

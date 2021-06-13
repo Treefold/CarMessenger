@@ -179,7 +179,7 @@ namespace CarMessenger.Controllers
                         .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, ch.Id)));
 
                     context.SaveChanges();
-                    ChatHub.NewChat(carId, new ChatHead(ch, car, User.Identity.GetNickname()));
+                    ChatHub.NewOwnerChat(carId, new ChatHead(ch, car, User.Identity.GetNickname()));
                 }
                 
                 return RedirectToAction("Index", "Home");
@@ -238,7 +238,7 @@ namespace CarMessenger.Controllers
                         .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, chat.Id)));
 
                     context.SaveChanges();
-                    ChatHub.NewChat(carId, new ChatHead(newChat, car, User.Identity.GetNickname()));
+                    ChatHub.NewOwnerChat(carId, new ChatHead(newChat, car, User.Identity.GetNickname()));
                 }
 
                 return RedirectToAction("Index", "Home");

@@ -62,5 +62,40 @@ namespace CarMessenger.Models
             //    Expiry = DateTime.MaxValue;
             //}
         }
+        public bool HasExpired()
+        {
+            return DateTime.Now >= this.Expiry;
+        }
+
+        public bool IsOwner()
+        {
+            return this.Category == "Owner";
+        }
+        public bool IsCoOwner()
+        {
+            return this.Category == "CoOwner";
+        }
+        public bool IsInvitati()
+        {
+            return this.Category == "Invitation";
+        }
+        public bool IsRequest()
+        {
+            return this.Category == "Request";
+        }
+
+        public bool Owns()
+        {
+            return (this.IsOwner() || this.IsCoOwner());
+        }
+
+        public void Delete(ApplicationDbContext context, bool notifyMsg = true)
+        {
+            if (notifyMsg)
+            {
+                // TODO: notify users
+            }
+            context.Owners.Remove(this);
+        }
     }
 }

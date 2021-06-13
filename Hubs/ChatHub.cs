@@ -18,96 +18,312 @@ namespace CarMessenger.Hubs
         private static IHubContext chatHub = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
 
         public ChatHub() {}
-        
-        public void Send (string name, string message)
-        {
-            Clients.All.broadcastMessage(name, message);
-        }
 
-        public void JoinChat(string chatId)
+        public static void DeleteChat(string chatId)
         {
-            Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
-        }
-        
-        public void JoinChats(List<string> chatIdList)
-        {
-            foreach (var chatId in chatIdList)
-            {
-                JoinChat(chatId);
-            }
-        }
-
-        private void JoinCarById(string carId)
-        {
-            Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
-        }
-
-        public void JoinMyCars(string userId)
-        {
-            contextdb.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner"))
-                .Select(o => o.CarId).ToList().ForEach(carId => { JoinCarById(carId); });
-        }
-
-        public static void NewChat(string carId, ChatHead head)
-        {
-            chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
-        }
-
-        public void NewSeen(string userId, string chatId, string messageId)
-        {
+            // only the server can call this function
+            // not verified, already trusted
             try
-            { 
-                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.userId == userId && s.chatId == chatId);
-                if (lastSeen != null)
+            {
+                if (chatHub != null)
                 {
-                    lastSeen.messageId = messageId;
-                    contextdb.SaveChanges();
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).DeleteChat(chatId);
                 }
-            } catch
+            }
+            catch
             {
                 // do nothing
             }
         }
 
-        public void MessageChat(string chatId, string userId, string nickname, string content)
+        public void DisconnectChat(string chatId)
         {
-            ApplicationUser user = contextdb.Users.Find(userId);
-            if (user == null) return;
-            nickname = user.Nickname;
-            Message msg = new Message(chatId, userId, content);
-            contextdb.Messages.Add(msg);
-            contextdb.SaveChanges();
-            LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
-            if (lastSeen != null)
+            // only the client should call this function
+            // calledback function after removing chats so that further messages won't be received
+            try
             {
-                lastSeen.messageId = msg.Id;
-            }
-            contextdb.SaveChanges();
+                // no validation needed while disconnectiong from the groups
 
-            Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
+                Groups.Remove(Context.ConnectionId, chatGroupPrefix + chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
-        public static void DeleteChat(string chatId)
+        private void JoinMyChatTrusted(string chatId)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix+chatId).DeleteChat(chatId);
+            // only this class can call this function
+            try
+            {
+                // this will not be verified, already trusted (the chat exists and has not expired)
+                Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public void JoinNewChat(string chatId)
+        {
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                if (Chat.HasUser(contextdb, userId, chatId))
+                {
+                    // all validations passed => it's safe to add it
+                    Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public void JoinMyChats()
+        {
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                // add to non-owner chats
+                contextdb.Chats.Where(c => c.userId == userId).Select( c => c.Id) // get all non-owner chats
+                    .ToList().ForEach(chatId => { JoinMyChatTrusted(chatId); }); // join all non-owner chats group
+
+                // add owner chats
+                contextdb.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner")) // get the id of all owned cars
+                    .Join( // get all owned cars
+                        contextdb.Cars,
+                        owner => owner.CarId,
+                        car   => car.Id,
+                        (owner, car) => car
+                    ).Join( // get all owned chats
+                        contextdb.Chats,
+                        car  => car.Id,
+                        chat => chat.carId,
+                        (car, chat) => chat.Id
+                    ).ToList().ForEach(chatId => { JoinMyChatTrusted(chatId); }); // join all owner chats group
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+               
+        private void JoinMyCarTrusted(string carId)
+        {
+            // only this class can call this function
+            try
+            {
+                // this will not be verified, already trusted (the car exists and the user owns it)
+                Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public void JoinMyCars()
+        {
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                // add car
+                contextdb.Owners.Where(o => o.UserId == userId)
+                    .ToList().ForEach(owner => {
+                        if (owner.HasExpired())
+                        {
+                            owner.Delete(contextdb);
+                        }
+                        else
+                        {
+                            if (owner.Owns())
+                            {
+                                JoinMyCarTrusted(owner.CarId);
+                            }
+                        }
+                    });
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public static void NewOwnerChat(string carId, ChatHead head)
+        {
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the owners of their new chat
+                chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public void NewSeen(string chatId, string messageId)
+        { 
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.userId == userId && s.chatId == chatId);
+                if (lastSeen == null)
+                {
+                    return; // invalid attempt - unknow chat
+                }
+
+                Message msg = contextdb.Messages.Find(messageId);
+                if (msg == null || msg.chatId != chatId)
+                {
+                    return; // invalid attempt - inexistent message in chat
+                }
+
+                /*
+                 * here should be a validation that this is the last messaga in chat
+                 * but we don't really care and that would be time/resourece consiuming, 
+                 * the user is allowed to play with this if he really wants to (and is able to).
+                 * only he can see these and it doesn't influence anybody else => it's not a vunlnerability
+                 */
+
+                lastSeen.messageId = messageId;
+                contextdb.SaveChanges();
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public void MessageChat(string chatId, string content)
+        {
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                if (!Chat.HasUser(contextdb, userId, chatId))
+                {
+                    return;  // invalid attempt - user not in chat
+                }
+
+                Message msg = new Message(chatId, userId, content);
+                contextdb.Messages.Add(msg);
+                contextdb.SaveChanges();
+
+                // update last seen for the current user in the current chat
+                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
+                if (lastSeen != null)
+                {
+                    lastSeen.messageId = msg.Id;
+                }
+                contextdb.SaveChanges();
+
+                Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, Context.User.Identity.GetNickname(), false)));
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
         public static void UpdateCarChat(string chatId, string plate, string code)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateCarChat(chatId, plate, code);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateCarChat(chatId, plate, code);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
         public static void UpdateNickChat(string chatId, string nick)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
         public static void UpdateNickMsg(string chatId, string nick, List<string> msgs)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickMsg(chatId, nick, msgs);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickMsg(chatId, nick, msgs);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
     }
 }
