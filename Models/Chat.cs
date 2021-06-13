@@ -51,9 +51,57 @@ namespace CarMessenger.Models
         public void Delete(ApplicationDbContext context)
         {
             ChatHub.DeleteChat(this.Id); // notify users of this chat deletion
-            var seens = context.LastSeens.Where(s => s.chatId == this.Id); 
+            var seens = context.LastSeens.Where(s => s.chatId == this.Id);
             context.LastSeens.RemoveRange(seens); // get rid of all seen markers
             context.Chats.Remove(this); // remove this chat
+        }
+
+        public bool HasUser(ApplicationDbContext contextdb, string userId)
+        {
+            if (this.HasExpired())
+            {
+                this.Delete(contextdb);
+                return false; // invalid attempt - this chat no longer exists
+            }
+
+            if (this.userId != userId)
+            {
+                string carId = contextdb.Cars.Find(this.carId)?.Id; // might fail, but catched (it's alright)
+                if (String.IsNullOrEmpty(carId))
+                {
+                    // should never happen
+                    return false; // invalid attempt - inexistent car
+                }
+                OwnerModel owner = contextdb.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
+                if (owner == null)
+                {
+                    return false; // invalid attempt - inexistent relationship between the user and the car
+                }
+                if (owner.HasExpired())
+                {
+                    owner.Delete(contextdb);
+                    return false; // invalid attempt - this is no longer available
+                }
+                if (!owner.Owns())
+                {
+                    return false; // access denied - doesn't own the car
+                }
+                // else: owns the car => OK
+            }
+            // else: it's the user talking to the car => OK
+            return true; // OK
+        }
+
+        public static bool HasUser(ApplicationDbContext contextdb, string userId, string chatId)
+        {
+            // chat validation
+            Chat chat = contextdb.Chats.Find(chatId); // might fail, but catched (it's alright)
+            if (chat == null)
+            {
+                return false; // invalid attempt - inexistent chat
+            }
+
+            return chat.HasUser(contextdb, userId);
         }
     }
 

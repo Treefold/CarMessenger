@@ -386,7 +386,7 @@
                 addMessage(_selectedChatId, "", "You", getContent(), true);
                 //$("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
-                chat.server.messageChat(_selectedChatId, userId, nickname, getContent())
+                chat.server.messageChat(_selectedChatId, getContent())
                 $('#messageInput').val('').focus();
             }
 

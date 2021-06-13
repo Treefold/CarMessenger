@@ -80,46 +80,11 @@ namespace CarMessenger.Hubs
                     return; // invalid attempt - unknown user
                 }
 
-                // chat validation
-                Chat chat = contextdb.Chats.Find(chatId); // might fail, but catched (it's alright)
-                if (chat == null)
+                if (Chat.HasUser(contextdb, userId, chatId))
                 {
-                    return; // invalid attempt - inexistent chat
+                    // all validations passed => it's safe to add it
+                    Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
                 }
-                if (chat.HasExpired())
-                {
-                    chat.Delete(contextdb);
-                    return; // invalid attempt - this chat no longer exists
-                }
-
-                if (chat.userId != userId)
-                {
-                    string carId = contextdb.Cars.Find(chat.carId)?.Id; // might fail, but catched (it's alright)
-                    if (String.IsNullOrEmpty(carId))
-                    {
-                        // should never happen
-                        return; // invalid attempt - inexistent car
-                    }
-                    OwnerModel owner = contextdb.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
-                    if (owner == null)
-                    {
-                        return; // invalid attempt - inexistent relationship between the user and the car
-                    }
-                    if (owner.HasExpired())
-                    {
-                        owner.Delete(contextdb);
-                        return; // invalid attempt - this is no longer available
-                    }
-                    if (!owner.Owns())
-                    {
-                        return; // access denied - doesn't own the car
-                    }
-                    // else: owns the car => OK
-                }
-                // else: it's the user talking to the car => OK
-
-                // all validations passed => it's safe to add it
-                Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
             }
             catch
             {
@@ -270,32 +235,48 @@ namespace CarMessenger.Hubs
             {
                 // do nothing
             }
+        }
+
+        public void MessageChat(string chatId, string content)
+        {
+
+            // only the client should call this function
             try
-            { 
-            } catch
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                if (!Chat.HasUser(contextdb, userId, chatId))
+                {
+                    return;  // invalid attempt - user not in chat
+                }
+
+                Message msg = new Message(chatId, userId, content);
+                contextdb.Messages.Add(msg);
+                contextdb.SaveChanges();
+
+                // update last seen for the current user in the current chat
+                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
+                if (lastSeen != null)
+                {
+                    lastSeen.messageId = msg.Id;
+                }
+                contextdb.SaveChanges();
+
+                Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, Context.User.Identity.GetNickname(), false)));
+            }
+            catch
             {
                 // do nothing
             }
         }
 
-
-        public void MessageChat(string chatId, string userId, string nickname, string content)
-        {
-            ApplicationUser user = contextdb.Users.Find(userId);
-            if (user == null) return;
-            nickname = user.Nickname;
-            Message msg = new Message(chatId, userId, content);
-            contextdb.Messages.Add(msg);
-            contextdb.SaveChanges();
-            LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.chatId == chatId && s.userId == userId);
-            if (lastSeen != null)
-            {
-                lastSeen.messageId = msg.Id;
-            }
-            contextdb.SaveChanges();
-
-            Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
-        }
 
         public static void UpdateCarChat(string chatId, string plate, string code)
         {
