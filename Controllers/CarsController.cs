@@ -778,12 +778,8 @@ namespace CarMessenger.Controllers
                     TempData["InfoMsgs"] = new List<string> { "Not a CoOwner" };
                     return RedirectToAction("Details/" + carId);
                 }
-                context.Owners.Remove(removedOwner);
-                var chatIds = context.Chats.Where(c => c.carId == carId).Select(c => c.Id).ToList();
-                var lastSeens = context.LastSeens.Where(s => s.userId == userRem.Id && chatIds.Contains(s.chatId));
-                context.LastSeens.RemoveRange(lastSeens);
+                removedOwner.Delete(context);
                 context.SaveChanges();
-
 
                 string msg;
 

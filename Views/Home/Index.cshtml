@@ -274,6 +274,7 @@
             addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
         chat.client.DeleteChat = function (chatId) {
+
             var chatH = $("#h_" + chatId)[0];
             var chatB = $("#b_" + chatId)[0];
             var warningMsgEl = $(

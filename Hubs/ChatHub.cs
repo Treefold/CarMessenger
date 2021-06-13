@@ -253,6 +253,21 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public static void DeleteChatForUser(string chatId, string userId)
+        {
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the user of its chat deletion
+                chatHub.Clients.Group(userPrefix + userId).DeleteChat(chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
         public void NewSeen(string chatId, string messageId)
         { 
             // only the client should call this function
