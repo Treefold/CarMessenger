@@ -28,9 +28,7 @@ namespace CarMessenger.Models
 
         public DateTime deleteTime { get; set; } = DateTime.Now.AddDays(2);
 
-        public Chat()
-        {
-        }
+        public Chat() {}
 
         public Chat(string userId, string carId) : this()
         {
@@ -50,10 +48,12 @@ namespace CarMessenger.Models
 
         public void Delete(ApplicationDbContext context)
         {
-            ChatHub.DeleteChat(this.Id); // notify users of this chat deletion
+            var chatId = this.Id;
             var seens = context.LastSeens.Where(s => s.chatId == this.Id);
             context.LastSeens.RemoveRange(seens); // get rid of all seen markers
+            context.SaveChanges(); // this save is mandatory
             context.Chats.Remove(this); // remove this chat
+            ChatHub.DeleteChat(chatId); // notify users of this chat deletion
         }
 
         public bool HasUser(ApplicationDbContext contextdb, string userId)
@@ -132,10 +132,10 @@ namespace CarMessenger.Models
         {
         }
 
-        public ChatHead(Chat chat, CarModel car, string nickname)
+        public ChatHead(Chat chat, CarModel car, string nickname, bool owning = true)
         {
             this.chatId = chat.Id;
-            this.owning = true;
+            this.owning = owning;
             this.plate = car.Plate;
             this.code = car.CountryCode;
             this.info = nickname;

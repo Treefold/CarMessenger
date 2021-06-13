@@ -346,8 +346,9 @@
         // Start the connection.
         $.connection.hub.start().done(function () {
 
-            chat.server.joinMyChats()
+            chat.server.joinMyChats();
             chat.server.joinMyCars();
+            chat.server.joinMyNotifications();
 
             $('#messageInput').val('').focus();
 

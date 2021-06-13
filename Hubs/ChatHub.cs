@@ -14,7 +14,8 @@ namespace CarMessenger.Hubs
     {
         private static ApplicationDbContext contextdb = ApplicationDbContext.GetApplicationDbContext();
         private static string chatGroupPrefix = "Chat_";
-        private static string carGroupPrefix  = "Car_";
+        private static string carGroupPrefix = "Car_";
+        private static string userPrefix = "User_";
         private static IHubContext chatHub = GlobalHost.ConnectionManager.GetHubContext<ChatHub>();
 
         public ChatHub() {}
@@ -180,7 +181,49 @@ namespace CarMessenger.Hubs
             }
         }
 
-        public static void NewOwnerChat(string carId, ChatHead head)
+        public void JoinMyNotifications() 
+        {
+            // user joins it's own notification 
+
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
+
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                Groups.Add(Context.ConnectionId, userPrefix + userId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public static void Notify(string userId, string notType, string notMsg)
+        {
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(userPrefix + userId).Notify(notType, notMsg);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
+        
+        }
+
+        public static void NewChatForOwners(string carId, ChatHead head)
         {
             // only the server can call this function
             // no validations, already trusted
@@ -188,6 +231,21 @@ namespace CarMessenger.Hubs
             {
                 // this notify the owners of their new chat
                 chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+        
+        public static void NewChatForUser(string userId, ChatHead head)
+        {
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the owners of their new chat
+                chatHub.Clients.Group(userPrefix + userId).AddChat(head);
             }
             catch
             {

@@ -844,10 +844,7 @@ namespace CarMessenger.Controllers
                     }
                     else
                     {
-                        context.Chats.Where(c => c.carId == id).Select(c => c.Id).ToList()
-                            .ForEach((chat) => ChatHub.DeleteChat(chat));
-
-                        context.Cars.Remove(car);
+                        car.Delete(context);
                     }
                 } 
 
