@@ -239,7 +239,6 @@ namespace CarMessenger.Hubs
 
         public void MessageChat(string chatId, string content)
         {
-
             // only the client should call this function
             try
             {
@@ -277,22 +276,54 @@ namespace CarMessenger.Hubs
             }
         }
 
-
         public static void UpdateCarChat(string chatId, string plate, string code)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateCarChat(chatId, plate, code);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateCarChat(chatId, plate, code);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
         public static void UpdateNickChat(string chatId, string nick)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickChat(chatId, nick);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
         public static void UpdateNickMsg(string chatId, string nick, List<string> msgs)
         {
-            if (chatHub != null)
-                chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickMsg(chatId, nick, msgs);
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (chatHub != null)
+                {
+                    chatHub.Clients.Group(chatGroupPrefix + chatId).UpdateNickMsg(chatId, nick, msgs);
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
         }
     }
 }
