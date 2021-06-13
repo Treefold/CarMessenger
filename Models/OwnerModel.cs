@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CarMessenger.Hubs;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -75,15 +76,14 @@ namespace CarMessenger.Models
         {
             return this.Category == "CoOwner";
         }
-        public bool IsInvitati()
+        public bool IsInvited()
         {
-            return this.Category == "Invitation";
+            return this.Category == "Invited";
         }
-        public bool IsRequest()
+        public bool IsRequested()
         {
-            return this.Category == "Request";
+            return this.Category == "Requested";
         }
-
         public bool Owns()
         {
             return (this.IsOwner() || this.IsCoOwner());
@@ -93,7 +93,14 @@ namespace CarMessenger.Models
         {
             if (notifyMsg)
             {
-                // TODO: notify users
+                if (this.Owns())
+                {
+                    var chatIds = context.Chats.Where(c => c.carId == this.CarId).Select(c => c.Id).ToList();
+                    var lastSeens = context.LastSeens.Where(s => s.userId == this.UserId && chatIds.Contains(s.chatId));
+                    context.LastSeens.RemoveRange(lastSeens);
+                    // notify the user
+                    chatIds.ForEach(chatId => ChatHub.DeleteChatForUser(chatId, this.UserId));
+                }
             }
             context.Owners.Remove(this);
         }

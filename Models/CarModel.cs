@@ -169,5 +169,16 @@ namespace CarMessenger.Models
 
             return true;
         }
+        public void Delete(ApplicationDbContext context)
+        {
+            // notify car owners
+            // TODO
+
+            //notify all members in a chat with the car
+            context.Chats.Where(c => c.carId == this.Id).ToList()
+                .ForEach(chat => chat.Delete(context));
+
+            context.Cars.Remove(this); // remove this chat
+        }
     }
 }

@@ -195,6 +195,16 @@
         headNewMsgs[0].innerHTML = "0";
     }
 
+    function addInfoReloadMsg(msg) {
+        var infoReloadMsgEl = $(
+            '<div class="alert info"> \
+                    <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
+                    <strong>Info:</strong>' 
+            + msg 
+            + '<button onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
+        $('#Msgs')[0].append(infoReloadMsgEl);
+    }
+
     $(document).ready(function () {
         // notifications test
         //Notification.requestPermission().then(permision => {
@@ -274,6 +284,7 @@
             addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
         chat.client.DeleteChat = function (chatId) {
+
             var chatH = $("#h_" + chatId)[0];
             var chatB = $("#b_" + chatId)[0];
             var warningMsgEl = $(
@@ -281,7 +292,7 @@
                     <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Well... </strong> The "'
                 + chatH.innerHTML
-                + '" Chat was removed by the Car Owner</div>')[0];
+                + '" Chat was removed</div>')[0];
             $('#Msgs')[0].append(warningMsgEl);
 
             chatH.remove();
@@ -342,12 +353,17 @@
             );
             chat.server.joinNewChat(newChat.chatId);
         }
+        chat.client.NotifyNewOwner = function (carName, isCoOwner) {
+            var msg = "You are now the " + (isCoOwner ? "Co" : "") + "Owner of the car: " + carName +"! ";
+            addInfoReloadMsg(msg);
+        }
 
         // Start the connection.
         $.connection.hub.start().done(function () {
 
-            chat.server.joinMyChats()
+            chat.server.joinMyChats();
             chat.server.joinMyCars();
+            chat.server.joinMyNotifications();
 
             $('#messageInput').val('').focus();
 
