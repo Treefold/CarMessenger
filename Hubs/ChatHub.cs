@@ -21,6 +21,8 @@ namespace CarMessenger.Hubs
 
         public static void DeleteChat(string chatId)
         {
+            // only the server can call this function
+            // not verified, already trusted
             try
             {
                 if (chatHub != null)
@@ -34,8 +36,25 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public void DisconnectChat(string chatId)
+        {
+            // only the client should call this function
+            // calledback function after removing chats so that further messages won't be received
+            try
+            {
+                // no validation needed while disconnectiong from the groups
+
+                Groups.Remove(Context.ConnectionId, chatGroupPrefix + chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
         private void JoinMyChatTrusted(string chatId)
         {
+            // only this class can call this function
             try
             {
                 // this will not be verified, already trusted (the chat exists and has not expired)
@@ -49,12 +68,13 @@ namespace CarMessenger.Hubs
 
         public void JoinNewChat(string chatId)
         {
+            // only the client should call this function
             try
             {
                 // this will be verified, not trusted
 
                 // user validation
-                string userId = Context?.User?.Identity?.GetUserId(); // this nmight be enough not to test the database
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
                 if (String.IsNullOrEmpty(userId))
                 {
                     return; // invalid attempt - unknown user
@@ -90,7 +110,7 @@ namespace CarMessenger.Hubs
                         owner.Delete(contextdb);
                         return; // invalid attempt - this is no longer available
                     }
-                    if (owner.Category != "Owner" && owner.Category != "CoOwner")
+                    if (!owner.Owns())
                     {
                         return; // access denied - doesn't own the car
                     }
@@ -109,12 +129,13 @@ namespace CarMessenger.Hubs
 
         public void JoinMyChats()
         {
+            // only the client should call this function
             try
             {
                 // this will be verified, not trusted
 
                 // user validation
-                string userId = Context?.User?.Identity?.GetUserId(); // this nmight be enough not to test the database
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
                 if (String.IsNullOrEmpty(userId))
                 {
                     return; // invalid attempt - unknown user
@@ -144,24 +165,71 @@ namespace CarMessenger.Hubs
             }
         }
                
-
-        private void JoinCarById(string carId)
+        private void JoinMyCarTrusted(string carId)
         {
-            Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
+            // only this class can call this function
+            try
+            {
+                // this will not be verified, already trusted (the car exists and the user owns it)
+                Groups.Add(Context.ConnectionId, carGroupPrefix + carId);
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
-        public void JoinMyCars(string userId)
+        public void JoinMyCars()
         {
-            var user = Context.User;
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
 
-            contextdb.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner"))
-                .Select(o => o.CarId).ToList().ForEach(carId => { JoinCarById(carId); });
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                // add car
+                contextdb.Owners.Where(o => o.UserId == userId)
+                    .ToList().ForEach(owner => {
+                        if (owner.HasExpired())
+                        {
+                            owner.Delete(contextdb);
+                        }
+                        else
+                        {
+                            if (owner.Owns())
+                            {
+                                JoinMyCarTrusted(owner.CarId);
+                            }
+                        }
+                    });
+            }
+            catch
+            {
+                // do nothing
+            }
         }
 
-        public static void NewChat(string carId, ChatHead head)
+        public static void NewOwnerChat(string carId, ChatHead head)
         {
-            chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the owners of their new chat
+                chatHub.Clients.Group(carGroupPrefix + carId).AddChat(head);
+            }
+            catch
+            {
+                // do nothing
+            }
         }
+
 
         public void NewSeen(string userId, string chatId, string messageId)
         {
@@ -196,7 +264,6 @@ namespace CarMessenger.Hubs
 
             Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, nickname, false)));
         }
-
 
         public static void UpdateCarChat(string chatId, string plate, string code)
         {

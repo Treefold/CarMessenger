@@ -292,6 +292,9 @@
                 $("#chat_box").css('display', 'none');
                 _selectedChatId = undefined;
             }
+
+            // callback function
+            chat.server.disconnectChat(chatId);
         };
         chat.client.UpdateCarChat = function (chatId, plate, code) {
             $("#h_" + chatId + " .carPlate")[0].innerHTML = plate;
@@ -344,7 +347,7 @@
         $.connection.hub.start().done(function () {
 
             chat.server.joinMyChats()
-            chat.server.joinMyCars(userId);
+            chat.server.joinMyCars();
 
             $('#messageInput').val('').focus();
 
@@ -368,7 +371,7 @@
 
             function send() {
                 if (getContent() === "") {
-                    $('#messageInput').focus();
+                    $('#messageInput').val('').focus();
                     return;
                 }
                 var id = "h_" + _selectedChatId;
