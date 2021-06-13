@@ -259,7 +259,7 @@
                 var currChatbox = $("#b_" + chatId);
                 currChatbox.scrollTop(currChatbox[0].scrollHeight*2);
                 if (!mine) {
-                    chat.server.newSeen(userId, chatId, msgId)
+                    chat.server.newSeen(chatId, msgId)
                 }
             }
         }
@@ -363,7 +363,7 @@
                 if (_selectedChatId) {
                     var msgId = getLastMsgs(_selectedChatId);
                     if (msgId) {
-                        chat.server.newSeen(userId, _selectedChatId, msgId);
+                        chat.server.newSeen(_selectedChatId, msgId);
                     }
                 }
             });
@@ -403,7 +403,7 @@
                 var chatId = e.attr('id').substring(2);
                 var lastMsgId = getLastMsgs(chatId);
                 if (lastMsgId) {
-                    chat.server.newSeen(userId, chatId, lastMsgId);
+                    chat.server.newSeen(chatId, lastMsgId);
                 }
             });
         });

@@ -230,22 +230,54 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public void NewSeen(string chatId, string messageId)
+        { 
+            // only the client should call this function
+            try
+            {
+                // this will be verified, not trusted
 
-        public void NewSeen(string userId, string chatId, string messageId)
-        {
+                // user validation
+                string userId = Context?.User?.Identity?.GetUserId(); // this might be enough not to test the database
+                if (String.IsNullOrEmpty(userId))
+                {
+                    return; // invalid attempt - unknown user
+                }
+
+                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.userId == userId && s.chatId == chatId);
+                if (lastSeen == null)
+                {
+                    return; // invalid attempt - unknow chat
+                }
+
+                Message msg = contextdb.Messages.Find(messageId);
+                if (msg == null || msg.chatId != chatId)
+                {
+                    return; // invalid attempt - inexistent message in chat
+                }
+
+                /*
+                 * here should be a validation that this is the last messaga in chat
+                 * but we don't really care and that would be time/resourece consiuming, 
+                 * the user is allowed to play with this if he really wants to (and is able to).
+                 * only he can see these and it doesn't influence anybody else => it's not a vunlnerability
+                 */
+
+                lastSeen.messageId = messageId;
+                contextdb.SaveChanges();
+            }
+            catch
+            {
+                // do nothing
+            }
             try
             { 
-                LastSeen lastSeen = contextdb.LastSeens.FirstOrDefault(s => s.userId == userId && s.chatId == chatId);
-                if (lastSeen != null)
-                {
-                    lastSeen.messageId = messageId;
-                    contextdb.SaveChanges();
-                }
             } catch
             {
                 // do nothing
             }
         }
+
 
         public void MessageChat(string chatId, string userId, string nickname, string content)
         {
