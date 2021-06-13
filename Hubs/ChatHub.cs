@@ -205,7 +205,7 @@ namespace CarMessenger.Hubs
             }
         }
 
-        public static void Notify(string userId, string notType, string notMsg)
+        public static void NotifyNewOwner(string userId, CarModel car, bool isCoOwner = false)
         {
             // only the server can call this function
             // not verified, already trusted
@@ -213,7 +213,8 @@ namespace CarMessenger.Hubs
             {
                 if (chatHub != null)
                 {
-                    chatHub.Clients.Group(userPrefix + userId).Notify(notType, notMsg);
+                    var carName = "(" + car.CountryCode + ") " + car.Plate;
+                    chatHub.Clients.Group(userPrefix + userId).NotifyNewOwner(carName, isCoOwner);
                 }
             }
             catch

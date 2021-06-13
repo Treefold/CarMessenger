@@ -287,25 +287,28 @@ namespace CarMessenger.Controllers
                         context.Chats.Add(chat);
                         context.LastSeens.Add(new LastSeen(userId, chat.Id));
                         context.SaveChanges();
+
+                        ChatHub.NotifyNewOwner(userId, car);
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("Index", "Manage");
                     }
+                    // else: the car already exists => send an appropriate message
 
                     OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == existingCar.Id);
                     string msg;
                     if (owner == null)
                     {
                         msg = "This car is already owned. If you know the owner send him a request";
-                    } else if (owner.Category == "Owner")
+                    } else if (owner.IsOwner())
                     {
                         msg = "You already own the car";
-                    } else if (owner.Category == "CoOwner")
+                    } else if (owner.IsCoOwner())
                     {
                         msg = "You already co-own the car";
-                    } else if (owner.Category == "Invited")
+                    } else if (owner.IsInvited())
                     {
                         msg = "You already are invited to co-own the car";
-                    } else if (owner.Category == "Requested")
+                    } else if (owner.IsRequested())
                     {
                         msg = "You already requested to co-own the car";
                     } else
@@ -674,6 +677,8 @@ namespace CarMessenger.Controllers
 
                 context.SaveChanges();
 
+                ChatHub.NotifyNewOwner(userId, car, true);
+
                 TempData["SuccessMsgs"] = new List<string> { "You are now a CoOwner" };
                 return RedirectToAction("Details/" + id);
             }
@@ -738,6 +743,8 @@ namespace CarMessenger.Controllers
                     .ToList().ForEach(chatId => context.LastSeens.Add(new LastSeen(userReq.Id, chatId)));
 
                 context.SaveChanges();
+
+                ChatHub.NotifyNewOwner(userReq.Id, car, true);
 
                 TempData["SuccessMsgs"] = new List<string> { mail + " is now a CoOwner" };
                 return RedirectToAction("Details/" + id);
@@ -818,21 +825,19 @@ namespace CarMessenger.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
-                ViewBag.Owned = owner?.Category == "Owner";
-                if (!(owner != null || User.IsInRole("Admin")))
+                ViewBag.Owned = owner?.IsOwner();
+                if ((owner == null || !owner.Owns()) && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return RedirectToAction("Index", "Manage");
                 }
 
-                if (owner?.Category == "CoOwner")
+                if (owner.IsCoOwner())
                 {
-                    context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id && o.UserId == userId));
+                    owner.Delete(context);
                 }
                 else
                 {
-                    // context.Owners.RemoveRange(context.Owners.Where(o => o.CarId == id));
-
                     var car = context.Cars.Find(id);
                     if (car == null)
                     {

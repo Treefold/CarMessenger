@@ -76,15 +76,14 @@ namespace CarMessenger.Models
         {
             return this.Category == "CoOwner";
         }
-        public bool IsInvitati()
+        public bool IsInvited()
         {
-            return this.Category == "Invitation";
+            return this.Category == "Invited";
         }
-        public bool IsRequest()
+        public bool IsRequested()
         {
-            return this.Category == "Request";
+            return this.Category == "Requested";
         }
-
         public bool Owns()
         {
             return (this.IsOwner() || this.IsCoOwner());
