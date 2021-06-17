@@ -215,8 +215,6 @@
 
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
-        var userId = "@User.Identity.GetUserId()";
-        var nickname = "@User.GetClaimValue("Nickname")";
 
         function addMessage(chatId, msgId, nickname, msg, mine = false) {
             // move chat head
