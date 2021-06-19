@@ -1,17 +1,16 @@
 ﻿@using CarMessenger.Models
 @model CarMessenger.Models.IndexViewModel
 
-@{ 
+@{
     var maxOwnedLimit = 100;
     var maxCoOwnedLimit = 100;
-    //var maxOwned = ViewBag?.Owned ?? 0;
-    //var maxCoOwned = ViewBag?.CoOwned ?? 0;
 
     var ownedCars = ViewBag.OwnedCars as List<CarModel>;
     var coOwnedCars = ViewBag.CoOwnedCars as List<CarModel>;
     var carRequests = ViewBag.Requests as List<CarModel>;
     var carInvitations = ViewBag.Invitations as List<CarModel>;
 }
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 <h2>Manage your account</h2>
 
@@ -38,85 +37,93 @@
             ]
         </dd>
         @*<dt>External Logins:</dt>
-        <dd>
-            @Model.Logins.Count [
-            @Html.ActionLink("Manage", "ManageLogins") ]
-        </dd>*@
+            <dd>
+                @Model.Logins.Count [
+                @Html.ActionLink("Manage", "ManageLogins") ]
+            </dd>*@
         @*
-        Phone Numbers can used as a second factor of verification in a two-factor authentication system.
+            Phone Numbers can used as a second factor of verification in a two-factor authentication system.
 
-         See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
-            for details on setting up this ASP.NET application to support two-factor authentication using SMS.
+             See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication using SMS.
 
-         Uncomment the following block after you have set up two-factor authentication
+             Uncomment the following block after you have set up two-factor authentication
         *@
 
         @*<dt>Phone Number:</dt>
-        <dd>
-            @(Model.PhoneNumber ?? "None")
-            @if (Model.PhoneNumber != null)
-            {
-                <br />
-                <text>[&nbsp;&nbsp;@Html.ActionLink("Change", "AddPhoneNumber")&nbsp;&nbsp;]</text>
-                using (Html.BeginForm("RemovePhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            <dd>
+                @(Model.PhoneNumber ?? "None")
+                @if (Model.PhoneNumber != null)
                 {
-                    @Html.AntiForgeryToken()
-                    <text>[<input type="submit" value="Remove" class="btn-link" />]</text>
+                    <br />
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Change", "AddPhoneNumber")&nbsp;&nbsp;]</text>
+                    using (Html.BeginForm("RemovePhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <text>[<input type="submit" value="Remove" class="btn-link" />]</text>
+                    }
                 }
-            }
-            else
-            {
-                <text>[&nbsp;&nbsp;@Html.ActionLink("Add", "AddPhoneNumber") ]</text>
-            }
-        </dd>*@
+                else
+                {
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Add", "AddPhoneNumber") ]</text>
+                }
+            </dd>*@
 
         <!--<dt>Two-Factor Authentication:</dt>
-    <dd>
-        <p>
-            There are no two-factor authentication providers configured. See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
-            for details on setting up this ASP.NET application to support two-factor authentication.
-        </p>-->
-        @*@if (Model.TwoFactor)
-        {
-            using (Html.BeginForm("DisableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <text>Enabled
-                <input type="submit" value="Disable" class="btn btn-link" />
-                </text>
-            }
-        }
-        else
-        {
-            using (Html.BeginForm("EnableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <text>Disabled
-                <input type="submit" value="Enable" class="btn btn-link" />
-                </text>
-            }
-        }*@
-        <!--</dd>-->
-        @*<dt>Plate Number:</dt>
         <dd>
-            @(Model.PlateNumber ?? "None")
-            @if (Model.PhoneNumber != null)
+            <p>
+                There are no two-factor authentication providers configured. See <a href="https://go.microsoft.com/fwlink/?LinkId=403804">this article</a>
+                for details on setting up this ASP.NET application to support two-factor authentication.
+            </p>-->
+        @*@if (Model.TwoFactor)
             {
-                <br />
-                <text>[&nbsp;&nbsp;@Html.ActionLink("Change", "AddPhoneNumber")&nbsp;&nbsp;]</text>
-                using (Html.BeginForm("RemovePhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                using (Html.BeginForm("DisableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
                     @Html.AntiForgeryToken()
-                    <text>[<input type="submit" value="Remove" class="btn-link" />]</text>
+                    <text>Enabled
+                    <input type="submit" value="Disable" class="btn btn-link" />
+                    </text>
                 }
             }
             else
             {
-                <text>[&nbsp;&nbsp;@Html.ActionLink("Add", "AddPhoneNumber") ]</text>
-            }
-        </dd>*@
+                using (Html.BeginForm("EnableTwoFactorAuthentication", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <text>Disabled
+                    <input type="submit" value="Enable" class="btn btn-link" />
+                    </text>
+                }
+            }*@
+        <!--</dd>-->
+        @*<dt>Plate Number:</dt>
+            <dd>
+                @(Model.PlateNumber ?? "None")
+                @if (Model.PhoneNumber != null)
+                {
+                    <br />
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Change", "AddPhoneNumber")&nbsp;&nbsp;]</text>
+                    using (Html.BeginForm("RemovePhoneNumber", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <text>[<input type="submit" value="Remove" class="btn-link" />]</text>
+                    }
+                }
+                else
+                {
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Add", "AddPhoneNumber") ]</text>
+                }
+            </dd>*@
 
-        <dt>Owned Cars (@(ownedCars?.Count() ?? 0)/@(Model.MaxOwned))</dt>
+        <dt>Owned Cars (@(ownedCars?.Count() ?? 0)/@(Model.MaxOwned))
+            @if ((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
+            {
+                if ((ownedCars?.Count() ?? 0) < maxOwnedLimit)
+                {
+                    <text>[&nbsp;&nbsp;@Html.ActionLink("Increase Owned Car Limit", "IncreaseOwnedCarLimit")&nbsp;&nbsp;]</text>
+                }
+            }
+        </dt>
         <dd>
             <ul>
                 @if (ViewBag.OwnedCars != null)
@@ -129,51 +136,54 @@
                         </li>
                     }
                 }
-                @*else
+                @if ((ownedCars?.Count() ?? 0) < maxOwnedLimit)
                 {
-                    <text>None</text></li>
-                }*@
-                @if((ownedCars?.Count() ?? 0) < maxOwnedLimit)
-                {
-                    <li>
-                        @if ((ownedCars?.Count() ?? 0) >= Model.MaxOwned)
-                        {
-                            <text>[&nbsp;&nbsp;@Html.ActionLink("Increase Owned Car Limit", "IncreaseOwnedCarLimit")&nbsp;&nbsp;]</text>
-                        }
-                        else
-                        {
-                            <text>[&nbsp;&nbsp;@Html.ActionLink("Add Car", "../Cars/Create")&nbsp;&nbsp;]</text>
-                        }
-
-                    </li>
+                    if ((ownedCars?.Count() ?? 0) < Model.MaxOwned)
+                    {
+                        <li><text>[&nbsp;&nbsp;@Html.ActionLink("Add Car", "../Cars/Create")&nbsp;&nbsp;]</text></li>
+                    }
+                    else
+                    {
+                        <text>None</text>
+                    }
                 }
             </ul>
         </dd>
 
-        <dt>CoOwned Cars (@(coOwnedCars?.Count() ?? 0)/@(Model.MaxCoOwned)) 
-        @if((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
-        {
-            <text>[@Html.ActionLink("Increase CoOwned Car Limit", "IncreaseCoOwnedCarLimit")]</text>
-        }
+        <dt>
+            CoOwned Cars (@(coOwnedCars?.Count() ?? 0)/@(Model.MaxCoOwned))
+            @if ((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
+            {
+                if ((coOwnedCars?.Count() ?? 0) < maxCoOwnedLimit)
+                {
+                    <text>[@Html.ActionLink("Increase CoOwned Car Limit", "IncreaseCoOwnedCarLimit")]</text>
+                }
+            }
         </dt>
         <dd>
             <ul>
                 @if (ViewBag.CoOwnedCars != null)
                 {
-                        foreach (var car in coOwnedCars)
-                        {
+                    foreach (var car in coOwnedCars)
+                    {
                         <li>
                             <text> (@car.CountryCode) @car.Plate </text>
                             <text> ([&nbsp; &nbsp; @Html.ActionLink("Details", "../Cars/Details/" + car.Id) &nbsp; &nbsp;] </text>
                         </li>
-                        }
                     }
-                @**@else
+                }
+
+                @if ((coOwnedCars?.Count() ?? 0) < maxCoOwnedLimit)
                 {
-                    <li>None</li>
-                }@*@
-                <li><text>[&nbsp;&nbsp;@Html.ActionLink("Request Car", "../Cars/Request")&nbsp;&nbsp;]</text></li>
-                @**@
+                    if ((coOwnedCars?.Count() ?? 0) < Model.MaxCoOwned)
+                    {
+                        <li><text>[&nbsp;&nbsp;@Html.ActionLink("Request Car", "../Cars/Request")&nbsp;&nbsp;]</text></li>
+                    }
+                    else
+                    {
+                        <text>None</text>
+                    }
+                }
             </ul>
         </dd>
 
@@ -190,12 +200,10 @@
                         </li>
                     }
                 }
-                @*else
+                else
                 {
-                    <text>None</text></li>
-                }*@
-                <li><text>[&nbsp;&nbsp;@Html.ActionLink("New Request", "../Cars/RequestCoOwner")&nbsp;&nbsp;]</text></li>
-
+                    <text>None</text>
+                }
             </ul>
         </dd>
 
@@ -215,7 +223,7 @@
                 }
                 else
                 {
-                    <li>None</li>
+                    <text>None</text>
                 }
             </ul>
         </dd>

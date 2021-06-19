@@ -16,7 +16,6 @@ namespace CarMessenger.Models
         public bool BrowserRemembered { get; set; }
         public Int16 MaxOwned { get; set; }
         public Int16 MaxCoOwned { get; set; }
-
     }
 
     public class ManageLoginsViewModel
