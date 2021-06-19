@@ -52,6 +52,22 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public void DisconnectCar(string carId)
+        {
+            // only the client should call this function
+            // calledback function after removing car so that further new chats or updates won't be received
+            try
+            {
+                // no validation needed while disconnectiong from the groups
+
+                Groups.Remove(Context.ConnectionId, carGroupPrefix + carId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
         private void JoinMyChatTrusted(string chatId)
         {
             // only this class can call this function
@@ -261,6 +277,21 @@ namespace CarMessenger.Hubs
             {
                 // this notify the user of its chat deletion
                 chatHub.Clients.Group(userPrefix + userId).DeleteChat(chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public static void DeleteCarForUser(string carId, string userId)
+        {
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the user of its car removal
+                chatHub.Clients.Group(userPrefix + userId).DeleteCar(carId);
             }
             catch
             {
