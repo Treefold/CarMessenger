@@ -117,7 +117,7 @@
 
         <dt>
             Owned Cars (@(ownedCars?.Count() ?? 0)/@(Model.MaxOwned))
-            @if ((coOwnedCars?.Count() ?? 0) >= (Model.MaxCoOwned))
+            @if ((ownedCars?.Count() ?? 0) >= (Model.MaxOwned))
             {
                 if ((ownedCars?.Count() ?? 0) < maxOwnedLimit)
                 {
@@ -242,6 +242,59 @@
 <script src="~/signalr/hubs"></script>
 <!--Add script to update the page and send messages.-->
 <script type="text/javascript">
+    var _selectedChatId = undefined;
+
+    function getCarPlate(headId) {
+        return $("#" + headId + " .carPlate")[0].innerHTML;
+    }
+    function getCarCode(headId) {
+        return $("#" + headId + " .carCode")[0].innerHTML;
+    }
+    function getOwned(headId) {
+        return $("#" + headId).hasClass("Owned");
+    }
+    function getNickname(headId) {
+        var maybeNickname = $("#" + headId + " .nickname");
+        return maybeNickname.length == 0 ? null : maybeNickname[0].innerHTML;
+    }
+    function getContent() {
+        return (new DOMParser().parseFromString($('#messageInput').val(), 'text/html')).body.textContent;
+    }
+    function resetContent(cnt = '') {
+        $('#messageInput').val(cnt);
+    }
+    function getLastMsgs(chatId) {
+        var msgArr = $("#b_" + chatId + " .messege:last");
+        if (msgArr.length > 0) {
+            var msgId = msgArr.attr('id').substring(2);
+            return msgId;
+        }
+        return null;
+    }
+    function select_head(id) {
+        // for the old chat
+        if (_selectedChatId) { // if there was a previous chat
+            var oldHeadNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+            if (oldHeadNewMsgs[0].innerHTML == 0) { // all messages were read
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none') // hide new messages banner
+            }
+        }
+
+        // for the new chat
+        _selectedChatId = id;
+        resetContent()
+        $(".chat_head").css('background-color', '#FFF');
+        $("#h_" + id).css('background-color', "#C0FFEE");
+        $('#chat-with-id').html($("#h_" + id).html());
+        $(".contact_body").css('display', 'none');
+        $("#chat_box").css('display', 'block');
+        $("#b_" + id).css('display', 'block');
+        $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
+
+        var headNewMsgs = $("#h_" + id + " .NewMsgs");
+        headNewMsgs.css('display', 'none');
+        headNewMsgs[0].innerHTML = "0";
+    }
     function addInfoReloadMsg(msg) {
         var infoReloadMsgEl = $(
             '<div class="alert info"> \
@@ -253,11 +306,10 @@
     }
 
     $(document).ready(function () {
-
         // all server functions have the first letter lowered
 
         // Declare a proxy to reference the hub.
-        var chat = $.connection.carHub;
+        var chat = $.connection.chatHub;
 
         function addMessage(chatId, msgId, nickname, msg, mine = false) {
             // move chat head
@@ -317,6 +369,7 @@
         };
         chat.client.addMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
+            //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
             addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
         chat.client.DeleteChat = function (chatId) {
@@ -396,26 +449,6 @@
             chat.server.joinMyCars();
             chat.server.joinMyNotifications();
 
-            $('#messageInput').val('').focus();
-
-            $("#messageInput").click(function () {
-
-                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
-                headNewMsgs.css('display', 'none');
-                headNewMsgs[0].innerHTML = "0";
-
-                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
-
-
-                if (_selectedChatId) {
-                    var msgId = getLastMsgs(_selectedChatId);
-                    if (msgId) {
-                        chat.server.newSeen(_selectedChatId, msgId);
-                    }
-                }
-            });
-
-
             function send() {
                 if (getContent() === "") {
                     $('#messageInput').val('').focus();
@@ -436,13 +469,29 @@
                 $('#messageInput').val('').focus();
             }
 
+            $('#messageInput').val('').focus();
+            $("#messageInput").click(function () {
+
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
+
+
+                if (_selectedChatId) {
+                    var msgId = getLastMsgs(_selectedChatId);
+                    if (msgId) {
+                        chat.server.newSeen(_selectedChatId, msgId);
+                    }
+                }
+            });
             $('#sendButton').click(send);
             $("#messageInput").keyup(function (event) {
                 if (event.keyCode === 13) { // enter
                     send();
                 }
             });
-
             $('div.chat_head').click(function (event) {
                 var e = $(event.currentTarget);
                 if (!e.is('div')) return;
