@@ -3,19 +3,19 @@
 
 @{
     var chats = ViewBag.chats as List<KeyValuePair<ChatHead, List<SentMessage>>>;
-    //var newChats = ViewBag.newChats ? (ViewBag.newChats as List<String>) : (List<String>());
 }
+
 @*<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
-<style>
-    
+
+<style>    
     .left-box {
         color: #888 !important;
         padding: 0;
     }
     .left-box>div {
-      background: #fff !important;
+        background: #fff !important;
     }
     .left-box .card-header {
         border-bottom: 1px solid #8ccbe54a !important;
@@ -26,10 +26,10 @@
         background-color: rgba(0,0,0,.06) !important;
     }
     @@media all and (max-width: 767px) {
-      .left-box {
-        margin-left: 0 !important;
-        padding: 0;
-      }
+          .left-box {
+                margin-left: 0 !important;
+                padding: 0;
+          }
     }
     .card-header .user_info span {
         font-size: 16px;
@@ -44,27 +44,24 @@
         position: relative;
         box-shadow: 0 0 0 0.1rem rgb(95 183 204 / 50%);
     }
-
-        .btn-primary:before {
-            content: "+";
-            background: #5fb7cc;
-            color: #fff;
-            border-radius: 50px;
-            position: absolute;
-            left: -10px;
-            top: 18px;
-            width: 20px;
-            height: 20px;
-            font-size: 14px;
-            line-height: 20px;
-            font-weight: bold;
-            font-family: arial;
-        }
-
-        .btn-primary.focus, .btn-primary:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
-            box-shadow: 0 0 0 0.2rem rgb(95 183 204 / 50%);
-        }
-
+    .btn-primary:before {
+        content: "+";
+        background: #5fb7cc;
+        color: #fff;
+        border-radius: 50px;
+        position: absolute;
+        left: -10px;
+        top: 18px;
+        width: 20px;
+        height: 20px;
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: bold;
+        font-family: arial;
+    }
+    .btn-primary.focus, .btn-primary:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
+        box-shadow: 0 0 0 0.2rem rgb(95 183 204 / 50%);
+    }
     a {
         color: #587893 !important;
     }
@@ -72,15 +69,16 @@
         padding: 0.6rem 0;
         border-bottom: 1px solid #f7f7f7 !important;
         display: flow-root !important;
+        font-size: 14px;
     }
-        .list-group * {
-            display: inline-block;
-        }
-        .list-group:hover {
-            background-color: rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-        }
-
+    .list-group * {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .list-group:hover {
+        background-color: rgba(0, 0, 0, 0.06);
+        cursor: pointer;
+    }
     .list-group.active {
         background: #86c0dc;
         color: #fff !important;
@@ -99,39 +97,37 @@
     .left-box .card {
         border-radius: 0!important;
     }
-        .contacts_body {
-            padding: 0 !important;
-            overflow-y: auto;
-            white-space: nowrap;
-        }
-
+    .contacts_body {
+        padding: 0 !important;
+        overflow-y: auto;
+        white-space: nowrap;
+    }
     .msg_card_body {
         overflow-y: auto;
+        display: flex;
+        align-items: flex-end;
     }
     .right-box .card-header {
         border-bottom: none !important;
     }
-        .right-box .card-header .user_info span {
-            font-size: 20px;
-            color: #fff;
-        }
+    .right-box .card-header .user_info span {
+        font-size: 20px;
+        color: #fff;
+    }
     .card-footer {
         border-radius: 0 0 4px 4px !important;
         border-top: 0 !important;
     }
-
     .type_msg {
         background-color: #fff !important;
         border: 0 !important;
         height: 60px !important;
         overflow-y: auto;
     }
-
-        .type_msg:focus {
-            box-shadow: none !important;
-            outline: 0px !important;
-        }
-
+    .type_msg:focus {
+        box-shadow: none !important;
+        outline: 0px !important;
+    }
     .send_btn {
         border-radius: 0 4px 4px 0 !important;
         background-color: #4f5186 !important;
@@ -139,21 +135,17 @@
         color: white !important;
         cursor: pointer;
     }
-
-        .send_btn:hover {
-            background-color: rgba(0, 0, 0, 0.25) !important;
-        }
-
+    .send_btn:hover {
+        background-color: rgba(0, 0, 0, 0.25) !important;
+    }
     ::-webkit-input-placeholder {
         /* Edge */
         color: #999 !important;
     }
-
     :-ms-input-placeholder {
         /* Internet Explorer 10-11 */
         color: #999 !important;
     }
-
     ::placeholder {
         color: #999 !important;
     }
@@ -164,7 +156,6 @@
         color: rgba(255, 255, 255, 0.5);
         font-size: 10px;
     }
-
     .img_cont_msg {
         height: 26px;
         width: 26px;
@@ -172,29 +163,25 @@
         border-radius: 30px;
         position: relative;
     }
-
-        .img_cont_msg .hide {
-            opacity: 0;
-        }
-
-        .img_cont_msg:before {
-            content: "car";
-            font-size: 8px;
-            line-height: 28px;
-            font-weight: bold;
-            text-transform: uppercase;
-            position: absolute;
-            left: 5px;
-            opacity: 1;
-        }
-
+    .img_cont_msg .hide {
+        opacity: 0;
+    }
+    .img_cont_msg:before {
+        content: "car";
+        font-size: 8px;
+        line-height: 28px;
+        font-weight: bold;
+        text-transform: uppercase;
+        position: absolute;
+        left: 5px;
+        opacity: 1;
+    }
     .justify-content-end .img_cont_msg {
         background: #4f5186;
     }
-
-        .justify-content-end .img_cont_msg:before {
-            content: "you";
-        }
+    .justify-content-end .img_cont_msg:before {
+        content: "you";
+    }
     .opacity-0 {
         opacity: 0;
     }
@@ -208,12 +195,10 @@
         position: relative;
         color: #666;
     }
-
     .msg_cotainer_send {
         margin-left: 0px;
         margin-right: 14px;
     }
-
     .msg_time {
         position: absolute;
         left: 0;
@@ -221,7 +206,6 @@
         color: rgba(255, 255, 255, 0.5);
         font-size: 10px;
     }
-
     .msg_time_send {
         position: absolute;
         right: 0;
@@ -229,7 +213,28 @@
         color: rgba(255, 255, 255, 0.5);
         font-size: 10px;
     }
+    .NUM {
+        background-color: rgba(0,0,0,.06);
+    }
+    .NewMsgs {
+        background: #f37b18;
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 25px;
+        font-size: 8px;
+    }
+    .NewMsgsWrapp {
+        float: right;
+        width: 50px;
+        text-align: center;
+    }
+    .left-box .nickname {
+        max-width: 30%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 </style>
+
 <div class="h-100">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 g-2 h-100 h-100 m-0">
         <div class="col-md-4 col-xl-3 h-100 left-box chat">
@@ -262,7 +267,7 @@
                                         <text> # </text>
                                     }
                                 }
-                                <text><text class="NewMsgs" style="display: @(chat.Key.newMsgs == 0 ? "none" : "inline")">@chat.Key.newMsgs</text></text>
+                                <text class="NewMsgsWrapp"><text class="NewMsgs" style="display: @(chat.Key.newMsgs == 0 ? "none" : "inline-block")">@chat.Key.newMsgs</text></text>
                             </div>
                         }
                     }
@@ -278,10 +283,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="chat_body" class="card-body msg_card_body">
+                <div id="chat_body" class="card-body msg_card_body w-100">
                     @foreach (var chat in chats)
                     {
-                        <div id="b_@chat.Key.chatId" class="msg_card_body contact_body chat_body">
+                        <div id="b_@chat.Key.chatId" class="msg_card_body contact_body chat_body w-100">
                             @if (chat.Value.Count > 0)
                             {
                                 SentMessage msg;
@@ -289,13 +294,24 @@
                                 {
                                     if (i == chat.Key.newMsgs - 1)
                                     {
-                                        <div class="NUM">
+                                        <div class="NUM pb-2 pt-2 text-center mb-2">
                                             New Unread Messages
                                         </div>
                                     }
                                     msg = chat.Value[i];
                                     
                                     if (msg.owned)
+                                    {
+                                        <div id="m_@msg.Id" class="messege d-flex justify-content-end mb-4">
+                                            <div class="msg_cotainer">
+                                                @msg.content
+                                            </div>
+                                            <div class="img_cont_msg">
+                                                <span class="opacity-0">icon</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (!chat.Key.owning)
                                     {
                                         <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
                                             <div class="img_cont_msg">
@@ -305,25 +321,26 @@
                                                 <span class="msg_nickname nickname">@msg.nickname</span>
                                                 @msg.content
                                             </div>
-                                        </div>
+                                        </div>  
                                     }
-                                    else if (!chat.Key.owning)
+                                    else
                                     {
-                                    <div id="m_@msg.Id" class="messege d-flex justify-content-end mb-4">
-                                        <div class="img_cont_msg">
-                                            <span class="opacity-0">icon</span>
-                                        </div>
-                                        <div class="msg_cotainer">
-                                            <span class="msg_nickname nickname">@msg.nickname</span>
-                                            @msg.content
-                                        </div>
-                                    </div>  
+                                        <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
+                                            <div class="img_cont_msg">
+                                                <span class="opacity-0">icon</span>
+                                            </div>
+                                            <div class="msg_cotainer">
+                                                <span class="msg_nickname nickname">@msg.nickname</span>
+                                                @msg.content
+                                            </div>
+                                        </div>  
+
                                     }
                                 }
                             }
                             @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
                             {
-                                <div class="NUM" style="display: none">
+                                <div class="NUM pb-2 pt-2 text-center mb-2" style="display: none">
                                     New Unread Messages
                                 </div>
                             }
@@ -376,7 +393,7 @@
     function getLastMsgs(chatId) {
         var msgArr = $("#b_" + chatId + " .messege:last");
         if (msgArr.length > 0) {
-            var msgId = msgArr.attr('id').substring(2);
+            var msgId = msgArr.attr('id')?.substring(2);
             return msgId;
         }
         return null;
@@ -404,7 +421,8 @@
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
 
-        $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
+        //$("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
+        $("#chat_body").scrollTop($("#chat_body")[0].scrollHeight)
 
         var headNewMsgs = $("#h_" + id + " .NewMsgs");
         headNewMsgs.css('display', 'none');
@@ -426,28 +444,28 @@
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
 
-        function addMessage(chatId, msgId, nickname, msg, mine = false) {
+        function addMessage(chatId, msgId, nickname, msg, owningCar = false, owningMsg = false) {
             // move chat head
+
             var el = $("#h_" + chatId);
             $("#heads_box").prepend(el);
 
-            var readMsg = mine;
-            if (!mine) {
+            var readMsg = owningMsg;
+            if (!owningMsg) {
                 if (chatId == _selectedChatId) { // new message in the current chat
-                    var currChatbox = $("#b_" + chatId);
-                    var chatboxHeight = $("#chat_body").height();
-                    if (currChatbox.scrollTop() + chatboxHeight >= currChatbox[0].scrollHeight) {
+                    var chatbox = $("#chat_body");
+                    if (chatbox.scrollTop() + chatbox.innerHeight() >= chatbox[0].scrollHeight) {
                         readMsg = true;
                     }
                 }
                 var headNewMsgs = $("#h_" + chatId + " .NewMsgs");
                 if (!readMsg) {
                     // update new messages counter
-                    headNewMsgs.css('display', 'inline');
                     if (headNewMsgs[0].innerHTML == 0) { // First new message
+                        headNewMsgs.css('display', 'inline-block');
                         var NUM = $("#b_" + chatId + " .NUM");
                         $("#b_" + chatId).append(NUM);
-                        NUM.css("display", "inline");
+                        NUM.css("display", "block");
                     }
                     headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
 
@@ -467,12 +485,20 @@
                 }
             }
 
-            $("#b_" + chatId).append('<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
+            var msgStr = '<div' + (msgId ? (' id ="m_' + msgId + '"') : '') + ' class="messege d-flex justify-content-';
+            if (owningMsg) {
+                msgStr += 'end mb-4"> <div class="msg_cotainer">' + msg + '</div> <div class="img_cont_msg"><span class="opacity-0">icon</span>';
+            } else if (owningCar) {
+                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
+            } else {
+                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
+            }
+            msgStr += '</div> </div>';
+            $("#b_" + chatId).append($(msgStr));//'<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
 
             if (readMsg) {
-                var currChatbox = $("#b_" + chatId);
-                currChatbox.scrollTop(currChatbox[0].scrollHeight * 2);
-                if (!mine) {
+                $("#chat_body").scrollTop($("#chat_body")[0].scrollHeight)
+                if (!owningMsg) {
                     chat.server.newSeen(chatId, msgId)
                 }
             }
@@ -547,7 +573,7 @@
             var id = newChat.chatId;
             $("#h_" + newChat.chatId).click(function () { select_head(id); });
             $("#chat_body").append(
-                '<div id="b_' + newChat.chatId + '" class="msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
+                '<div id="b_' + newChat.chatId + '" class="msg_card_body contact_body chat_body w-100">'
                 + '</div>'
             );
             chat.server.joinNewChat(newChat.chatId);
@@ -578,8 +604,7 @@
 
                 $("#b_" + _selectedChatId + " .NUM").css('display', 'none')
 
-                addMessage(_selectedChatId, "", "You", getContent(), true);
-
+                addMessage(_selectedChatId, "", "You", getContent(), owned, true);
                 chat.server.messageChat(_selectedChatId, getContent())
                 $('#messageInput').val('').focus();
             }

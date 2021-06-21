@@ -67,7 +67,7 @@ namespace CarMessenger.Models
             if (this.userId != userId)
             {
                 CarModel car = contextdb.Cars.Find(this.carId); // might fail, but catched (it's alright)
-                if (car != null)
+                if (car == null)
                 {
                     // should never happen
                     return false; // invalid attempt - inexistent car
