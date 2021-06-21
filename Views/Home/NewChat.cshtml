@@ -4,12 +4,10 @@
     ViewBag.Title = "Add a New Chat";
 }
 
-
 <div class="d-flex w-100 h-100 justify-content-center main-top">
     <div class="col-sm-10 col-md-8">
         <div class="main-bg">
             <h2 class="main-header">@ViewBag.Title</h2>
-
 
             @using (Html.BeginForm())
             {
@@ -44,11 +42,10 @@
                 </div>
             }
         </div>
-        </div>
     </div>
+</div>
 
 
-
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
