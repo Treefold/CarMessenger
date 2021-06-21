@@ -124,6 +124,37 @@ namespace CarMessenger.Models
             this.Color          = "Unknown";
             this.UpdateChatInviteLinkSync();
         }
+        public bool IsOwnedBy(ApplicationDbContext contextdb, string userId)
+        {
+            OwnerModel owner = contextdb.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == this.Id);
+            if (owner == null)
+            {
+                return false; // invalid attempt - inexistent relationship between the user and the car
+            }
+            if (owner.HasExpired())
+            {
+                owner.Delete(contextdb);
+                return false; // invalid attempt - this is no longer available
+            }
+            if (!owner.Owns())
+            {
+                return false; // access denied - doesn't own the car
+            }
+            // else: owns the car => OK
+            return true; // OK
+        }
+
+        public static bool IsOwnedBy(ApplicationDbContext contextdb, string userId, string carId)
+        {
+            // chat validation
+            CarModel car = contextdb.Cars.Find(carId); // might fail, but catched (it's alright)
+            if (car == null)
+            {
+                return false; // invalid attempt - inexistent chat
+            }
+
+            return car.IsOwnedBy(contextdb, userId);
+        }
 
         public async Task<bool> GenerateNewChatInviteToken(bool shorten = true)
         {

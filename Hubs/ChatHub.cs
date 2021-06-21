@@ -99,7 +99,7 @@ namespace CarMessenger.Hubs
                 if (Chat.HasUser(contextdb, userId, chatId))
                 {
                     // all validations passed => it's safe to add it
-                    Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
+                    JoinMyChatTrusted(chatId);
                 }
             }
             catch

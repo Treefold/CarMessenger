@@ -253,15 +253,15 @@
         }
 
         // Create a function that the hub can call to broadcast messages.
-        chat.client.addMessage = function (msgJson) {
+        chat.client.AddMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
             addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
-        chat.client.deleteCar = function (carId) {
+        chat.client.DeleteCar = function (carId) {
             chat.server.disconnectCar(carId);
         }
-        chat.client.deleteChat = function (chatId) {
+        chat.client.DeleteChat = function (chatId) {
 
             var chatH = $("#h_" + chatId)[0];
             var chatB = $("#b_" + chatId)[0];

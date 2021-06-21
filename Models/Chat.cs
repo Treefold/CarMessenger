@@ -66,25 +66,15 @@ namespace CarMessenger.Models
 
             if (this.userId != userId)
             {
-                string carId = contextdb.Cars.Find(this.carId)?.Id; // might fail, but catched (it's alright)
-                if (String.IsNullOrEmpty(carId))
+                CarModel car = contextdb.Cars.Find(this.carId); // might fail, but catched (it's alright)
+                if (car != null)
                 {
                     // should never happen
                     return false; // invalid attempt - inexistent car
                 }
-                OwnerModel owner = contextdb.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == carId);
-                if (owner == null)
+                if(!car.IsOwnedBy(contextdb, userId))
                 {
-                    return false; // invalid attempt - inexistent relationship between the user and the car
-                }
-                if (owner.HasExpired())
-                {
-                    owner.Delete(contextdb);
-                    return false; // invalid attempt - this is no longer available
-                }
-                if (!owner.Owns())
-                {
-                    return false; // access denied - doesn't own the car
+                    return false;
                 }
                 // else: owns the car => OK
             }
