@@ -15,18 +15,6 @@ namespace CarMessenger.Models
             // Test for null to avoid issues during local testing
             return (claim != null) ? claim.Value : string.Empty;
         }
-        //public static int GetMaxOwners(this IIdentity identity)
-        //{
-        //    var claim = ((ClaimsIdentity)identity).FindFirst("Nickname");
-        //    // Test for null to avoid issues during local testing
-        //    return (claim != null) ? Int32.Parse(claim.Value) : 0;
-        //}
-        //public static int GetCoMaxOwners(this IIdentity identity)
-        //{
-        //    var claim = ((ClaimsIdentity)identity).FindFirst("Nickname");
-        //    // Test for null to avoid issues during local testing
-        //    return (claim != null) ? Int32.Parse(claim.Value) : 0;
-        //}
         public static void AddUpdateClaim(this IPrincipal currentPrincipal, string key, string value)
         {
             var identity = currentPrincipal.Identity as ClaimsIdentity;

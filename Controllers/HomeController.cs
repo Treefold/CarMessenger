@@ -30,14 +30,31 @@ namespace CarMessenger.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.Identity.GetUserId();
-                //var userMail    = User.Identity.GetUserName();
-                var ownedCarIds = context.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.CarId);
-
-                var userChats = context.Chats.Where(c => c.userId == userId || ownedCarIds.Contains(c.carId)).ToList();
 
                 bool contextChanged = false;
-                // TODO: Delete expired chats
+                string userId = User.Identity.GetUserId();
+
+                var ownedCar = context.Owners.Where(o => o.UserId == userId && (o.Category == "Owner" || o.Category == "CoOwner"));
+                var ownedCarIds = ownedCar.Select(o => o.CarId).ToList();
+                ownedCar.ToList().ForEach(owner => {
+                    if (owner.HasExpired())
+                    {
+                        ownedCarIds.Remove(owner.CarId);
+                        owner.Delete(context);
+                        contextChanged = true;
+                    }
+                });
+
+                var userChatsInitial = context.Chats.Where(c => c.userId == userId || ownedCarIds.Contains(c.carId));
+                var userChats = userChatsInitial.ToList();
+                userChatsInitial.ToList().ForEach(chat => {
+                    if (chat.HasExpired())
+                    {
+                        chat.Delete(context);
+                        userChats.Remove(chat);
+                        contextChanged = true;
+                    }
+                });
 
                 var allCarsIds = userChats.Select(c => c.carId).ToList();
                 var carDetails = context.Cars.Where(c => allCarsIds.Contains(c.Id)).ToList();
@@ -88,7 +105,18 @@ namespace CarMessenger.Controllers
                             }
                         ).OrderByDescending(m => m.sendTime).ThenBy(c => c.Id).ToList();
 
-                    string seenMsgId = context.LastSeens.First(s => s.chatId == currChat.chatId && s.userId == userId).messageId;
+                    string seenMsgId = null;
+                    if (context.LastSeens.Any(o => true))
+                    {
+                        try
+                        {
+                            seenMsgId = context.LastSeens.First(s => s.chatId == currChat.chatId && s.userId == userId)?.messageId;
+                        }
+                        catch
+                        {
+                            seenMsgId = null;
+                        }
+                    }
 
                     if (String.IsNullOrEmpty(seenMsgId))
                     {

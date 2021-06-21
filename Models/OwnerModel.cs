@@ -95,11 +95,15 @@ namespace CarMessenger.Models
             {
                 if (this.Owns())
                 {
-                    var chatIds = context.Chats.Where(c => c.carId == this.CarId).Select(c => c.Id).ToList();
+                    var chats = context.Chats.Where(c => c.carId == this.CarId).ToList();
+                    var chatIds = chats.Select(c => c.Id).ToList();
                     var lastSeens = context.LastSeens.Where(s => s.userId == this.UserId && chatIds.Contains(s.chatId));
                     context.LastSeens.RemoveRange(lastSeens);
                     // notify the user
-                    chatIds.ForEach(chatId => ChatHub.DeleteChatForUser(chatId, this.UserId));
+                    chats.ForEach(chat => {
+                        ChatHub.DeleteCarForUser(chat.carId, this.UserId);
+                        ChatHub.DeleteChatForUser(chat.Id,    this.UserId);
+                    });
                 }
             }
             context.Owners.Remove(this);

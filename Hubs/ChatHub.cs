@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web;
 using CarMessenger.Models;
 using Microsoft.AspNet.SignalR;
 using System.Text.Json;
@@ -53,6 +52,22 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public void DisconnectCar(string carId)
+        {
+            // only the client should call this function
+            // calledback function after removing car so that further new chats or updates won't be received
+            try
+            {
+                // no validation needed while disconnectiong from the groups
+
+                Groups.Remove(Context.ConnectionId, carGroupPrefix + carId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
         private void JoinMyChatTrusted(string chatId)
         {
             // only this class can call this function
@@ -84,7 +99,7 @@ namespace CarMessenger.Hubs
                 if (Chat.HasUser(contextdb, userId, chatId))
                 {
                     // all validations passed => it's safe to add it
-                    Groups.Add(Context.ConnectionId, chatGroupPrefix + chatId);
+                    JoinMyChatTrusted(chatId);
                 }
             }
             catch
@@ -262,6 +277,21 @@ namespace CarMessenger.Hubs
             {
                 // this notify the user of its chat deletion
                 chatHub.Clients.Group(userPrefix + userId).DeleteChat(chatId);
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
+        public static void DeleteCarForUser(string carId, string userId)
+        {
+            // only the server can call this function
+            // no validations, already trusted
+            try
+            {
+                // this notify the user of its car removal
+                chatHub.Clients.Group(userPrefix + userId).DeleteCar(carId);
             }
             catch
             {

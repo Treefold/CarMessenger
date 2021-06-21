@@ -8,7 +8,7 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
+
 <div class="container-fluid h-100">
     <div class="row justify-content-center h-100">
         <div class="col-md-4 col-xl-3 chat">
@@ -134,33 +134,24 @@
     var _selectedChatId = undefined;
 
     function getCarPlate(headId) {
-
         return $("#" + headId + " .carPlate")[0].innerHTML;
     }
-
     function getCarCode(headId) {
         return $("#" + headId + " .carCode")[0].innerHTML;
     }
-
     function getOwned(headId) {
         return $("#" + headId).hasClass("Owned");
     }
-
     function getNickname(headId) {
-
-        var maybeNickname =  $("#" + headId + " .nickname");
+        var maybeNickname = $("#" + headId + " .nickname");
         return maybeNickname.length == 0 ? null : maybeNickname[0].innerHTML;
     }
-
     function getContent() {
-        // return $('#messageInput').val(); // faulty - keeps html tags
         return (new DOMParser().parseFromString($('#messageInput').val(), 'text/html')).body.textContent;
     }
-
     function resetContent(cnt = '') {
         $('#messageInput').val(cnt);
     }
-
     function getLastMsgs(chatId) {
         var msgArr = $("#b_" + chatId + " .messege:last");
         if (msgArr.length > 0) {
@@ -169,7 +160,6 @@
         }
         return null;
     }
-
     function select_head(id) {
         // for the old chat
         if (_selectedChatId) { // if there was a previous chat
@@ -194,23 +184,17 @@
         headNewMsgs.css('display', 'none');
         headNewMsgs[0].innerHTML = "0";
     }
-
     function addInfoReloadMsg(msg) {
         var infoReloadMsgEl = $(
             '<div class="alert info"> \
                     <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
-                    <strong>Info:</strong>' 
-            + msg 
+                    <strong>Info:</strong>'
+            + msg
             + '<button onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
         $('#Msgs')[0].append(infoReloadMsgEl);
     }
 
     $(document).ready(function () {
-        // notifications test
-        //Notification.requestPermission().then(permision => {
-        //    new Notification("CarMessanger", {body: "Test Notificationswd"});
-        //})
-
         // all server functions have the first letter lowered
 
         // Declare a proxy to reference the hub.
@@ -219,7 +203,6 @@
         function addMessage(chatId, msgId, nickname, msg, mine = false) {
             // move chat head
             var el = $("#h_" + chatId);
-            //$("#h_" + chatId).remove();
             $("#heads_box").prepend(el);
 
             var readMsg = mine;
@@ -228,7 +211,6 @@
                     var currChatbox = $("#b_" + chatId);
                     var chatboxHeight = $("#chat_body").height();
                     if (currChatbox.scrollTop() + chatboxHeight >= currChatbox[0].scrollHeight) {
-                        //console.log("this message was read")
                         readMsg = true;
                     }
                 }
@@ -238,14 +220,12 @@
                     headNewMsgs.css('display', 'inline');
                     if (headNewMsgs[0].innerHTML == 0) { // First new message
                         var NUM = $("#b_" + chatId + " .NUM");
-                        //$("#b_" + chatId + " .NUM")[0].remove();
                         $("#b_" + chatId).append(NUM);
                         NUM.css("display", "inline");
                     }
                     headNewMsgs[0].innerHTML -= -1; // adds 1 to string - js hack :)
 
                     // add notification if message was not read
-                    //new Notification("CarMessanger", { body: "New Message in: " +});
                     notMsgComp = el.children();
                     notificationMsg = "New Message in chat: " + notMsgComp[0].innerHTML + " " + notMsgComp[1].innerHTML + (notMsgComp.length > 3 ? (" " + notMsgComp[2].innerHTML) : "");
                     Notification.requestPermission().then(permision => {
@@ -253,7 +233,7 @@
                     });
                 }
                 else {
-                    // remove unreadcounter 
+                    // remove unreadcounter
                     headNewMsgs[0].innerHTML = 0;
                     headNewMsgs.css('display', 'none');
                     // remove last read marker
@@ -265,7 +245,7 @@
 
             if (readMsg) {
                 var currChatbox = $("#b_" + chatId);
-                currChatbox.scrollTop(currChatbox[0].scrollHeight*2);
+                currChatbox.scrollTop(currChatbox[0].scrollHeight * 2);
                 if (!mine) {
                     chat.server.newSeen(chatId, msgId)
                 }
@@ -273,14 +253,14 @@
         }
 
         // Create a function that the hub can call to broadcast messages.
-        chat.client.broadcastMessage = function (name, message) {
-            console.log(name + ": " + message);
-        };
-        chat.client.addMessage = function (msgJson) {
+        chat.client.AddMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
             addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
         };
+        chat.client.DeleteCar = function (carId) {
+            chat.server.disconnectCar(carId);
+        }
         chat.client.DeleteChat = function (chatId) {
 
             var chatH = $("#h_" + chatId)[0];
@@ -318,11 +298,6 @@
                 els[0].innerHTML = nick;
         };
         chat.client.UpdateNickMsg = function (chatId, nick, msgIdList) {
-            //for (var idx in msgIdList) {
-            //    var els = $("#b_" + chatId + " #m_" + msgIdList[idx] + " .nickname")
-            //    if (els.length > 0)
-            //        els[0].innerHTML = nick;
-            //}
             msgIdList.forEach((msgId) => {
                 var els = $("#b_" + chatId + " #m_" + msgId + " .nickname")
                 if (els.length > 0)
@@ -336,11 +311,11 @@
                 + '" class="contacts_card chat_head ' + newChat.plate + " " + newChat.code + (newChat.owned == true ? " Owned" : "") + '" style="border: 1px solid; border-color: black">'
                 + '(<text class="carCode">' + newChat.code + '</text>) <strong class="carPlate">' + newChat.plate + '</strong> '
                 + ((newChat.owning == false) ? ('') : (
-                        (newChat.info != null) ? (
-                            '<text>(<text class="nickname">' + newChat.info + '</text>)</text>'
-                        ) : (
-                                '<text><strong>#</strong></text>'
-                        )
+                    (newChat.info != null) ? (
+                        '<text>(<text class="nickname">' + newChat.info + '</text>)</text>'
+                    ) : (
+                        '<text><strong>#</strong></text>'
+                    )
                 )) + '</div>'
             );
             var id = newChat.chatId;
@@ -352,7 +327,7 @@
             chat.server.joinNewChat(newChat.chatId);
         }
         chat.client.NotifyNewOwner = function (carName, isCoOwner) {
-            var msg = "You are now the " + (isCoOwner ? "Co" : "") + "Owner of the car: " + carName +"! ";
+            var msg = "You are now the " + (isCoOwner ? "Co" : "") + "Owner of the car: " + carName + "! ";
             addInfoReloadMsg(msg);
         }
 
@@ -362,26 +337,6 @@
             chat.server.joinMyChats();
             chat.server.joinMyCars();
             chat.server.joinMyNotifications();
-
-            $('#messageInput').val('').focus();
-
-            $("#messageInput").click(function () {
-               
-                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
-                headNewMsgs.css('display', 'none');
-                headNewMsgs[0].innerHTML = "0";
-
-                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
-
-                
-                if (_selectedChatId) {
-                    var msgId = getLastMsgs(_selectedChatId);
-                    if (msgId) {
-                        chat.server.newSeen(_selectedChatId, msgId);
-                    }
-                }
-            });
-
 
             function send() {
                 if (getContent() === "") {
@@ -398,19 +353,34 @@
                 $("#b_" + _selectedChatId + " .NUM").css('display', 'none')
 
                 addMessage(_selectedChatId, "", "You", getContent(), true);
-                //$("#b_" + _selectedChatId).scrollTop($("#b_" + _selectedChatId)[0].scrollHeight);
 
                 chat.server.messageChat(_selectedChatId, getContent())
                 $('#messageInput').val('').focus();
             }
 
+            $('#messageInput').val('').focus();
+            $("#messageInput").click(function () {
+
+                var headNewMsgs = $("#h_" + _selectedChatId + " .NewMsgs");
+                headNewMsgs.css('display', 'none');
+                headNewMsgs[0].innerHTML = "0";
+
+                $("#b_" + _selectedChatId + " .NUM").css('display', 'none');
+
+
+                if (_selectedChatId) {
+                    var msgId = getLastMsgs(_selectedChatId);
+                    if (msgId) {
+                        chat.server.newSeen(_selectedChatId, msgId);
+                    }
+                }
+            });
             $('#sendButton').click(send);
             $("#messageInput").keyup(function (event) {
                 if (event.keyCode === 13) { // enter
                     send();
                 }
             });
-
             $('div.chat_head').click(function (event) {
                 var e = $(event.currentTarget);
                 if (!e.is('div')) return;
