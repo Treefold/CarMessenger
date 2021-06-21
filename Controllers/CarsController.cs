@@ -832,12 +832,13 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("Index", "Manage");
                 }
 
-                if (owner.IsCoOwner())
+                if (owner != null && owner.IsCoOwner())
                 {
                     owner.Delete(context);
                 }
                 else
                 {
+                    // owner == null --> Admin
                     var car = context.Cars.Find(id);
                     if (car == null)
                     {

@@ -50,8 +50,11 @@ namespace CarMessenger.Models
         {
             var chatId = this.Id;
             var seens = context.LastSeens.Where(s => s.chatId == this.Id);
-            context.LastSeens.RemoveRange(seens); // get rid of all seen markers
-            context.SaveChanges(); // this save is mandatory
+            if (seens.Count() > 0)
+            {
+                context.LastSeens.RemoveRange(seens); // get rid of all seen markers
+                context.SaveChanges(); // this save is mandatory
+            }
             context.Chats.Remove(this); // remove this chat
             ChatHub.DeleteChat(chatId); // notify users of this chat deletion
         }
