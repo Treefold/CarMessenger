@@ -5,13 +5,15 @@
     {
     @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @*@Html.ActionLink(User.GetClaimValue("Nickname"), "Index", "Manage", routeValues: null, htmlAttributes: new { id = "Nickname", title = "Manage" })*@
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
             @Html.ActionLink("Manage your account", "Index", "Manage", routeValues: null, htmlAttributes: new { id = "Nickname", title = "Manage" })
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        <li class="nav-item">
+            <a href="javascript:document.getelementbyid('logoutform').submit()">log off</a>
+        </li>
     </ul>
+    
     }
 }
 @*else

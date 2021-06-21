@@ -5,31 +5,252 @@
     var chats = ViewBag.chats as List<KeyValuePair<ChatHead, List<SentMessage>>>;
     //var newChats = ViewBag.newChats ? (ViewBag.newChats as List<String>) : (List<String>());
 }
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+@*<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>*@
+<style>
+    
+    .left-box {
+        color: #888 !important;
+        padding: 0;
+    }
+    .left-box>div {
+      background: #fff !important;
+    }
+    .left-box .card-header {
+        border-bottom: 1px solid #8ccbe54a !important;
+    }
+    .card-header {
+        border-radius: 4px 4px 0 0 !important;
+        border-bottom: 0 !important;
+        background-color: rgba(0,0,0,.06) !important;
+    }
+    @@media all and (max-width: 767px) {
+      .left-box {
+        margin-left: 0 !important;
+        padding: 0;
+      }
+    }
+    .card-header .user_info span {
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+    }
+    .btn-primary {
+        background: #fff !important;
+        border-color: #fff !important;
+        color: #4f5186 !important;
+        border-radius: 50px !important;
+        position: relative;
+        box-shadow: 0 0 0 0.1rem rgb(95 183 204 / 50%);
+    }
 
-<div class="container-fluid h-100">
-    <div class="row justify-content-center h-100">
-        <div class="col-md-4 col-xl-3 chat">
-            <div class="card mb-sm-3 mb-md-0 contacts_card" style="width:200px">
-                @*<div class="card-header">
-                        <div class="input-group">
-                            <input type="text" placeholder="Search..." name="" class="form-control search">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
-                            </div>
+        .btn-primary:before {
+            content: "+";
+            background: #5fb7cc;
+            color: #fff;
+            border-radius: 50px;
+            position: absolute;
+            left: -10px;
+            top: 18px;
+            width: 20px;
+            height: 20px;
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: bold;
+            font-family: arial;
+        }
+
+        .btn-primary.focus, .btn-primary:focus, .btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show > .btn-primary.dropdown-toggle:focus {
+            box-shadow: 0 0 0 0.2rem rgb(95 183 204 / 50%);
+        }
+
+    a {
+        color: #587893 !important;
+    }
+    .list-group {
+        padding: 0.6rem 0;
+        border-bottom: 1px solid #f7f7f7 !important;
+        display: flow-root !important;
+    }
+        .list-group * {
+            display: inline-block;
+        }
+        .list-group:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+        }
+
+    .list-group.active {
+        background: #86c0dc;
+        color: #fff !important;
+    }
+    .chat {
+        padding: 68px 0 50px;
+    }
+    .right-box.chat {
+        padding: 83px 15px 65px !important;
+    }
+    .card {
+        border-radius: 4px !important;
+        background-color: rgba(0, 0, 0, 0.04) !important;
+        border: none !important;
+    }
+    .left-box .card {
+        border-radius: 0!important;
+    }
+        .contacts_body {
+            padding: 0 !important;
+            overflow-y: auto;
+            white-space: nowrap;
+        }
+
+    .msg_card_body {
+        overflow-y: auto;
+    }
+    .right-box .card-header {
+        border-bottom: none !important;
+    }
+        .right-box .card-header .user_info span {
+            font-size: 20px;
+            color: #fff;
+        }
+    .card-footer {
+        border-radius: 0 0 4px 4px !important;
+        border-top: 0 !important;
+    }
+
+    .type_msg {
+        background-color: #fff !important;
+        border: 0 !important;
+        height: 60px !important;
+        overflow-y: auto;
+    }
+
+        .type_msg:focus {
+            box-shadow: none !important;
+            outline: 0px !important;
+        }
+
+    .send_btn {
+        border-radius: 0 4px 4px 0 !important;
+        background-color: #4f5186 !important;
+        border: 0 !important;
+        color: white !important;
+        cursor: pointer;
+    }
+
+        .send_btn:hover {
+            background-color: rgba(0, 0, 0, 0.25) !important;
+        }
+
+    ::-webkit-input-placeholder {
+        /* Edge */
+        color: #999 !important;
+    }
+
+    :-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: #999 !important;
+    }
+
+    ::placeholder {
+        color: #999 !important;
+    }
+    .msg_nickname {
+        position: absolute;
+        left: 0;
+        bottom: -18px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 10px;
+    }
+
+    .img_cont_msg {
+        height: 26px;
+        width: 26px;
+        background: #5fb7cc;
+        border-radius: 30px;
+        position: relative;
+    }
+
+        .img_cont_msg .hide {
+            opacity: 0;
+        }
+
+        .img_cont_msg:before {
+            content: "car";
+            font-size: 8px;
+            line-height: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;
+            left: 5px;
+            opacity: 1;
+        }
+
+    .justify-content-end .img_cont_msg {
+        background: #4f5186;
+    }
+
+        .justify-content-end .img_cont_msg:before {
+            content: "you";
+        }
+    .opacity-0 {
+        opacity: 0;
+    }
+    .msg_cotainer {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 14px;
+        border-radius: 25px;
+        background-color: #fff;
+        padding: 10px;
+        position: relative;
+        color: #666;
+    }
+
+    .msg_cotainer_send {
+        margin-left: 0px;
+        margin-right: 14px;
+    }
+
+    .msg_time {
+        position: absolute;
+        left: 0;
+        bottom: -18px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 10px;
+    }
+
+    .msg_time_send {
+        position: absolute;
+        right: 0;
+        bottom: -18px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 10px;
+    }
+</style>
+<div class="h-100">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 g-2 h-100 h-100 m-0">
+        <div class="col-md-4 col-xl-3 h-100 left-box chat">
+            <div class="card mb-sm-3 mb-md-0 contacts_card h-100">
+
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center bd-highlight">
+                        <div class="user_info">
+                            <span>Your chat list</span>
                         </div>
-                    </div>*@
-                <button class="btn" style="background-color: #C0FFEE"> @Html.ActionLink("New Message", "NewChat")</button>
-                <div id="heads_box" class="card-body contacts_body" style="overflow-y: scroll; height:400px;">
+                        <button type="button" class="btn btn-rounded btn-primary" onclick="location.href='/Home/NewChat'"><i class="fas fa-car" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div id="heads_box" class="contacts_body">
                     @{
                         foreach (var chat in chats)
                         {
                             var personNickname = chat.Key.info;
-                             <div id="h_@chat.Key.chatId" class="contacts_card chat_head @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
-                                    style="border: 1px solid; border-color: black" onclick="select_head('@chat.Key.chatId');">
-                                (<text class="carCode" st>@chat.Key.code</text>) <strong class="carPlate">@chat.Key.plate</strong>
+                            <div id="h_@chat.Key.chatId" class="p-3 list-group list-group-hover contacts_card chat_head @chat.Key.code @chat.Key.plate @(chat.Key.owning == true ? "Owned" : "")"
+                                  onclick="select_head('@chat.Key.chatId');">
+                                (<text class="carCode" st>@chat.Key.code</text>) <text class="carPlate">@chat.Key.plate</text>
                                 @if (chat.Key.owning)
                                 {
                                     if (personNickname != null)
@@ -38,7 +259,7 @@
                                     }
                                     else
                                     {
-                                        <text><strong> #</strong></text>
+                                        <text> # </text>
                                     }
                                 }
                                 <text><text class="NewMsgs" style="display: @(chat.Key.newMsgs == 0 ? "none" : "inline")">@chat.Key.newMsgs</text></text>
@@ -46,11 +267,10 @@
                         }
                     }
                 </div>
-                <div class="card-footer"></div>
             </div>
         </div>
-        <div id ="chat_box" class="col-md-8 col-xl-6 chat" style="display: none">
-            <div class="card">
+        <div id ="chat_box" class="col-md-8 col-xl-9 pt-4 pb-4 chat h-100 right-box" style="display: none">
+            <div class="card h-100">
                 <div class="card-header msg_head">
                     <div class="d-flex bd-highlight">
                         <div class="user_info">
@@ -58,63 +278,64 @@
                         </div>
                     </div>
                 </div>
-                <div id="chat_body">
-                    @{
-                        foreach (var chat in chats)
-                        {
-                            <div id="b_@chat.Key.chatId" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">
-                                @if (chat.Value.Count > 0)
+                <div id="chat_body" class="card-body msg_card_body">
+                    @foreach (var chat in chats)
+                    {
+                        <div id="b_@chat.Key.chatId" class="msg_card_body contact_body chat_body">
+                            @if (chat.Value.Count > 0)
+                            {
+                                SentMessage msg;
+                                for (var i = chat.Value.Count - 1; i >= 0; --i)
                                 {
-                                    SentMessage msg;
-                                    for (var i = chat.Value.Count - 1; i >= 0; --i)
+                                    if (i == chat.Key.newMsgs - 1)
                                     {
-                                        if (i == chat.Key.newMsgs-1)
-                                        {
-                                            <div class="NUM">
-                                                New Unread Messages
-                                            </div>
-                                        }
-                                        msg = chat.Value[i];
-                                        <div id="m_@msg.Id" class="messege">
-                                            @if (msg.owned)
-                                            {
-                                                <strong>You</strong>
-                                            }
-                                            else if ((msg.nickname ?? "") == "")
-                                            {
-                                                <strong>Anonymus</strong>
-                                            }
-                                            else
-                                            {
-                                                <strong class="nickname"> @msg.nickname </strong>
-                                                if (!chat.Key.owning)
-                                                {
-                                                    <text> (<text class="carCode">@chat.Key.code</text>-<text class="carPlate">@chat.Key.plate</text>)</text>
-                                                }
-                                            }
-                                            <text>: @msg.content</text>
+                                        <div class="NUM">
+                                            New Unread Messages
                                         </div>
                                     }
+                                    msg = chat.Value[i];
+                                    
+                                    if (msg.owned)
+                                    {
+                                        <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
+                                            <div class="img_cont_msg">
+                                                <span class="opacity-0">icon</span>
+                                            </div>
+                                            <div class="msg_cotainer">
+                                                <span class="msg_nickname nickname">@msg.nickname</span>
+                                                @msg.content
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (!chat.Key.owning)
+                                    {
+                                    <div id="m_@msg.Id" class="messege d-flex justify-content-end mb-4">
+                                        <div class="img_cont_msg">
+                                            <span class="opacity-0">icon</span>
+                                        </div>
+                                        <div class="msg_cotainer">
+                                            <span class="msg_nickname nickname">@msg.nickname</span>
+                                            @msg.content
+                                        </div>
+                                    </div>  
+                                    }
                                 }
-                                @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
-                                {
-                                    <div class="NUM" style="display: none">
-                                        New Unread Messages
-                                    </div>
-                                }
-                            </div>
-                        }
+                            }
+                            @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
+                            {
+                                <div class="NUM" style="display: none">
+                                    New Unread Messages
+                                </div>
+                            }
+                        </div>
                     }
                 </div>
                 <div class="card-footer">
                     <div class="input-group">
-                        <div class="input-group-append">
-                            <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
-                        </div>
                         <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Type your message......">
                          </textarea>
                         <div class="input-group-append">
-                            <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow">Send</i></span>
+                            <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow"></i></span>
                         </div>
                     </div>
                 </div>
@@ -167,17 +388,22 @@
             if (oldHeadNewMsgs[0].innerHTML == 0) { // all messages were read
                 $("#b_" + _selectedChatId + " .NUM").css('display', 'none') // hide new messages banner
             }
+            $("#h_" + _selectedChatId).removeClass("active");
         }
 
         // for the new chat
         _selectedChatId = id;
         resetContent()
-        $(".chat_head").css('background-color', '#FFF');
-        $("#h_" + id).css('background-color', "#C0FFEE");
+
+        //$(".chat_head").css('background-color', '#FFF');
+        //$("#h_" + id).css('background-color', "#C0FFEE");
+        $("#h_" + _selectedChatId).addClass("active");
+
         $('#chat-with-id').html($("#h_" + id).html());
         $(".contact_body").css('display', 'none');
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
+
         $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
 
         var headNewMsgs = $("#h_" + id + " .NewMsgs");
@@ -309,19 +535,19 @@
             $("#heads_box").prepend(
                 '<div id="h_' + newChat.chatId
                 + '" class="contacts_card chat_head ' + newChat.plate + " " + newChat.code + (newChat.owned == true ? " Owned" : "") + '" style="border: 1px solid; border-color: black">'
-                + '(<text class="carCode">' + newChat.code + '</text>) <strong class="carPlate">' + newChat.plate + '</strong> '
+                + '(<text class="carCode">' + newChat.code + '</text>) <text class="carPlate">' + newChat.plate + '</text> '
                 + ((newChat.owning == false) ? ('') : (
                     (newChat.info != null) ? (
                         '<text>(<text class="nickname">' + newChat.info + '</text>)</text>'
                     ) : (
-                        '<text><strong>#</strong></text>'
+                        '<text>#</text>'
                     )
                 )) + '</div>'
             );
             var id = newChat.chatId;
             $("#h_" + newChat.chatId).click(function () { select_head(id); });
             $("#chat_body").append(
-                '<div id="b_' + newChat.chatId + '" class="card-body msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
+                '<div id="b_' + newChat.chatId + '" class="msg_card_body contact_body chat_body" style="overflow-y: scroll; height:400px;">'
                 + '</div>'
             );
             chat.server.joinNewChat(newChat.chatId);
