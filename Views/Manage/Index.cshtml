@@ -13,7 +13,7 @@
     var carInvitations = ViewBag.Invitations as List<CarModel>;
 }
 
-<div class="d-flex w-100 h-100 justify-content-center">
+<div class="d-flex w-100 justify-content-center">
     <div class="col-sm-10 col-md-8">
         <div class="main-bg">
             <h2 class="main-header">@ViewBag.Title</h2>
@@ -27,6 +27,7 @@
                             <button class="btn btn-warning p-0 pr-1 pl-1 ml-2 mb-1 mt-1">@Html.ActionLink("Change", "ChangeNickname", null, new { Style = "color:White; text-decoration: none;" }) </button>
                         </span>
                     </li>
+
 
                     <li class="d-flex justify-content-between p-1 pl-3 pr-3">
                         <span class="font-weight-bold">Password:</span>
@@ -130,7 +131,7 @@
                                 {
                                     foreach (var car in ownedCars)
                                     {
-                                        <li>
+                                        <li class="d-flex align-items-center justify-content-between">
                                             <text class="align-center"> (@car.CountryCode) @car.Plate </text>
                                             <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
@@ -168,9 +169,9 @@
                                 {
                                     foreach (var car in coOwnedCars)
                                     {
-                                        <li>
+                                        <li class="d-flex align-items-center justify-content-between">
                                             <text class="align-center"> (@car.CountryCode) @car.Plate </text>
-                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
+                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
                                 }
@@ -199,7 +200,7 @@
                                 {
                                     foreach (var car in carRequests)
                                     {
-                                        <li>
+                                        <li class="d-flex align-items-center justify-content-between">
                                             <text class="align-center"> (@car.CountryCode) @car.Plate </text>
                                             <button class="btn btn-danger p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Remove", "../Cars/Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
@@ -221,7 +222,7 @@
                                 {
                                     foreach (var car in carInvitations)
                                     {
-                                        <li>
+                                        <li class="d-flex align-items-center justify-content-between">
                                             <text class="align-center"> (@car.CountryCode) @car.Plate </text>
                                             <button class="btn btn-success p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Accept", "../Cars/AcceptInvite", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                                             <button class="btn btn-danger p-0 pr-1 pl-1 mb-1 mt-1">@Html.ActionLink("Reject", "../Cars/Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
@@ -235,6 +236,7 @@
                             </ul>
                         </span>
                     </li>
+                    
                     @if (User.IsInRole("Admin"))
                     {
                         <li class="d-flex justify-content-between p-1 pl-3 pr-3">
