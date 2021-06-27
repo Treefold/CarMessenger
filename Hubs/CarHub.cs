@@ -115,7 +115,7 @@ namespace CarMessenger.Hubs
             }
         }
 
-        public static void RemoveCar (string userId, CarModel car)
+        public static void RemoveStatus (string userId, string carId)
         {
             // only the server can call this function
             // not verified, already trusted
@@ -124,45 +124,7 @@ namespace CarMessenger.Hubs
                 if (carHub != null)
                 {
                     // notify the target user
-                    carHub.Clients.Group(userPrefix + userId).RemoveCar(car);
-                    // TODO: Notify the car
-                }
-            }
-            catch
-            {
-                // do nothing
-            }
-        }
-
-        public static void RemoveInvitation(string userId, CarModel car)
-        {
-            // only the server can call this function
-            // not verified, already trusted
-            try
-            {
-                if (carHub != null)
-                {
-                    // notify the target user
-                    carHub.Clients.Group(userPrefix + userId).RemoveInvitation(car);
-                    // TODO: Notify the car
-                }
-            }
-            catch
-            {
-                // do nothing
-            }
-        }
-
-        public static void RemoveRequest(string userId, CarModel car)
-        {
-            // only the server can call this function
-            // not verified, already trusted
-            try
-            {
-                if (carHub != null)
-                {
-                    // notify the target user
-                    carHub.Clients.Group(userPrefix + userId).RemoveRequest(car);
+                    carHub.Clients.Group(userPrefix + userId).RemoveStatus(carId);
                     // TODO: Notify the car
                 }
             }

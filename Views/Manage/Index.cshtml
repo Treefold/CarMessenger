@@ -131,8 +131,8 @@
                                 {
                                     foreach (var car in ownedCars)
                                     {
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <text class="align-center"> (@car.CountryCode) @car.Plate </text>
+                                        <li id="c_@car.Id" class="d-flex align-items-center justify-content-between Owned">
+                                            <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
                                             <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
@@ -169,8 +169,8 @@
                                 {
                                     foreach (var car in coOwnedCars)
                                     {
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <text class="align-center"> (@car.CountryCode) @car.Plate </text>
+                                        <li id="c_@car.Id" class="d-flex align-items-center justify-content-between CoOwned">
+                                            <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
                                             <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
@@ -200,8 +200,8 @@
                                 {
                                     foreach (var car in carRequests)
                                     {
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <text class="align-center"> (@car.CountryCode) @car.Plate </text>
+                                        <li id="c_@car.Id" class="d-flex align-items-center justify-content-between Request">
+                                            <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
                                             <button class="btn btn-danger p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Remove", "../Cars/Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
@@ -222,8 +222,8 @@
                                 {
                                     foreach (var car in carInvitations)
                                     {
-                                        <li class="d-flex align-items-center justify-content-between">
-                                            <text class="align-center"> (@car.CountryCode) @car.Plate </text>
+                                        <li id="c_@car.Id" class="d-flex align-items-center justify-content-between Invitation">
+                                            <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
                                             <button class="btn btn-success p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Accept", "../Cars/AcceptInvite", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                                             <button class="btn btn-danger p-0 pr-1 pl-1 mb-1 mt-1">@Html.ActionLink("Reject", "../Cars/Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
@@ -283,15 +283,27 @@
         hub.client.AddRequest = function (request) {
             console.log("add request", request)
         }
-        hub.client.RemoveCar = function (car) {
-            console.log("remove car", car)
-            hub.server.RemoveCar(car.Id);
-        }
-        hub.client.RemoveInvitation = function (car) {
-            console.log("remove invitation", car)
-        }
-        hub.client.RemoveRequest = function (car) {
-            console.log("remove request", car)
+        hub.client.RemoveStatus = function (carId) {
+            var status = $('#c_' + carId);
+
+            var warningMsgEl = $(
+                '<div class="alert alert-warning col-sm-10 col-md-8"> \
+                    <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
+                    <strong>Well... </strong> '
+                + (
+                    status.hasClass('Owned') ? 'Your Owned Car "' :
+                        status.hasClass('CoOwned') ? 'Your CoOwned Car "' :
+                            status.hasClass('Request') ? 'Your Request "' :
+                                status.hasClass('Invitation') ? 'Your Invitation "' :
+                                    '"'
+                    )
+                + status.find('.name')[0].innerHTML
+                + '" was removed</div>')[0];
+
+            status.remove();
+            $('#Msgs')[0].append(warningMsgEl);
+
+            hub.server.RemoveCar(carId);
         }
 
         // Start the connection.

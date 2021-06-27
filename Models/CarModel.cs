@@ -216,6 +216,9 @@ namespace CarMessenger.Models
             context.Chats.Where(c => c.carId == this.Id).ToList()
                 .ForEach(chat => chat.Delete(context));
 
+            context.Owners.Where(o => o.CarId == this.Id).ToList()
+                .ForEach(o => o.Delete(context));
+
             context.Cars.Remove(this); // remove this chat
         }
     }

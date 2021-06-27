@@ -50,7 +50,7 @@ namespace CarMessenger.Models
         {
             var chatId = this.Id;
             var seens = context.LastSeens.Where(s => s.chatId == this.Id);
-            if (seens.Count() > 0)
+            if (seens.Any())
             {
                 context.LastSeens.RemoveRange(seens); // get rid of all seen markers
                 context.SaveChanges(); // this save is mandatory
