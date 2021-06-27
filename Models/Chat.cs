@@ -50,8 +50,11 @@ namespace CarMessenger.Models
         {
             var chatId = this.Id;
             var seens = context.LastSeens.Where(s => s.chatId == this.Id);
-            context.LastSeens.RemoveRange(seens); // get rid of all seen markers
-            context.SaveChanges(); // this save is mandatory
+            if (seens.Count() > 0)
+            {
+                context.LastSeens.RemoveRange(seens); // get rid of all seen markers
+                context.SaveChanges(); // this save is mandatory
+            }
             context.Chats.Remove(this); // remove this chat
             ChatHub.DeleteChat(chatId); // notify users of this chat deletion
         }
@@ -67,7 +70,7 @@ namespace CarMessenger.Models
             if (this.userId != userId)
             {
                 CarModel car = contextdb.Cars.Find(this.carId); // might fail, but catched (it's alright)
-                if (car != null)
+                if (car == null)
                 {
                     // should never happen
                     return false; // invalid attempt - inexistent car
@@ -99,12 +102,12 @@ namespace CarMessenger.Models
     {
         [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
-        [Display(Name = "Plate")]
+        [Display(Name = "Car Plate Number")]
         public string carPlate { get; set; }
 
         [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
         [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
-        [Display(Name = "CountryCode")]
+        [Display(Name = "Car Country Code")]
         public string carCountryCode { get; set; }
     }
 

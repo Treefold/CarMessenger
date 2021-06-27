@@ -1,37 +1,41 @@
 ﻿@model CarMessenger.Models.InvitationModel
 
 @{
-    ViewBag.Title = "InviteCoOwner";
+    ViewBag.Title = "Invite CoOwner";
 }
 
-<h2>Invite CoOwner</h2>
+<div class="d-flex w-100 h-100 justify-content-center">
+    <div class="col-sm-10 col-md-8">
+        <div class="main-bg">
+            <h2 class="main-header">@ViewBag.Title</h2>
 
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
 
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <span class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Send Invitation" class="btn btn-info" />
-            </span>
-            <span>
-                <button class="btn btn-info"> @Html.ActionLink("Back to Car Details", HttpContext.Current.Request.Url.AbsolutePath.Replace("Cars/InviteCoOwner", "Details"), null, new { Style = "color:White; text-decoration: none;" }) </button>
-            </span>
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label w-100" })
+                        <div class="w-100">
+                            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    
+                    <div class="form-group d-flex justify-content-between">
+                        <span>
+                            <button class="btn btn-info"> @Html.ActionLink("Back to Car Details", HttpContext.Current.Request.Url.AbsolutePath.Replace("Cars/InviteCoOwner", "Details"), null, new { Style = "color:White; text-decoration: none;" }) </button>
+                        </span>
+                        <span class="mr-3">
+                            <input type="submit" value="Send Invitation" class="btn btn-success" />
+                        </span>
+                    </div>
+                </div>
+            }
         </div>
     </div>
-}
+</div>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

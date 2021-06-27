@@ -101,7 +101,7 @@ namespace CarMessenger.Models
                     context.LastSeens.RemoveRange(lastSeens);
                     // notify the user
                     chats.ForEach(chat => {
-                        ChatHub.DeleteCarForUser(chat.carId, this.UserId);
+                        ChatHub.DeleteCarForUser (chat.carId, this.UserId);
                         ChatHub.DeleteChatForUser(chat.Id,    this.UserId);
                     });
                 }

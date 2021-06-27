@@ -2,54 +2,48 @@
 @{
     ViewBag.Title = "Car List";
 }
-<h2>@ViewBag.Title</h2>
-<br />
-<div>
-    <span>
-        <button class="btn btn-primary"> @Html.ActionLink("Create", "../Cars/Create", null, new { Style = "color:White; text-decoration: none;" }) </button>
-    </span>
-    @*<span>
-        <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
-    </span>*@
-</div>
-<br />
 
-<table>
-    <tr>
-        <th>Plate</th>
-        <th> </th>
-        <th>Country Code</th>
-        <th> </th>
-        <th></th>
-        <th></th>
-        <th></th>
-    </tr>
-    @foreach (var car in ViewData["Cars"] as List<CarModel>)
-    {
-        <tr>
-            <td style="text-align: center;">@car.Plate</td>
-            <td> </td>
-            <td style="text-align: center;">@car.CountryCode</td>
+<div class="d-flex w-100 h-100 justify-content-center main-top">
+    <div class="col-sm-10 col-md-8">
+        <div class="main-bg">
+            <h2 class="main-header">@ViewBag.Title</h2>
 
-            <td> </td>
-            <td>
-                <button class="btn btn-info"> @Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
-            </td>
-            <td>
-                <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
-            </td>
-            <td>
-                <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink("Delete", "Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
-            </td>
-        </tr>
-    }
-</table>
-<br />
-<div>
-    @*<span>
-        <button class="btn btn-primary"> @Html.ActionLink("Create", "../Cars/Create", null, new { Style = "color:White; text-decoration: none;" }) </button>
-    </span>*@
-    <span>
-        <button class="btn btn-primary"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
-    </span>
+            <table class="form-horizontal">
+                <tr>
+                    <th>Plate</th>
+                    <th> </th>
+                    <th>Country Code</th>
+                    <th> </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @foreach (var car in ViewData["Cars"] as List<CarModel>)
+                {
+                    <tr>
+                        <td style="text-align: center;">@car.Plate</td>
+                        <td> </td>
+                        <td style="text-align: center;">@car.CountryCode</td>
+
+                        <td> </td>
+                        <td>
+                            <button class="btn btn-info"> @Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink("Delete", "Delete", new { id = car.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+                        </td>
+                    </tr>
+                }
+            </table>
+
+            <div class="form-group d-flex justify-content-end">
+                <span>
+                    <button class="btn btn-primary"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
+                </span>
+            </div>
+        </div>
+    </div>
 </div>

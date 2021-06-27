@@ -289,6 +289,8 @@ namespace CarMessenger.Controllers
                         context.SaveChanges();
 
                         ChatHub.NotifyNewOwner(userId, car);
+                        CarHub.NotifyNewOwnedCar(userId, car);
+
                         TempData["SuccessMsgs"] = new List<string> { "Car Added" };
                         return RedirectToAction("Index", "Manage");
                     }
@@ -432,7 +434,6 @@ namespace CarMessenger.Controllers
         {
             try
             {
-
                 var userId = User.Identity.GetUserId();
                 var user = context.Users.Find(userId);
                 var ownedCars = context.Owners.Count(o => o.UserId == userId && o.Category == "CoOwner");
@@ -493,6 +494,8 @@ namespace CarMessenger.Controllers
                     TempData["InfoMsgs"] = new List<string> { "Request Sent" };
                     context.Owners.Add(new OwnerModel(userId, ownerCar.Id, "Requested", DateTime.Now.AddDays(7)));
                     context.SaveChanges();
+
+                    CarHub.NotifyNewRequest(user.Id, ownerCar);
                 }
                 else if (coOwner.Category == "Owner")
                 {
@@ -519,6 +522,8 @@ namespace CarMessenger.Controllers
                     coOwner.Category = "Requested";
                     coOwner.Expiry = DateTime.Now.AddDays(7);
                     context.SaveChanges();
+
+                    CarHub.NotifyNewRequest(user.Id, ownerCar);
                 }
             }
             catch (Exception e)
@@ -600,6 +605,7 @@ namespace CarMessenger.Controllers
                     TempData["InfoMsgs"] = new List<string> { "Invitation Sent" };
                     context.Owners.Add(new OwnerModel(user.Id, id, "Invited", DateTime.Now.AddDays(7)));
                     context.SaveChanges();
+                    CarHub.NotifyNewInvitation(user.Id, car);
                 }
                 else if (coOwner.Category == "Owner")
                 {
@@ -626,6 +632,8 @@ namespace CarMessenger.Controllers
                     coOwner.Category = "Invited";
                     coOwner.Expiry   = DateTime.Now.AddDays(7);
                     context.SaveChanges();
+
+                    CarHub.NotifyNewInvitation(user.Id, car);
                 }
 
                 return RedirectToAction("Details/" + id);
@@ -678,6 +686,7 @@ namespace CarMessenger.Controllers
                 context.SaveChanges();
 
                 ChatHub.NotifyNewOwner(userId, car, true);
+                CarHub.NotifyNewCoOwnedCar(userId, car);
 
                 TempData["SuccessMsgs"] = new List<string> { "You are now a CoOwner" };
                 return RedirectToAction("Details/" + id);
@@ -745,6 +754,7 @@ namespace CarMessenger.Controllers
                 context.SaveChanges();
 
                 ChatHub.NotifyNewOwner(userReq.Id, car, true);
+                CarHub.NotifyNewCoOwnedCar(userReq.Id, car);
 
                 TempData["SuccessMsgs"] = new List<string> { mail + " is now a CoOwner" };
                 return RedirectToAction("Details/" + id);
@@ -826,18 +836,19 @@ namespace CarMessenger.Controllers
                 string userId = User.Identity.GetUserId();
                 OwnerModel owner = context.Owners.FirstOrDefault(o => o.UserId == userId && o.CarId == id);
                 ViewBag.Owned = owner?.IsOwner();
-                if ((owner == null || !owner.Owns()) && !User.IsInRole("Admin"))
+                if ((owner == null) && !User.IsInRole("Admin"))
                 {
                     TempData["InfoMsgs"] = new List<string> { "That was not your car" };
                     return RedirectToAction("Index", "Manage");
                 }
 
-                if (owner.IsCoOwner())
+                if (owner != null && !owner.IsOwner())
                 {
                     owner.Delete(context);
                 }
                 else
                 {
+                    // owner == null --> Admin
                     var car = context.Cars.Find(id);
                     if (car == null)
                     {

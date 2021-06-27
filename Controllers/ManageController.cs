@@ -75,24 +75,24 @@ namespace CarMessenger.Controllers
                 List<String> ownedCarsId = myCars.Where(o => o.Category == "Owner").Select(o => o.CarId).ToList();
                 if (ownedCarsId.Count > 0)
                 {
-                    ViewBag.OwnedCars = context.Cars.Where(c => ownedCarsId.Contains(c.Id)).ToList();
+                    ViewBag.OwnedCars = context.Cars.Where(c => ownedCarsId.Contains(c.Id)).OrderBy(c => c.CountryCode).ThenBy(c => c.Plate).ToList();
                 }
 
                 List<String> coOwnedCarsId = myCars.Where(o => o.Category == "CoOwner").Select(o => o.CarId).ToList();
                 if (coOwnedCarsId.Count > 0)
                 {
-                    ViewBag.CoOwnedCars = context.Cars.Where(c => coOwnedCarsId.Contains(c.Id)).ToList();
+                    ViewBag.CoOwnedCars = context.Cars.Where(c => coOwnedCarsId.Contains(c.Id)).OrderBy(c => c.CountryCode).ThenBy(c => c.Plate).ToList();
                 }
                 List<String> pendingRequests = myCars.Where(o => o.Category == "Requested").Select(o => o.CarId).ToList();
                 if (pendingRequests.Count > 0)
                 {
-                    ViewBag.Requests = context.Cars.Where(c => pendingRequests.Contains(c.Id)).ToList();
+                    ViewBag.Requests = context.Cars.Where(c => pendingRequests.Contains(c.Id)).OrderBy(c => c.CountryCode).ThenBy(c => c.Plate).ToList();
                 }
 
                 List<String> pendingInvitations = myCars.Where(o => o.Category == "Invited").Select(o => o.CarId).ToList();
                 if (pendingInvitations.Count > 0)
                 {
-                    ViewBag.Invitations = context.Cars.Where(c => pendingInvitations.Contains(c.Id)).ToList();
+                    ViewBag.Invitations = context.Cars.Where(c => pendingInvitations.Contains(c.Id)).OrderBy(c => c.CountryCode).ThenBy(c => c.Plate).ToList();
                 }
             }
 

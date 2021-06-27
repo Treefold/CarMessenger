@@ -5,37 +5,189 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CarMessenger</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    @**@ <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script src="~/Scripts/jquery-3.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            color: #fff !important;
+            background: #7F7FD5;
+            background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+            background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+        }
+
+        header {
+            margin-bottom: 30px;
+            z-index: 1;
+        }
+        .main-top {
+            padding-top: 88px;
+        }
+        .main-bg {
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+            .main-bg form {
+                padding: 1.25rem;
+            }
+        .main-header {
+            background-color: rgba(0,0,0,.06);
+            font-size: 20px;
+            color: #fff;
+            padding: 1.25rem 1rem;
+        }
+        .main-header .btn {
+            margin: -0.5rem 0;
+        }
+        .navbar .navbar-toggler {
+                border-width: 0;
+                outline: 0;
+            }
+
+        .animated-icon3 {
+            width: 30px;
+            height: 20px;
+            position: relative;
+            margin: 0px;
+            -webkit-transform: rotate(0deg);
+            -moz-transform: rotate(0deg);
+            -o-transform: rotate(0deg);
+            transform: rotate(0deg);
+            -webkit-transition: .5s ease-in-out;
+            -moz-transition: .5s ease-in-out;
+            -o-transition: .5s ease-in-out;
+            transition: .5s ease-in-out;
+            cursor: pointer;
+        }
+
+            .animated-icon3 span {
+                display: block;
+                position: absolute;
+                height: 3px;
+                width: 100%;
+                border-radius: 9px;
+                opacity: 1;
+                left: 0;
+                -webkit-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+                -webkit-transition: .25s ease-in-out;
+                -moz-transition: .25s ease-in-out;
+                -o-transition: .25s ease-in-out;
+                transition: .25s ease-in-out;
+            }
+
+            .animated-icon3 span {
+                background: #4f5186;
+            }
+
+                .animated-icon3 span:nth-child(1) {
+                    top: 0px;
+                    -webkit-transform-origin: left center;
+                    -moz-transform-origin: left center;
+                    -o-transform-origin: left center;
+                    transform-origin: left center;
+                }
+
+                .animated-icon3 span:nth-child(2) {
+                    top: 10px;
+                    -webkit-transform-origin: left center;
+                    -moz-transform-origin: left center;
+                    -o-transform-origin: left center;
+                    transform-origin: left center;
+                }
+
+                .animated-icon3 span:nth-child(3) {
+                    top: 20px;
+                    -webkit-transform-origin: left center;
+                    -moz-transform-origin: left center;
+                    -o-transform-origin: left center;
+                    transform-origin: left center;
+                }
+
+            .animated-icon3.open span:nth-child(1) {
+                -webkit-transform: rotate(45deg);
+                -moz-transform: rotate(45deg);
+                -o-transform: rotate(45deg);
+                transform: rotate(45deg);
+                top: 0px;
+                left: 8px;
+            }
+
+            .animated-icon3.open span:nth-child(2) {
+                width: 0%;
+                opacity: 0;
+            }
+
+            .animated-icon3.open span:nth-child(3) {
+                -webkit-transform: rotate(-45deg);
+                -moz-transform: rotate(-45deg);
+                -o-transform: rotate(-45deg);
+                transform: rotate(-45deg);
+                top: 21px;
+                left: 8px;
+            }
+
+        header,
+        .card-header {
+            border-bottom: 1px solid #8ccbe54a !important;
+        }
+
+        .right-box .card-header {
+            border-bottom: none !important;
+        }
+
+        .navbar {
+            background: #fff;
+        }
+
+        .navbar-brand {
+            color: #4f5186 !important;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-family: roboto;
+            font-size: 24px;
+            width: 62.6%;
+            height: 50px;
+            max-width: 190px;
+        }
+        .list-hover > li:hover {
+            background-color: rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    @if (Request.IsAuthenticated)
-    {
-        <div class="navbar navbar-inverse navbar-fixed-top">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    @Html.ActionLink("CarMessenger", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-                </div>
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav">
-                        @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("About", "About", "Home")</li>
-                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
-                    </ul>
-                    @Html.Partial("_LoginPartial")
-                </div>
+    <header class="d-flex justify-content-center bg-light position-absolute w-100">
+        <!--Navbar-->
+        <nav class="navbar w-100 row">
+            <!-- Navbar brand -->
+            <a class="navbar-brand" href="/")"><img src="@Url.Content("~/Uploads/logo-1.png")" class="img-fluid" alt="CarMessanger"></a>
+            <!-- Collapse button -->
+            <button class="navbar-toggler third-button collapsed" type="button" data-toggle="collapse" data-target="#navbarSupportedContent22" aria-controls="navbarSupportedContent22" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="animated-icon3"><span></span><span></span><span></span></div>
+            </button>
+            @*@if (Request.IsAuthenticated)
+            {*@
+            <!-- Collapsible content -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent22">
+                <!-- Links -->
+                @Html.Partial("_LoginPartial")
+                <!-- Links -->
             </div>
-        </div>
-    }
-    <div class="container body-content">
+            <!-- Collapsible content -->
+            @*}*@
+            </nav>
+        <!--/.Navbar-->
+    </header>
+    <div class="w-100 h-100">
 
-        <div id="Msgs">
+        <div id="Msgs" class="d-flex w-100 justify-content-center main-top flex-column align-items-center">
             @{
                 var dangerMsgs = ViewBag.DangerMsgs as List<string>;
                 var warningMsgs = ViewBag.WarningMsgs as List<string>;
@@ -45,7 +197,7 @@
                 {
                     foreach (var dangerMsg in dangerMsgs)
                     {
-                        <div class="alert">
+                        <div class="alert alert-danger col-sm-10 col-md-8">
                             <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                             <strong>USP? </strong> @dangerMsg
                         </div>
@@ -55,7 +207,7 @@
                 {
                     foreach (var warningMsg in warningMsgs)
                     {
-                        <div class="alert warning">
+                        <div class="alert alert-warning col-sm-10 col-md-8">
                             <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                             <strong>Well... </strong> @warningMsg
                         </div>
@@ -65,7 +217,7 @@
                 {
                     foreach (var successMsg in successMsgs)
                     {
-                        <div class="alert success">
+                        <div class="alert alert-success col-sm-10 col-md-8">
                             <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                             <strong>Success! </strong> @successMsg
                         </div>
@@ -75,7 +227,7 @@
                 {
                     foreach (var infoMsg in infoMsgs)
                     {
-                        <div class="alert info">
+                        <div class="alert alert-info col-sm-10 col-md-8">
                             <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
                             <strong>Info: </strong> @infoMsg
                         </div>
@@ -83,21 +235,30 @@
                 }
             }
         </div>
+
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - CarMessenger (Mihai-Daniel Surcea)</p>
-        </footer>
     </div>
 
-    @*@Scripts.Render("~/bundles/jquery")*@
+    <footer class="fixed-bottom w-100 bg-light">    
+        <!-- Copyright -->
+        <div class="text-dark text-muted small text-center p-3">
+            Contact: suportcarmessenger@gmail.com
+            <br>
+            &copy; @DateTime.Now.Year - CarMessenger (Mihai-Daniel Surcea)
+        </div>
+        <!-- Copyright -->
+    </footer>
 
-    <!--Reference the jQuery library. -->
-    @Scripts.Render("~/bundles/bootstrap")
+    @*@Scripts.Render("~/bundles/jquery")*@
     @RenderSection("scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            $('.third-button').on('click', function () {
+                $('.animated-icon3').toggleClass('open');
+            });
+        });
+    </script>
 </body>
 </html>
 
-@*@
-    @RenderBody()
-    @**@

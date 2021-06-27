@@ -17,7 +17,7 @@ namespace CarMessenger.Models
     {
         [Key]
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "User Email")]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -30,6 +30,7 @@ namespace CarMessenger.Models
             Email = email;
         }
     }
+   
     public class RequestModel
     {
         [Key]
@@ -40,10 +41,12 @@ namespace CarMessenger.Models
 
         [Required(ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
+        [Display(Name = "Car Plate Number")]
         public string Plate { get; set; }
 
         [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
         [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
+        [Display(Name = "Car Country Code")]
         public string CountryCode { get; set; }
 
         public RequestModel()
@@ -71,22 +74,26 @@ namespace CarMessenger.Models
         [RegularExpression(@"[0-9A-Z][0-9A-Z-]{3,8}[0-9A-Z]", ErrorMessage = ("Please enter the Plate Number in UPPER CASE without spaces (Ex: B123ABC)"))]
         [Index("UniquePlateNumber", 1, IsUnique = true)]
         [StringLength(19, ErrorMessage = "CarPlate excedeed length limit")]
+        [Display(Name = "Car Plate Number")]
         public string Plate { get; set; }
 
         [Required(ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))] // from the plate
         [RegularExpression(@"[A-Z]{1,3}", ErrorMessage = ("Please enter the Country Code in UPPER CASE (Ex: RO)"))]
         [Index("UniquePlateNumber", 2, IsUnique = true)]
         [StringLength(3, ErrorMessage = "Car CountryCode excedeed length limit")]
+        [Display(Name = "Car Country Code")]
         public string CountryCode { get; set; }
 
         [Required]
         [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
         [StringLength(20, ErrorMessage = "Car ModelName excedeed length limit")]
+        [Display(Name = "Car Model")]
         public string ModelName { get; set; }
 
         [Required]
         [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
         [StringLength(20, ErrorMessage = "Car Color excedeed length limit")]
+        [Display(Name = "Car Color")]
         public string Color { get; set; }
 
         [Required]
