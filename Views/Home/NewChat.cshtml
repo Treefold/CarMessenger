@@ -4,7 +4,7 @@
     ViewBag.Title = "Add a New Chat";
 }
 
-<div class="d-flex w-100 h-100 justify-content-center">
+<div class="d-flex w-100 justify-content-center">
     <div class="col-sm-10 col-md-8">
         <div class="main-bg">
             <h2 class="main-header">@ViewBag.Title</h2>
@@ -35,7 +35,7 @@
                         <span>
                             <button class="btn btn-info"> @Html.ActionLink("Back to Chat", "Index", null, new { Style = "color:White; text-decoration: none;" }) </button>
                         </span>
-                        <span class="mr-3">
+                        <span>
                             <input type="submit" value="Add Chat" class="btn btn-success" />
                         </span>
                     </div>

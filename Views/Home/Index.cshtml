@@ -426,15 +426,24 @@
         //$("#h_" + id).css('background-color', "#C0FFEE");
         $("#h_" + _selectedChatId).addClass("active");
 
-        $('#chat-with-id').html($("#h_" + id).html());
+        var chatTitle = $("#h_" + id).clone()
+        chatTitle.children().last().remove(); // remove the unread messages counter
+
+        $('#chat-with-id').html(chatTitle.html());
         $(".contact_body").css('display', 'none');
         $("#chat_box").css('display', 'block');
         $("#b_" + id).css('display', 'block');
 
-        //$("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
-        $("#chat_body").scrollTop($("#chat_body")[0].scrollHeight)
 
-        var headNewMsgs = $("#h_" + id + " .NewMsgs");
+        var headNewMsgs = $("#h_" + id + " .NewMsgsWrapp .NewMsgs");
+
+        if (headNewMsgs[0].innerHTML == 0) {
+            $("#b_" + id).scrollTop($("#b_" + id)[0].scrollHeight);
+        }
+        else {
+            $("#b_" + id).scrollTop($("#b_" + id + " .NUM")[0].offsetTop - $("#b_" + id)[0].offsetTop)
+        }
+
         headNewMsgs.css('display', 'none');
         headNewMsgs[0].innerHTML = "0";
     }
@@ -468,7 +477,7 @@
             var readMsg = owningMsg;
             if (!owningMsg) {
                 if (chatId == _selectedChatId) { // new message in the current chat
-                    var chatbox = $("#chat_body");
+                    var chatbox = $("#b_" + chatId);
                     if (chatbox.scrollTop() + chatbox.innerHeight() >= chatbox[0].scrollHeight) {
                         readMsg = true;
                     }
@@ -512,7 +521,7 @@
             $("#b_" + chatId).append($(msgStr));//'<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
 
             if (readMsg) {
-                $("#chat_body").scrollTop($("#chat_body")[0].scrollHeight)
+                $("#b_" + chatId).scrollTop($("#b_" + chatId)[0].scrollHeight);
                 if (!owningMsg) {
                     chat.server.newSeen(chatId, msgId)
                 }
@@ -575,7 +584,7 @@
             if ($("#h_" + newChat.chatId).length > 0) return; // error already exists
             $("#heads_box").prepend(
                 '<div id="h_' + newChat.chatId
-                + '" class="contacts_card chat_head ' + newChat.plate + " " + newChat.code + (newChat.owned == true ? " Owned" : "") + '" style="border: 1px solid; border-color: black">'
+                + '" class="p-3 list-group list-group-hover contacts_card chat_head' + newChat.plate + " " + newChat.code + (newChat.owned == true ? " Owned" : "") + '">'
                 + '(<text class="carCode">' + newChat.code + '</text>) <text class="carPlate">' + newChat.plate + '</text> '
                 + ((newChat.owning == false) ? ('') : (
                     (newChat.info != null) ? (
@@ -583,13 +592,15 @@
                     ) : (
                         '<text>#</text>'
                     )
-                )) + '</div>'
+                )) + '<text class="NewMsgsWrapp"><text class="NewMsgs" style="display: none">0</text></text></div>'
             );
-            var id = newChat.chatId;
-            $("#h_" + newChat.chatId).click(function () { select_head(id); });
+            $("#h_" + newChat.chatId).click(function () {
+                var id = newChat.chatId;
+                select_head(id);
+            });
             $("#chat_body").append(
                 '<div id="b_' + newChat.chatId + '" class="msg_card_body contact_body chat_body w-100">'
-                + '</div>'
+                + '<div class="NUM pb-2 pt-2 text-center mb-2" style="display: none">New Unread Messages</div ></div>'
             );
             chat.server.joinNewChat(newChat.chatId);
         }

@@ -149,19 +149,19 @@
             <div class="d-flex justify-content-between p-3">
                 @if (User.IsInRole("Admin"))
                 {
-                    <span class="mr-3">
+                    <span>
                         <button class="btn btn-info"> @Html.ActionLink("Back to Cars", "Index", null, new { Style = "color:White; text-decoration: none;" }) </button>
                     </span>
                 }
                 else
                 {
-                    <span class="mr-3">
+                    <span>
                         <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
                     </span>
                 }
                 @if (User.IsInRole("Admin") || (ViewBag.Owned != null && ViewBag.Owned))
                 {
-                    <span class="mr-3">
+                    <span>
                         <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                     </span>
                 }
