@@ -5,19 +5,21 @@
     {
     @Html.AntiForgeryToken()
 
-    <ul class="nav navbar-nav navbar-right">
-        <li>
-            @*@Html.ActionLink(User.GetClaimValue("Nickname"), "Index", "Manage", routeValues: null, htmlAttributes: new { id = "Nickname", title = "Manage" })*@
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
             @Html.ActionLink("Manage your account", "Index", "Manage", routeValues: null, htmlAttributes: new { id = "Nickname", title = "Manage" })
         </li>
-        <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        <li class="nav-item">
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        </li>
     </ul>
+
     }
 }
-@*else
+else
 {
-    <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    <ul class="nav navbar-nav mr-auto">
+        <li class="nav-item">@Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li class="nav-item">@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
-}*@
+}

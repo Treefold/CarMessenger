@@ -1,56 +1,59 @@
 ﻿@model CarMessenger.Models.RegisterViewModel
 @{
-    ViewBag.Title = "Register for your Car Messenger";
+    ViewBag.Title = "Registration";
 }
 
-<h2>@ViewBag.Title</h2>
-<div class="row">
-    <div class="col-md-8">
-        <section id="registerForm">
-            @using (Html.BeginForm("Register", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-            {
-                @Html.AntiForgeryToken()
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Nickname, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.TextBoxFor(m => m.Nickname, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Nickname, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
-                    <div class="col-md-10">
-                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
-                    </div>
-                </div>
+<div class="d-flex w-100 h-100 justify-content-center main-top">
+    <div class="col-sm-10 col-md-8">
+        <div class="main-bg">
+            <h2 class="main-header">@ViewBag.Title</h2>
 
-                <div class="form-group">
-                    <span class="col-md-offset-2 col-md-10">
-                        <input type="submit" class="btn btn-info" value="Register" />
-                    </span>
-                    <span>
-                        <button class="btn btn-info">@Html.ActionLink("Login as an existing user", "Login", "Home Controler", new { Style = "color:White; text-decoration: none;" })</button>
-                    </span>
-                </div>
-            }
-        </section>
+            <section id="registerForm">
+                @using (Html.BeginForm("Register", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-horizontal">
+                        @Html.LabelFor(m => m.Email, new { @class = "control-label w-100" })
+                        <div class="w-100">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Nickname, new { @class = "control-label w-100" })
+                        <div class="w-100">
+                            @Html.TextBoxFor(m => m.Nickname, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Nickname, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Password, new { @class = "control-label w-100" })
+                        <div class="w-100">
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "control-label w-100" })
+                        <div class="w-100">
+                            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group d-flex justify-content-end">
+                        <span class="mr-3">
+                            <input type="submit" class="btn btn-success" value="Register" />
+                        </span>
+                        <span>
+                            <button class="btn btn-info">@Html.ActionLink("Login as an existing user", "Login", "Home Controler", new { Style = "color:White; text-decoration: none;" })</button>
+                        </span>
+                    </div>
+                }
+            </section>
+        </div>
     </div>
 </div>
 

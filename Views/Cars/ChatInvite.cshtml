@@ -1,58 +1,48 @@
 ﻿@model  CarMessenger.Models.CarModel
 
 @{
-    ViewBag.Title = "ChatInvite";
+    ViewBag.Title = "Chat Invitation for (" + Model.CountryCode + ") " + Model.Plate;
 }
 
-<h2>Chat Invitation for (@(Model.CountryCode)) @(Model.Plate)</h2>
-<br>
-<div>
+<div class="d-flex w-100 h-100 justify-content-center">
+    <div class="col-sm-10 col-md-8">
+        <div class="main-bg">
+            <h2 class="main-header">@ViewBag.Title</h2>
 
-    @*<form asp-controller="Car" asp-action="ChatInvite2" method="post" role="form">
-            <button class="btn btn-info" type="submit" style="color:White; text-decoration: none;">Generate New Token</button>
-        </form>*@
+            <div class="form-horizontal p-3 text-center">
+                <button class="btn btn-info">
+                    @Html.ActionLink("Generate New Token", "NewChatInvite", new { id = Model.Id, token = Model.chatInviteToken },
+                        new
+                             {
+                            Style = "color:White; text-decoration: none;",
+                            onclick = "return confirm('Are you sure you want to regenerate your Invite Link?');"
+                        }
+                    )
+                </button>
 
-    <button class="btn btn-info">
-        @Html.ActionLink(
-            "Generate New Token",
-            "NewChatInvite",
-            new { id = Model.Id, token = Model.chatInviteToken },
-            new
-                 {
-                Style = "color:White; text-decoration: none;",
-                onclick = "return confirm('Are you sure you want to regenerate your Invite Link?');"
-            }
-        )
-    </button>
-    <br><br>
-    @if (Model.chatInviteToken != null)
-    {
-        <img src="https://api.qrserver.com/v1/create-qr-code/?data=@(ViewBag.ChatLink ?? "")&amp;size=256x256" alt="" title="" />
-    }
-    @*//else{*@
-    <dl class="dl-horizontal">
+                <br><br>
+                @if (Model.chatInviteToken != null)
+                {
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?data=@(ViewBag.ChatLink ?? "")&amp;size=256x256" alt="" title="" />
+                }
 
+                <br><br>
+                <dl class="dl-horizontal">
 
-        <dt> Invitation Token: </dt>
+                    <dt> Invitation Token: </dt>
+                    <dd> @(Model.chatInviteToken ?? "No Token")</dd>
 
-        <dd> @(Model.chatInviteToken ?? "No Token")</dd>
+                    <dt> Invitation Link: </dt>
+                    <dd><a href="@(ViewBag.ChatLink)">@(ViewBag.ChatLink ?? "No Link") </a> </dd>
 
-        <dt> Invitation Link: </dt>
+                </dl>
 
-        <dd><a href="@(ViewBag.ChatLink)">@(ViewBag.ChatLink ?? "No Link") </a> </dd>
-
-    </dl>
-    @* } *@
+                <div class="form-group d-flex justify-content-between">
+                    <span>
+                        <button class="btn btn-info"> @Html.ActionLink("Back To Car Details", "Details", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;", }) </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<p>
-    <button class="btn btn-info">
-        @Html.ActionLink(
-            "Back To Car Details",
-            "Details",
-            new { id = Model.Id},
-            new {
-                Style = "color:White; text-decoration: none;",
-            }
-        )
-    </button>
-</p>
