@@ -84,10 +84,10 @@
         color: #fff !important;
     }
     .chat {
-        padding: 68px 0 50px;
+        padding: 68px 0 70px;
     }
     .right-box.chat {
-        padding: 83px 15px 65px !important;
+        padding: 83px 15px 85px !important;
     }
     .card {
         border-radius: 4px !important;
@@ -105,7 +105,8 @@
     .msg_card_body {
         overflow-y: auto;
         display: flex;
-        align-items: flex-end;
+        /*align-items: flex-end;*/
+        padding-right: 10px;
     }
     .right-box .card-header {
         border-bottom: none !important;
@@ -233,6 +234,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    #Msgs {
+        display: none !important;
+        position: absolute;
+        z-index: 1;
+        top: 140px;
+        padding-right: 30px;
+    }
 </style>
 
 <div class="h-100">
@@ -274,85 +282,87 @@
                 </div>
             </div>
         </div>
-        <div id ="chat_box" class="col-md-8 col-xl-9 pt-4 pb-4 chat h-100 right-box" style="display: none">
-            <div class="card h-100">
-                <div class="card-header msg_head">
-                    <div class="d-flex bd-highlight">
-                        <div class="user_info">
-                            <span>Chat with : <span id="chat-with-id"></span></span>
+        <div id="RightBox" class="col-md-8 col-xl-9 pt-4 pb-4 chat h-100 right-box">
+            <div id ="chat_box" class="h-100" style="display: none">
+                <div class="card h-100">
+                    <div class="card-header msg_head">
+                        <div class="d-flex bd-highlight">
+                            <div class="user_info">
+                                <span>Chat with : <span id="chat-with-id"></span></span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="chat_body" class="card-body msg_card_body w-100">
-                    @foreach (var chat in chats)
-                    {
-                        <div id="b_@chat.Key.chatId" class="msg_card_body contact_body chat_body w-100">
-                            @if (chat.Value.Count > 0)
-                            {
-                                SentMessage msg;
-                                for (var i = chat.Value.Count - 1; i >= 0; --i)
+                    <div id="chat_body" class="card-body msg_card_body w-100">
+                        @foreach (var chat in chats)
+                        {
+                            <div id="b_@chat.Key.chatId" class="msg_card_body contact_body chat_body w-100">
+                                @if (chat.Value.Count > 0)
                                 {
-                                    if (i == chat.Key.newMsgs - 1)
+                                    SentMessage msg;
+                                    for (var i = chat.Value.Count - 1; i >= 0; --i)
                                     {
-                                        <div class="NUM pb-2 pt-2 text-center mb-2">
-                                            New Unread Messages
-                                        </div>
-                                    }
-                                    msg = chat.Value[i];
-                                    
-                                    if (msg.owned)
-                                    {
-                                        <div id="m_@msg.Id" class="messege d-flex justify-content-end mb-4">
-                                            <div class="msg_cotainer">
-                                                @msg.content
+                                        if (i == chat.Key.newMsgs - 1)
+                                        {
+                                            <div class="NUM pb-2 pt-2 text-center mb-2">
+                                                New Unread Messages
                                             </div>
-                                            <div class="img_cont_msg">
-                                                <span class="opacity-0">icon</span>
-                                            </div>
-                                        </div>
-                                    }
-                                    else if (!chat.Key.owning)
-                                    {
-                                        <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                            <div class="img_cont_msg">
-                                                <span class="opacity-0">icon</span>
-                                            </div>
-                                            <div class="msg_cotainer">
-                                                <span class="msg_nickname nickname">@msg.nickname</span>
-                                                @msg.content
-                                            </div>
-                                        </div>  
-                                    }
-                                    else
-                                    {
-                                        <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                            <div class="img_cont_msg">
-                                                <span class="opacity-0">icon</span>
-                                            </div>
-                                            <div class="msg_cotainer">
-                                                <span class="msg_nickname nickname">@msg.nickname</span>
-                                                @msg.content
-                                            </div>
-                                        </div>  
+                                        }
+                                        msg = chat.Value[i];
 
+                                        if (msg.owned)
+                                        {
+                                            <div id="m_@msg.Id" class="messege d-flex justify-content-end mb-4">
+                                                <div class="msg_cotainer">
+                                                    @msg.content
+                                                </div>
+                                                <div class="img_cont_msg">
+                                                    <span class="opacity-0">icon</span>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (!chat.Key.owning)
+                                        {
+                                            <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
+                                                <div class="img_cont_msg">
+                                                    <span class="opacity-0">icon</span>
+                                                </div>
+                                                <div class="msg_cotainer">
+                                                    <span class="msg_nickname nickname">@msg.nickname</span>
+                                                    @msg.content
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
+                                                <div class="img_cont_msg">
+                                                    <span class="opacity-0">icon</span>
+                                                </div>
+                                                <div class="msg_cotainer">
+                                                    <span class="msg_nickname nickname">@msg.nickname</span>
+                                                    @msg.content
+                                                </div>
+                                            </div>
+
+                                        }
                                     }
                                 }
-                            }
-                            @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
-                            {
-                                <div class="NUM pb-2 pt-2 text-center mb-2" style="display: none">
-                                    New Unread Messages
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-                <div class="card-footer">
-                    <div class="input-group">
-                        <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Type your message......">
-                         </textarea>
-                        <div class="input-group-append">
-                            <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow"></i></span>
+                                @if (chat.Key.newMsgs == 0) // no new messages, but create the objesct
+                                {
+                                    <div class="NUM pb-2 pt-2 text-center mb-2" style="display: none">
+                                        New Unread Messages
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <div class="input-group">
+                            <textarea name="" class="form-control type_msg" id="messageInput" placeholder="Type your message......">
+                             </textarea>
+                            <div class="input-group-append">
+                                <span class="input-group-text send_btn" id="sendButton"><i class="fas fa-location-arrow"></i></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -430,7 +440,7 @@
     }
     function addInfoReloadMsg(msg) {
         var infoReloadMsgEl = $(
-            '<div class="alert info"> \
+            '<div class="alert alert-info"> \
                     <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Info:</strong>'
             + msg
@@ -440,6 +450,11 @@
 
     $(document).ready(function () {
         // all server functions have the first letter lowered
+
+        var msgsEl = $('#Msgs');
+        msgsEl.removeClass("main-top");
+        $('#RightBox').prepend(msgsEl);
+        msgsEl.attr("style", "display: block !important");
 
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
@@ -518,7 +533,7 @@
             var chatH = $("#h_" + chatId)[0];
             var chatB = $("#b_" + chatId)[0];
             var warningMsgEl = $(
-                '<div class="alert warning"> \
+                '<div class="alert alert-warning"> \
                     <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Well... </strong> The "'
                 + chatH.innerHTML
