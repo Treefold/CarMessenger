@@ -64,7 +64,7 @@ namespace CarMessenger.Models
     public class CarModel
     {
         private static readonly RestClient client;
-        private static readonly string HOST = "https://192.168.42.269:45455";
+        private static readonly string HOST = "https://192.168.42.249:45456";
 
         [Key]
         [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
@@ -163,7 +163,7 @@ namespace CarMessenger.Models
             return car.IsOwnedBy(contextdb, userId);
         }
 
-        public async Task<bool> GenerateNewChatInviteToken(bool shorten = true)
+        public async Task<bool> GenerateNewChatInviteToken(bool shorten = false)
         {
             this.chatInviteToken = Guid.NewGuid().ToString().ToUpper();
             return await UpdateChatInviteLinkAsync(shorten);
