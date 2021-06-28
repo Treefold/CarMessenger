@@ -159,15 +159,17 @@
                         <button class="btn btn-info"> @Html.ActionLink("Back to Manage", "../Manage", null, new { Style = "color:White; text-decoration: none;" }) </button>
                     </span>
                 }
-                @if (User.IsInRole("Admin") || (ViewBag.Owned != null && ViewBag.Owned))
-                {
+                <div>
+                    @if (User.IsInRole("Admin") || (ViewBag.Owned != null && ViewBag.Owned))
+                    {
+                        <span class="mr-2">
+                            <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+                        </span>
+                    }
                     <span>
-                        <button class="btn btn-warning">@Html.ActionLink("Edit", "Edit", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
+                        <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned ^ User.IsInRole("Admin") ? "Delete" : "Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
                     </span>
-                }
-                <span>
-                    <button class="btn btn-danger" onclick="return confirm('Are you sure?')">@Html.ActionLink(ViewBag.Owned ^ User.IsInRole("Admin") ? "Delete" : "Leave", "Delete", new { id = Model.Id }, new { Style = "color:White; text-decoration: none;" }) </button>
-                </span>
+                </div>
             </div>
 
         </div>

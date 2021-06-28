@@ -160,7 +160,7 @@
     .img_cont_msg {
         height: 26px;
         width: 26px;
-        background: #5fb7cc;
+        background: #788ccb;
         border-radius: 30px;
         position: relative;
     }
@@ -168,7 +168,7 @@
         opacity: 0;
     }
     .img_cont_msg:before {
-        content: "car";
+        @*content: "car";*@
         font-size: 8px;
         line-height: 28px;
         font-weight: bold;
@@ -182,6 +182,14 @@
     }
     .justify-content-end .img_cont_msg:before {
         content: "you";
+    }
+        .justify-content-start .img_cont_msg:before {
+            font-size: 14px;
+            line-height: 27px;
+            left: 0.34rem;
+        }
+    .justify-content-start .fa-user.img_cont_msg:before {
+        left: 0.38rem;
     }
     .opacity-0 {
         opacity: 0;
@@ -320,10 +328,10 @@
                                                 </div>
                                             </div>
                                         }
-                                        else if (!chat.Key.owning)
+                                        else 
                                         {
                                             <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                                <div class="img_cont_msg">
+                                                <div class="img_cont_msg fas fa-@(msg.isCar ? "car" : "user")">
                                                     <span class="opacity-0">icon</span>
                                                 </div>
                                                 <div class="msg_cotainer">
@@ -331,19 +339,6 @@
                                                     @msg.content
                                                 </div>
                                             </div>
-                                        }
-                                        else
-                                        {
-                                            <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                                <div class="img_cont_msg">
-                                                    <span class="opacity-0">icon</span>
-                                                </div>
-                                                <div class="msg_cotainer">
-                                                    <span class="msg_nickname nickname">@msg.nickname</span>
-                                                    @msg.content
-                                                </div>
-                                            </div>
-
                                         }
                                     }
                                 }
@@ -468,7 +463,7 @@
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
 
-        function addMessage(chatId, msgId, nickname, msg, owningCar = false, owningMsg = false) {
+        function addMessage(chatId, msgId, nickname, msg, owningCar = false, owningMsg = false, isCar = true) {
             // move chat head
 
             var el = $("#h_" + chatId);
@@ -512,10 +507,9 @@
             var msgStr = '<div' + (msgId ? (' id ="m_' + msgId + '"') : '') + ' class="messege d-flex justify-content-';
             if (owningMsg) {
                 msgStr += 'end mb-4"> <div class="msg_cotainer">' + msg + '</div> <div class="img_cont_msg"><span class="opacity-0">icon</span>';
-            } else if (owningCar) {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span> ' + msg;
-            } else {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span>' + msg;
+            } else  {
+                msgStr += 'start mb-4"><div class="img_cont_msg fas fa-' + (isCar ? "car" : "user") +
+                    '"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span> ' + msg;
             }
             msgStr += '</div> </div>';
             $("#b_" + chatId).append($(msgStr));//'<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
@@ -532,7 +526,7 @@
         chat.client.AddMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
-            addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
+            addMessage(msg.chatId, msg.Id, msg.nickname, msg.content, false, false, msg.isCar);
         };
         chat.client.DeleteCar = function (carId) {
             chat.server.disconnectCar(carId);

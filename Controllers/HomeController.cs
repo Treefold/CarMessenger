@@ -76,6 +76,7 @@ namespace CarMessenger.Controllers
                             {
                                 chatId = chat.Id, 
                                 owning = chat.userId != userId, 
+                                userId = chat.userId,
                                 plate = car.Plate, 
                                 code = car.CountryCode, 
                                 info = (string)(chat.userId == null || chat.userId == userId ? null : infoDict[chat.userId]),
@@ -103,7 +104,8 @@ namespace CarMessenger.Controllers
                                     sendTime = msg.sendTime,
                                     expiry = msg.expiry,
                                     nickname = user.Nickname,
-                                    owned = msg.userId == userId
+                                    owned = msg.userId == userId,
+                                    isCar = currChat.userId != msg.userId
                                 }
                             ).OrderByDescending(m => m.sendTime).ThenBy(c => c.Id).ToList();
 

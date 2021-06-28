@@ -115,6 +115,7 @@ namespace CarMessenger.Models
     {
         public string chatId;
         public bool owning;
+        public string userId;
         public string plate;
         public string code;
         public string info;
