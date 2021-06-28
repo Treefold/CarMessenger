@@ -23,7 +23,7 @@
                     <li class="d-flex justify-content-between p-1 pl-3 pr-3">
                         <span class="font-weight-bold">Nickname:</span>
                         <span class="align-center">
-                            <text class="">@Model.Nickname</text>
+                            <text id="Nickname">@Model.Nickname</text>
                             <button class="btn btn-warning p-0 pr-1 pl-1 ml-2 mb-1 mt-1">@Html.ActionLink("Change", "ChangeNickname", null, new { Style = "color:White; text-decoration: none;" }) </button>
                         </span>
                     </li>
@@ -133,7 +133,7 @@
                                     {
                                         <li id="c_@car.Id" class="d-flex align-items-center justify-content-between Owned">
                                             <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
-                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
+                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-2">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
                                 }
@@ -171,7 +171,7 @@
                                     {
                                         <li id="c_@car.Id" class="d-flex align-items-center justify-content-between CoOwned">
                                             <text class="align-center name"> (<text class="CountryCode">@car.CountryCode</text>) <text class="Plate">@car.Plate</text> </text>
-                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-1">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
+                                            <button class="btn btn-info p-0 pr-1 pl-1 mb-1 mt-1 ml-2">@Html.ActionLink("Details", "../Cars/Details/" + car.Id, null, new { Style = "color:White; text-decoration: none;" }) </button>
                                         </li>
                                     }
                                 }
@@ -262,13 +262,15 @@
         return $("#" + headId + " .carPlate")[0].innerHTML;
     }
 
-
     $(document).ready(function () {
         // all server functions have the first letter lowered
 
         // Declare a proxy to reference the hub.
         var hub = $.connection.carHub;
 
+        hub.client.UpdateNickname = function (newNick) {
+            $('#Nickname')[0].innerHTML = newNick;
+        }
         hub.client.AddOwnedCar = function (car) {
             console.log("add car", car)
             hub.server.joinNewCar(car.Id);

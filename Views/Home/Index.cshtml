@@ -513,9 +513,9 @@
             if (owningMsg) {
                 msgStr += 'end mb-4"> <div class="msg_cotainer">' + msg + '</div> <div class="img_cont_msg"><span class="opacity-0">icon</span>';
             } else if (owningCar) {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
+                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span> ' + msg;
             } else {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
+                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span>' + msg;
             }
             msgStr += '</div> </div>';
             $("#b_" + chatId).append($(msgStr));//'<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');

@@ -115,6 +115,25 @@ namespace CarMessenger.Hubs
             }
         }
 
+        public static void ChangeNickname(string userId, string nick)
+        {
+            // only the server can call this function
+            // not verified, already trusted
+            try
+            {
+                if (userId != null)
+                {
+                    // notify the target user
+                    carHub.Clients.Group(userPrefix + userId).UpdateNickname(nick);
+                    // TODO: Notify the car
+                }
+            }
+            catch
+            {
+                // do nothing
+            }
+        }
+
         public static void RemoveStatus (string userId, string carId)
         {
             // only the server can call this function

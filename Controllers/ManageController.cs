@@ -364,6 +364,7 @@ namespace CarMessenger.Controllers
             msgsGroup.Select(g => new {chatId = g.Key, msgs = g.Select(m => m.Id).ToList() }).ToList()
                 .ForEach((chat) => ChatHub.UpdateNickMsg(chat.chatId, model.Nickname, chat.msgs));
 
+            CarHub.ChangeNickname(userID, model.Nickname);
 
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId()); 
             if (user != null)
