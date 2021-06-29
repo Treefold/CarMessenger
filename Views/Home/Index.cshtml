@@ -243,6 +243,10 @@
         top: 140px;
         padding-right: 30px;
     }
+    .alert-reload {
+        color: black;
+        background-color: #91e8e4;
+    }
     @@media all and (max-width: 767px) {
         .left-box {
             margin-left: 0 !important;
@@ -451,10 +455,10 @@
     function addInfoReloadMsg(msg) {
         var infoReloadMsgEl = $(
             '<div class="alert alert-info"> \
-                    <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
+                    <span class="closebtn"  onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Info:</strong>'
             + msg
-            + '<button onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
+            + '<button class="alert alert-reload border p-0 pl-1 pr-1" onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
         $('#Msgs')[0].append(infoReloadMsgEl);
     }
 
@@ -565,6 +569,16 @@
             $("#h_" + chatId + " .carPlate")[0].innerHTML = plate;
             $("#h_" + chatId + " .carCode")[0].innerHTML = code;
 
+            if (_selectedChatId == chatId) {
+                var chatBodyPlate = $("#chat-with-id .carPlate");
+                if (chatBodyPlate.length > 0)
+                    chatBodyPlate[0].innerHTML = plate;
+
+                var chatBodyCode = $("#chat-with-id .carCode");
+                if (chatBodyCode.length > 0)
+                    chatBodyCode[0].innerHTML = code;
+            }
+
             $("#b_" + chatId + " .carPlate").each((ind, el) => el.innerHTML = plate);
             $("#b_" + chatId + " .carCode").each((ind, el) => el.innerHTML = code);
         };
@@ -572,6 +586,12 @@
             var els = $("#h_" + chatId + " .nickname")
             if (els.length > 0)
                 els[0].innerHTML = nick;
+
+            if (_selectedChatId == chatId) {
+                var chatBodyNick = $("#chat-with-id .nickname");
+                if (chatBodyNick.length > 0)
+                    chatBodyNick[0].innerHTML = nick;
+            }
         };
         chat.client.UpdateNickMsg = function (chatId, nick, msgIdList) {
             msgIdList.forEach((msgId) => {

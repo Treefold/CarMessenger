@@ -246,7 +246,7 @@ namespace CarMessenger.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId && c.userId == userId); // && c.userId == userId);
+                Chat chat = context.Chats.FirstOrDefault(c => c.carId == carId && c.userId == userId);
                 if (chat != null)
                 {
                     TempData["WarningMsgs"] = new List<string> { "This chat already exists. If you cannot find it, please contact us for technical support!" };
@@ -270,10 +270,10 @@ namespace CarMessenger.Controllers
                     return View(msg);*/
                     Chat newChat = new Chat(userId, carId);
                     context.Chats.Add(newChat);
-                    context.LastSeens.Add(new LastSeen(userId, chat.Id));// add the curent user seen to the new chat
+                    context.LastSeens.Add(new LastSeen(userId, newChat.Id));// add the curent user seen to the new chat
                     // add the car owners & co-owners seen to the new chat
                     context.Owners.Where(o => o.CarId == carId && (o.Category == "Owner" || o.Category == "CoOwner")).Select(o => o.UserId)
-                        .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, chat.Id)));
+                        .ToList().ForEach(carMemeberID => context.LastSeens.Add(new LastSeen(carMemeberID, newChat.Id)));
 
                     context.SaveChanges();
                     ChatHub.NewChatForOwners(carId,  new ChatHead(newChat, car, User.Identity.GetNickname()));

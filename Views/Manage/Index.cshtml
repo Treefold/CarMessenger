@@ -272,18 +272,18 @@
             $('#Nickname')[0].innerHTML = newNick;
         }
         hub.client.AddOwnedCar = function (car) {
-            console.log("add car", car)
+            //console.log("add car", car)
             hub.server.joinNewCar(car.Id);
         }
         hub.client.AddCoOwnedCar = function (car) {
-            console.log("add car", car)
+            //console.log("add car", car)
             hub.server.joinNewCar(car.Id);
         }
         hub.client.AddInvitation = function (invitation) {
-            console.log("add invitation", invitation)
+            //console.log("add invitation", invitation)
         }
         hub.client.AddRequest = function (request) {
-            console.log("add request", request)
+            //console.log("add request", request)
         }
         hub.client.RemoveStatus = function (carId) {
             var status = $('#c_' + carId);
@@ -311,8 +311,8 @@
         // Start the connection.
         $.connection.hub.start().done(function () {
 
-            hub.server.joinMyNotification();
-            hub.server.joinMyCars();
+            //hub.server.joinMyNotification();
+            //hub.server.joinMyCars();
         });
     });
 </script>
