@@ -52,6 +52,8 @@ namespace CarMessenger.Models
 
         public bool owned { get; set; }
 
+        public bool isCar { get; set; }
+
         public string content { get; set; }
 
         public DateTime sendTime { get; set; } = DateTime.Now;
@@ -68,6 +70,7 @@ namespace CarMessenger.Models
             this.chatId = chatId;
             this.nickname = nickname;
             this.owned = owned;
+            this.isCar = isCar;
             this.content = content;
             this.sendTime = sendTime;
             this.expiry = expiry;
@@ -82,10 +85,11 @@ namespace CarMessenger.Models
             this.expiry = msg.expiry;
         }
 
-        public SentMessage(Message msg, string nickname, bool owned) : this(msg)
+        public SentMessage(Message msg, string nickname, bool owned, bool isCar) : this(msg)
         {
             this.nickname = nickname;
             this.owned = owned;
+            this.isCar = isCar;
         }
     }
 }

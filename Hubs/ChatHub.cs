@@ -355,7 +355,9 @@ namespace CarMessenger.Hubs
                     return; // invalid attempt - unknown user
                 }
 
-                if (!Chat.HasUser(contextdb, userId, chatId))
+                Chat chat = contextdb.Chats.Find(chatId); // might fail, but catched (it's alright)
+
+                if (!chat.HasUser(contextdb, userId))
                 {
                     return;  // invalid attempt - user not in chat
                 }
@@ -372,7 +374,7 @@ namespace CarMessenger.Hubs
                 }
                 contextdb.SaveChanges();
 
-                Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, Context.User.Identity.GetNickname(), false)));
+                Clients.OthersInGroup(chatGroupPrefix + chatId).addMessage(JsonSerializer.Serialize(new SentMessage(msg, Context.User.Identity.GetNickname(), false, chat.userId != userId)));
             }
             catch
             {

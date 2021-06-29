@@ -25,12 +25,6 @@
         border-bottom: 0 !important;
         background-color: rgba(0,0,0,.06) !important;
     }
-    @@media all and (max-width: 767px) {
-          .left-box {
-                margin-left: 0 !important;
-                padding: 0;
-          }
-    }
     .card-header .user_info span {
         font-size: 16px;
         font-weight: 500;
@@ -160,7 +154,7 @@
     .img_cont_msg {
         height: 26px;
         width: 26px;
-        background: #5fb7cc;
+        background: #788ccb;
         border-radius: 30px;
         position: relative;
     }
@@ -168,7 +162,7 @@
         opacity: 0;
     }
     .img_cont_msg:before {
-        content: "car";
+        @*content: "car";*@
         font-size: 8px;
         line-height: 28px;
         font-weight: bold;
@@ -182,6 +176,14 @@
     }
     .justify-content-end .img_cont_msg:before {
         content: "you";
+    }
+        .justify-content-start .img_cont_msg:before {
+            font-size: 14px;
+            line-height: 27px;
+            left: 0.34rem;
+        }
+    .justify-content-start .fa-user.img_cont_msg:before {
+        left: 0.38rem;
     }
     .opacity-0 {
         opacity: 0;
@@ -240,6 +242,22 @@
         z-index: 1;
         top: 140px;
         padding-right: 30px;
+    }
+    .alert-reload {
+        color: black;
+        background-color: #91e8e4;
+    }
+    @@media all and (max-width: 767px) {
+        .left-box {
+            margin-left: 0 !important;
+            padding: 0;
+            height: auto !important;
+            max-height: 300px;
+        }
+
+        .right-box.chat {
+            padding: 15px 15px 85px !important;
+        }
     }
 </style>
 
@@ -320,10 +338,10 @@
                                                 </div>
                                             </div>
                                         }
-                                        else if (!chat.Key.owning)
+                                        else 
                                         {
                                             <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                                <div class="img_cont_msg">
+                                                <div class="img_cont_msg fas fa-@(msg.isCar ? "car" : "user")">
                                                     <span class="opacity-0">icon</span>
                                                 </div>
                                                 <div class="msg_cotainer">
@@ -331,19 +349,6 @@
                                                     @msg.content
                                                 </div>
                                             </div>
-                                        }
-                                        else
-                                        {
-                                            <div id="m_@msg.Id" class="messege d-flex justify-content-start mb-4">
-                                                <div class="img_cont_msg">
-                                                    <span class="opacity-0">icon</span>
-                                                </div>
-                                                <div class="msg_cotainer">
-                                                    <span class="msg_nickname nickname">@msg.nickname</span>
-                                                    @msg.content
-                                                </div>
-                                            </div>
-
                                         }
                                     }
                                 }
@@ -450,10 +455,10 @@
     function addInfoReloadMsg(msg) {
         var infoReloadMsgEl = $(
             '<div class="alert alert-info"> \
-                    <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> \
+                    <span class="closebtn"  onclick="this.parentElement.style.display=\'none\';">&times;</span> \
                     <strong>Info:</strong>'
             + msg
-            + '<button onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
+            + '<button class="alert alert-reload border p-0 pl-1 pr-1" onClick="window.location.reload();">Click here</button> to see the changes</div>')[0];
         $('#Msgs')[0].append(infoReloadMsgEl);
     }
 
@@ -468,7 +473,7 @@
         // Declare a proxy to reference the hub.
         var chat = $.connection.chatHub;
 
-        function addMessage(chatId, msgId, nickname, msg, owningCar = false, owningMsg = false) {
+        function addMessage(chatId, msgId, nickname, msg, owningCar = false, owningMsg = false, isCar = true) {
             // move chat head
 
             var el = $("#h_" + chatId);
@@ -512,10 +517,9 @@
             var msgStr = '<div' + (msgId ? (' id ="m_' + msgId + '"') : '') + ' class="messege d-flex justify-content-';
             if (owningMsg) {
                 msgStr += 'end mb-4"> <div class="msg_cotainer">' + msg + '</div> <div class="img_cont_msg"><span class="opacity-0">icon</span>';
-            } else if (owningCar) {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
-            } else {
-                msgStr += 'start mb-4"><div class="img_cont_msg"><span class="opacity-0">icon</span></div><div class="msg_cotainer">' + msg;
+            } else  {
+                msgStr += 'start mb-4"><div class="img_cont_msg fas fa-' + (isCar ? "car" : "user") +
+                    '"><span class="opacity-0">icon</span></div><div class="msg_cotainer"><span class="msg_nickname nickname">' + nickname + '</span> ' + msg;
             }
             msgStr += '</div> </div>';
             $("#b_" + chatId).append($(msgStr));//'<div id="m_' + msgId + '" class="messege"><strong class="nickname">' + nickname + '</strong><text> : ' + msg + '</text></div>');
@@ -532,7 +536,7 @@
         chat.client.AddMessage = function (msgJson) {
             var msg = jQuery.parseJSON(msgJson);
             //var id = $("." + msg.carCountryCode + "." + msg.carPlate)[0].id.replace('h_', '');
-            addMessage(msg.chatId, msg.Id, msg.nickname, msg.content);
+            addMessage(msg.chatId, msg.Id, msg.nickname, msg.content, false, false, msg.isCar);
         };
         chat.client.DeleteCar = function (carId) {
             chat.server.disconnectCar(carId);
@@ -565,6 +569,16 @@
             $("#h_" + chatId + " .carPlate")[0].innerHTML = plate;
             $("#h_" + chatId + " .carCode")[0].innerHTML = code;
 
+            if (_selectedChatId == chatId) {
+                var chatBodyPlate = $("#chat-with-id .carPlate");
+                if (chatBodyPlate.length > 0)
+                    chatBodyPlate[0].innerHTML = plate;
+
+                var chatBodyCode = $("#chat-with-id .carCode");
+                if (chatBodyCode.length > 0)
+                    chatBodyCode[0].innerHTML = code;
+            }
+
             $("#b_" + chatId + " .carPlate").each((ind, el) => el.innerHTML = plate);
             $("#b_" + chatId + " .carCode").each((ind, el) => el.innerHTML = code);
         };
@@ -572,6 +586,12 @@
             var els = $("#h_" + chatId + " .nickname")
             if (els.length > 0)
                 els[0].innerHTML = nick;
+
+            if (_selectedChatId == chatId) {
+                var chatBodyNick = $("#chat-with-id .nickname");
+                if (chatBodyNick.length > 0)
+                    chatBodyNick[0].innerHTML = nick;
+            }
         };
         chat.client.UpdateNickMsg = function (chatId, nick, msgIdList) {
             msgIdList.forEach((msgId) => {

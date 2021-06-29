@@ -64,7 +64,7 @@ namespace CarMessenger.Models
     public class CarModel
     {
         private static readonly RestClient client;
-        private static readonly string HOST = "https://192.168.42.269:45455";
+        private static readonly string HOST = "https://192.168.42.249:45455";
 
         [Key]
         [StringLength(40, ErrorMessage = "GUID excedeed length limit")]
@@ -85,13 +85,13 @@ namespace CarMessenger.Models
         public string CountryCode { get; set; }
 
         [Required]
-        [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
+        [RegularExpression(@"[A-Za-z0-9 ]{1,20}", ErrorMessage = ("Please enter the car model (only numbers and letters)"))]
         [StringLength(20, ErrorMessage = "Car ModelName excedeed length limit")]
         [Display(Name = "Car Model")]
         public string ModelName { get; set; }
 
         [Required]
-        [RegularExpression(@"[A-Za-z0-9]{1,20}", ErrorMessage = ("Please enter the color"))]
+        [RegularExpression(@"[A-Za-z0-9 ]{1,20}", ErrorMessage = ("Please enter the color (only numbers and letters)"))]
         [StringLength(20, ErrorMessage = "Car Color excedeed length limit")]
         [Display(Name = "Car Color")]
         public string Color { get; set; }
@@ -163,7 +163,7 @@ namespace CarMessenger.Models
             return car.IsOwnedBy(contextdb, userId);
         }
 
-        public async Task<bool> GenerateNewChatInviteToken(bool shorten = true)
+        public async Task<bool> GenerateNewChatInviteToken(bool shorten = false)
         {
             this.chatInviteToken = Guid.NewGuid().ToString().ToUpper();
             return await UpdateChatInviteLinkAsync(shorten);
@@ -215,6 +215,9 @@ namespace CarMessenger.Models
             //notify all members in a chat with the car
             context.Chats.Where(c => c.carId == this.Id).ToList()
                 .ForEach(chat => chat.Delete(context));
+
+            context.Owners.Where(o => o.CarId == this.Id).ToList()
+                .ForEach(o => o.Delete(context));
 
             context.Cars.Remove(this); // remove this chat
         }
