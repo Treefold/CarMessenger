@@ -388,6 +388,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Hubs\CarHub.cs" />
+    <Compile Include="Migrations\202106300611138_dbstart.cs" />
+    <Compile Include="Migrations\202106300611138_dbstart.Designer.cs">
+      <DependentUpon>202106300611138_dbstart.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\_CreateAppDB.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -592,7 +596,11 @@
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202106300611138_dbstart.resx">
+      <DependentUpon>202106300611138_dbstart.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
